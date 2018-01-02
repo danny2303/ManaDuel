@@ -20,11 +20,14 @@ end
 
 function scroll.load()
 
-	cameraBoarder = 100
+	cameraBoarder = 200
+	cameraBuffer = 500
+
 	zoomInProgress = false
 	zoomMode = "in"
 	zoomDuration = 100
-	zoomSpeed = 0.01
+	defaultZoomSpeed = 3
+	zoomSpeed = 1
 	zoomTimer = 0
 
 	tilemap = love.graphics.newImage("images/tilemap.png")
@@ -35,8 +38,8 @@ function scroll.load()
 	tilemap:setFilter("nearest","nearest")
 
 	mapLength,mapHeight = 10,10
-	zoom = 5
-	cameraX,cameraY = 0,0
+	zoom = 50
+	cameraX,cameraY = -20,-20
 
 	voidColor = {red=0,blue=0,green=0}
 
@@ -46,6 +49,8 @@ end
 
 function scroll.update()
 
+	zoomSpeed = defaultZoomSpeed/zoom
+
 	panCamera()
 	smoothZoom()
 
@@ -54,17 +59,6 @@ end
 function scroll.draw()
 
 	drawTiles()
-
-
-	p1x,p2x = (applyScroll(players[1].x,"x")*zoom)+cameraX, (applyScroll(players[2].x,"x")*zoom)+cameraX
-	p1y,p2y = (applyScroll(players[1].y,"y")*zoom)+cameraY, (applyScroll(players[2].y,"y")*zoom)+cameraY
-
-	xDifference = math.abs(p1x-p2x)
-	yDifference = math.abs(p1y-p2y)
-
-	love.graphics.print(zoomTimer,0,0)
-	love.graphics.print(xDifference,0,50)
-
 
 end
 
@@ -124,21 +118,21 @@ function panCamera()
 
 	if not zoomInProgress then
 
-		p1x,p2x = (applyScroll(players[1].x,"x")*zoom)+cameraX, (applyScroll(players[2].x,"x")*zoom)+cameraX
-		p1y,p2y = (applyScroll(players[1].y,"y")*zoom)+cameraY, (applyScroll(players[2].y,"y")*zoom)+cameraY
+		p1x,p2x = (applyScroll(players[1].x,"x")*zoom)+love.graphics.getWidth()/2, (applyScroll(players[2].x,"x")*zoom)+love.graphics.getWidth()/2
+		p1y,p2y = (applyScroll(players[1].y,"y")*zoom)+love.graphics.getHeight()/2, (applyScroll(players[2].y,"y")*zoom)+love.graphics.getHeight()/2
 
 		xDifference = math.abs(p1x-p2x)
 		yDifference = math.abs(p1y-p2y)
 
 
-		if xDifference + cameraBoarder*2 > love.graphics.getWidth() or yDifference + cameraBoarder*2 > love.graphics.getHeight() then--if it needs to zoom out
+		if p1x < cameraBoarder or p1x > love.graphics.getWidth() - cameraBoarder or p1y < cameraBoarder or p1y >  love.graphics.getHeight() - cameraBoarder or p2x < cameraBoarder or p2x > love.graphics.getWidth() - cameraBoarder or p2y < cameraBoarder or p2y >  love.graphics.getHeight() - cameraBoarder then--if it needs to zoom out
 
 			zoomInProgress = true
 			zoomMode = "out"
 
 		end
 
-		if xDifference < 200 or yDifference < 200 then
+		if p1x < love.graphics.getWidth() - cameraBuffer and p1x > cameraBuffer and p1y < love.graphics.getHeight() - cameraBuffer and p1y > cameraBuffer and p2x < love.graphics.getWidth() - cameraBuffer and p2x > cameraBuffer and p2y < love.graphics.getHeight() - cameraBuffer and p2y > cameraBuffer then
 
 			zoomInProgress = true
 			zoomMode = "in"

@@ -40,4 +40,15 @@ function love.draw()
 
 	input.draw()
 
+	love.graphics.line(cameraBoarder,cameraBoarder,cameraBoarder, love.graphics.getHeight() - cameraBoarder)
+	love.graphics.line(cameraBoarder,cameraBoarder,love.graphics.getWidth() - cameraBoarder, cameraBoarder)
+	love.graphics.line(love.graphics.getWidth() - cameraBoarder, cameraBoarder,love.graphics.getWidth() - cameraBoarder, love.graphics.getHeight() - cameraBoarder)
+	love.graphics.line(cameraBoarder, love.graphics.getHeight() - cameraBoarder, love.graphics.getWidth() - cameraBoarder, love.graphics.getHeight() - cameraBoarder)
+
+	love.graphics.line(cameraBuffer, cameraBuffer, love.graphics.getWidth() - cameraBuffer, cameraBuffer)
+	love.graphics.line(love.graphics.getWidth() - cameraBuffer, cameraBuffer, love.graphics.getWidth()- cameraBuffer, love.graphics.getHeight() - cameraBuffer)
+	love.graphics.line(love.graphics.getWidth()- cameraBuffer, love.graphics.getHeight() - cameraBuffer,cameraBuffer, love.graphics.getHeight() - cameraBuffer)
+	love.graphics.line(cameraBuffer, cameraBuffer,cameraBuffer, love.graphics.getHeight() - cameraBuffer)
+
+
 end

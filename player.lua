@@ -12,8 +12,8 @@ function player.update()
 
 	for i=1,2 do	
 
-		players[i].x = players[i].x + inputs[i].ballxl*0.1
-		players[i].y = players[i].y + inputs[i].ballyl*0.1
+		players[i].x = players[i].x + inputs[i].ballxl*0.01
+		players[i].y = players[i].y + inputs[i].ballyl*0.01
 
 	end
 
