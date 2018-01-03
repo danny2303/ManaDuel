@@ -10,15 +10,16 @@ function player.load()
 	playerBack:setFilter("nearest","nearest")
 	playerSide:setFilter("nearest","nearest")
 
-	players = {{image = playerFront,x=0,y=0,"down"},{image = playerFront,x=0,y=0, facing = "down"}}
+	maxHealth,maxMana = 20,100
+
+	players = {{image = playerFront,x=0,y=0,"down",health=maxHealth,mana=maxMana},{image = playerFront,x=0,y=0, facing = "down",health=maxHealth,mana=maxMana}}
 	playerScale = 0.25
 	playerOffsetX,playerOffsetY = playerFront:getWidth()/2*playerScale,playerFront:getHeight()/2*playerScale
 
-	speed = 1
+	speed = 0.05
 
-	addObject("ball",1,1,3,1)
-	addObject("barrier",1,5,1,1)
-	push("ball",0,0.01)
+	addObject("player1Hitbox",players[1].x,players[1].y,1,2.5,{playerHitbox = true})
+	addObject("player2Hitbox",players[2].x,players[2].y,1,2.5,{playerHitbox = true})
 
 end
 
@@ -26,9 +27,8 @@ function player.update()
 
 	movePlayers()
 
-	if checkForCollision("ball")[1] == true then
-		setObject("ball",{x=1,y=1,width=1,height=1,active=false})
-	end
+	put("player1Hitbox",players[1].x-((playerFront:getWidth()/2*playerScale)/tileSize) ,players[1].y-((playerFront:getHeight()/2*playerScale)/tileSize))
+	put("player2Hitbox",players[2].x-((playerFront:getWidth()/2*playerScale)/tileSize),players[2].y-((playerFront:getHeight()/2*playerScale)/tileSize))
 
 end
 
@@ -44,11 +44,6 @@ function player.draw()
 
 	end
 
-	x,y = getLocation("ball")
-	--love.graphics.circle("fill",applyScroll(x,"x"),applyScroll(y,"y"),1)
-	drawObject("barrier")
-	drawObject("ball")
-
 
 end
 
@@ -56,8 +51,8 @@ function movePlayers()
 
 	for i=1,2 do	
 
-		players[i].x = players[i].x + inputs[i].ballxl*speed/(zoom*5)
-		players[i].y = players[i].y + inputs[i].ballyl*speed/(zoom*5)
+		players[i].x = players[i].x + inputs[i].ballxl*speed
+		players[i].y = players[i].y + inputs[i].ballyl*speed
 
 		if math.abs(inputs[i].ballxl) > math.abs(inputs[i].ballyl) then
 			if inputs[i].ballxl < 0 then

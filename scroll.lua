@@ -8,16 +8,6 @@ function scroll.setTile(x,y,tiledata)
 
 end	
 
-function love.wheelmoved(x, y)
-
-	    if y > 0 then
-	        zoom = zoom + 0.1
-	    elseif y < 0 then
-	        zoom = zoom - 0.1
-	 	end
-
-end
-
 function scroll.load()
 
 	showZoomBoarders = false
@@ -33,8 +23,7 @@ function scroll.load()
 	zoomInProgress = false
 	zoomMode = "in"
 	zoomDuration = 100
-	defaultZoomSpeed = 1
-	zoomSpeed = 1
+	zoomSpeed = 0.01
 	zoomTimer = 0
 
 	tilemap = love.graphics.newImage("images/tilemap.png")
@@ -54,8 +43,6 @@ end
 
 function scroll.update()
 
-	zoomSpeed = defaultZoomSpeed/(zoom*2)
-
 	panCamera()
 	smoothZoom()
 
@@ -74,7 +61,11 @@ function setupMap()
 	for x = 1,mapLength do
 		map[x] = {}
 		for y = 1,mapHeight do
-			map[x][y] = createTiledata(math.random(0,2),0)
+			if math.random(1,100) == 1 then
+				map[x][y] = createTiledata(3,0)
+			else
+				map[x][y] = createTiledata(math.random(0,2),0)
+			end
 		end
 	end
 

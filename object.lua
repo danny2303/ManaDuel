@@ -3,7 +3,7 @@ local object = {}
 function object.load()
 
 	indexList = {}
-	objects = {} --x, y, velx, vely, active, width, height
+	objects = {} --x, y, velx, vely, active, width, height, playerHitbox?
 	numObjects = 0
 
 end
@@ -38,11 +38,15 @@ function applyVelocities()
 
 end
 
-function addObject(ID,x,y,w,h)
+function addObject(ID,x,y,w,h,args)
 
 	objects[ID] = {x=x,y=y,velx=0,vely=0,active=true,width=w,height=h}
 	indexList[#indexList+1] = ID
 	numObjects = numObjects + 1
+
+	if args.playerHitbox then
+		objects[ID].playerHitbox = true
+	end
 
 end
 
@@ -66,22 +70,30 @@ function put(ID, x,y)
 
 end
 
-function checkForCollision(ID)
+function checkForCollision(args)
+
+	SubjectID = args.subject
 
 	print("new check:\n")
 
 	isColliding = false
 	withWhat = false
 
-	SmaxX,SminX = objects[ID].x + objects[ID].width, objects[ID].x
-	SmaxY,SminY = objects[ID].y + objects[ID].height, objects[ID].y
+	SmaxX,SminX = objects[SubjectID].x + objects[SubjectID].width, objects[SubjectID].x
+	SmaxY,SminY = objects[SubjectID].y + objects[SubjectID].height, objects[SubjectID].y
 
 	for i=1, numObjects do
 
-		if objects[indexList[1]].active == true and not(indexList[i]==ID) then
+		if args.object then
+			ObjectID = args.object
+		else
+			ObjectID = indexList[i]
+		end
 
-			OmaxX,OminX = objects[indexList[i]].x + objects[indexList[i]].width, objects[indexList[i]].x
-			OmaxY,OminY = objects[indexList[i]].y + objects[indexList[i]].height, objects[indexList[i]].y
+		if objects[ObjectID].active == true and not(ObjectID==SubjectID) then
+
+			OmaxX,OminX = objects[ObjectID].x + objects[ObjectID].width, objects[ObjectID].x
+			OmaxY,OminY = objects[ObjectID].y + objects[ObjectID].height, objects[ObjectID].y
 
 			print("S (maxx, minx, maxy, miny):"..SmaxX..", "..SminX..", "..SmaxY..", "..SminY)
 			print("O (maxx, minx, maxy, miny):"..OmaxX..", "..OminX..", "..OmaxY..", "..OminY)
@@ -89,7 +101,7 @@ function checkForCollision(ID)
 			if (OmaxY > SminY and OminY < SmaxY) and (OmaxX > SminX and OminX < SmaxX) then
 
 				isColliding = true
-				withWhat = objects[indexList[i]]
+				withWhat = objects[ObjectID]
 
 			end
 

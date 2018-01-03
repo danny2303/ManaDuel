@@ -2,6 +2,7 @@ scroll = require "scroll"
 player = require "player"
 object = require "object"
 input = require "input"
+ui = require "ui"
 
 function love.load()
 
@@ -12,6 +13,7 @@ function love.load()
 	player.load()
 
 	input.load()
+	ui.load()
 
 end
 
@@ -22,6 +24,7 @@ function love.update()
 	object.update()
 
 	input.update()
+	ui.update()
 
 end
 
@@ -39,6 +42,7 @@ function love.draw()
 	love.graphics.pop()
 
 	input.draw()
+	ui.draw()
 
 	if showZoomBoarders then
 		love.graphics.line(cameraBoarderX,cameraBoarderY,cameraBoarderX, love.graphics.getHeight() - cameraBoarderY)
