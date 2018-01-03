@@ -1,6 +1,6 @@
 scroll = require "scroll"
 player = require "player"
-objects = require "objects"
+object = require "object"
 input = require "input"
 
 function love.load()
@@ -8,8 +8,8 @@ function love.load()
 	love.window.setFullscreen(true)
 
 	scroll.load()
+	object.load()
 	player.load()
-	objects.load()
 
 	input.load()
 
@@ -19,7 +19,7 @@ function love.update()
 
 	scroll.update()
 	player.update()
-	objects.update()
+	object.update()
 
 	input.update()
 
@@ -34,7 +34,7 @@ function love.draw()
 
 	scroll.draw()
 	player.draw()
-	objects.draw()
+	object.draw()
 
 	love.graphics.pop()
 

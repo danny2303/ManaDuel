@@ -16,11 +16,19 @@ function player.load()
 
 	speed = 1
 
+	addObject("ball",1,1,3,1)
+	addObject("barrier",1,5,1,1)
+	push("ball",0,0.01)
+
 end
 
 function player.update()
 
 	movePlayers()
+
+	if checkForCollision("ball")[1] == true then
+		setObject("ball",{x=1,y=1,width=1,height=1,active=false})
+	end
 
 end
 
@@ -29,13 +37,18 @@ function player.draw()
 	for i=1,2 do
 
 		if players[i].facing == "left" then
-			print("done")
 			love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX+(playerFront:getWidth()*playerScale),applyScroll(players[i].y,"y")-playerOffsetY,0,-playerScale,playerScale)
 		else
 			love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0,playerScale,playerScale)
 		end
 
 	end
+
+	x,y = getLocation("ball")
+	--love.graphics.circle("fill",applyScroll(x,"x"),applyScroll(y,"y"),1)
+	drawObject("barrier")
+	drawObject("ball")
+
 
 end
 
