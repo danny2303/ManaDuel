@@ -20,6 +20,8 @@ end
 
 function scroll.load()
 
+	showZoomBoarders = false
+
 	toPanTo = {}
 	panBuffer = 100
 
@@ -72,7 +74,7 @@ function setupMap()
 	for x = 1,mapLength do
 		map[x] = {}
 		for y = 1,mapHeight do
-			map[x][y] = createTiledata(0,0)
+			map[x][y] = createTiledata(math.random(0,2),0)
 		end
 	end
 
