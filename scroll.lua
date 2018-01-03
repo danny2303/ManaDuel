@@ -15,7 +15,7 @@ function scroll.load()
 	toPanTo = {}
 	panBuffer = 100
 
-	minZoom,maxZoom = 1,20
+	minZoom,maxZoom = 2,20
 
 	cameraBoarderX,cameraBoarderY = 100,100
 	cameraBufferX,cameraBufferY = 600,450
@@ -23,7 +23,7 @@ function scroll.load()
 	zoomInProgress = false
 	zoomMode = "in"
 	zoomDuration = 100
-	zoomSpeed = 0.01
+	zoomSpeed = 0.03
 	zoomTimer = 0
 
 	tilemap = love.graphics.newImage("images/tilemap.png")
@@ -33,7 +33,7 @@ function scroll.load()
 
 	mapLength,mapHeight = 100,100
 	zoom = 5
-	cameraX,cameraY = -20,-20
+	cameraX,cameraY = 0,0
 
 	voidColor = {red=0,blue=0,green=0}
 
@@ -88,7 +88,6 @@ function drawTiles()
 		for y=1, mapHeight do
 
 			love.graphics.setColor(255,255,255)
-
 			love.graphics.draw(tilemap,map[x][y].quad,applyScroll(x,"x")-500,applyScroll(y,"y")-500,0,1,1)
 
 		end
@@ -134,16 +133,6 @@ function panCamera()
 			zoomMode = "in"
 
 		end
-
-	end
-
-	toPanTo[#toPanTo+1] = combinedPlayerPos
-
-	if #toPanTo > panBuffer then --WIP
-
-		--cameraX = toPanTo[1][1]
-		--cameraY = toPanTo[1][2]
-		table.remove(toPanTo,1)
 
 	end
 

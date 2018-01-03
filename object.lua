@@ -48,6 +48,10 @@ function addObject(ID,x,y,w,h,args)
 		objects[ID].playerHitbox = true
 	end
 
+	if args.projectileIndex then
+		objects[ID].projectileIndex = args.projectileIndex
+	end
+
 end
 
 function removeObject(ID)
@@ -74,8 +78,6 @@ function checkForCollision(args)
 
 	SubjectID = args.subject
 
-	print("new check:\n")
-
 	isColliding = false
 	withWhat = false
 
@@ -94,9 +96,6 @@ function checkForCollision(args)
 
 			OmaxX,OminX = objects[ObjectID].x + objects[ObjectID].width, objects[ObjectID].x
 			OmaxY,OminY = objects[ObjectID].y + objects[ObjectID].height, objects[ObjectID].y
-
-			print("S (maxx, minx, maxy, miny):"..SmaxX..", "..SminX..", "..SmaxY..", "..SminY)
-			print("O (maxx, minx, maxy, miny):"..OmaxX..", "..OminX..", "..OmaxY..", "..OminY)
 
 			if (OmaxY > SminY and OminY < SmaxY) and (OmaxX > SminX and OminX < SmaxX) then
 

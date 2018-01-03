@@ -26,6 +26,23 @@ end
 function player.update()
 
 	movePlayers()
+	moveHitboxes()
+	castSpells()
+
+end
+
+function castSpells()
+
+	for i=1,2 do
+		if inputs[i].button1.state == true then
+			cast(i,"fireball",1,1)
+		end
+
+	end
+
+end
+
+function moveHitboxes()
 
 	put("player1Hitbox",players[1].x-((playerFront:getWidth()/2*playerScale)/tileSize) ,players[1].y-((playerFront:getHeight()/2*playerScale)/tileSize))
 	put("player2Hitbox",players[2].x-((playerFront:getWidth()/2*playerScale)/tileSize),players[2].y-((playerFront:getHeight()/2*playerScale)/tileSize))
