@@ -20,25 +20,28 @@ end
 
 function scroll.load()
 
-	cameraBoarder = 200
-	cameraBuffer = 500
+	toPanTo = {}
+	panBuffer = 100
+
+	minZoom,maxZoom = 1,20
+
+	cameraBoarderX,cameraBoarderY = 100,100
+	cameraBufferX,cameraBufferY = 600,450
 
 	zoomInProgress = false
 	zoomMode = "in"
 	zoomDuration = 100
-	defaultZoomSpeed = 3
+	defaultZoomSpeed = 1
 	zoomSpeed = 1
 	zoomTimer = 0
 
 	tilemap = love.graphics.newImage("images/tilemap.png")
 	tileSize = 10
 
-	mapLength, mapHeight = 10, 10
-
 	tilemap:setFilter("nearest","nearest")
 
-	mapLength,mapHeight = 10,10
-	zoom = 50
+	mapLength,mapHeight = 100,100
+	zoom = 5
 	cameraX,cameraY = -20,-20
 
 	voidColor = {red=0,blue=0,green=0}
@@ -49,7 +52,7 @@ end
 
 function scroll.update()
 
-	zoomSpeed = defaultZoomSpeed/zoom
+	zoomSpeed = defaultZoomSpeed/(zoom*2)
 
 	panCamera()
 	smoothZoom()
@@ -93,7 +96,7 @@ function drawTiles()
 
 			love.graphics.setColor(255,255,255)
 
-			love.graphics.draw(tilemap,map[x][y].quad,applyScroll(x,"x"),applyScroll(y,"y"),0,1,1)
+			love.graphics.draw(tilemap,map[x][y].quad,applyScroll(x,"x")-500,applyScroll(y,"y")-500,0,1,1)
 
 		end
 	end
@@ -121,23 +124,33 @@ function panCamera()
 		p1x,p2x = (applyScroll(players[1].x,"x")*zoom)+love.graphics.getWidth()/2, (applyScroll(players[2].x,"x")*zoom)+love.graphics.getWidth()/2
 		p1y,p2y = (applyScroll(players[1].y,"y")*zoom)+love.graphics.getHeight()/2, (applyScroll(players[2].y,"y")*zoom)+love.graphics.getHeight()/2
 
-		xDifference = math.abs(p1x-p2x)
-		yDifference = math.abs(p1y-p2y)
+		combinedPlayerPos = {lowest(applyScroll(players[1].x,"x"),applyScroll(players[2].x,"x"))+((highest(applyScroll(players[1].x,"x"),applyScroll(players[2].x,"x"))-lowest(applyScroll(players[1].x,"x"),applyScroll(players[2].x,"x")))/2),
+							lowest(applyScroll(players[1].y,"y"),applyScroll(players[2].y,"y"))+((highest(applyScroll(players[1].y,"y"),applyScroll(players[2].y,"y"))-lowest(applyScroll(players[1].y,"y"),applyScroll(players[2].y,"y")))/2)}
 
 
-		if p1x < cameraBoarder or p1x > love.graphics.getWidth() - cameraBoarder or p1y < cameraBoarder or p1y >  love.graphics.getHeight() - cameraBoarder or p2x < cameraBoarder or p2x > love.graphics.getWidth() - cameraBoarder or p2y < cameraBoarder or p2y >  love.graphics.getHeight() - cameraBoarder then--if it needs to zoom out
+		if p1x < cameraBoarderX or p1x > love.graphics.getWidth() - cameraBoarderX or p1y < cameraBoarderY or p1y >  love.graphics.getHeight() - cameraBoarderY or p2x < cameraBoarderX or p2x > love.graphics.getWidth() - cameraBoarderX or p2y < cameraBoarderY or p2y >  love.graphics.getHeight() - cameraBoarderY then--if it needs to zoom out
 
 			zoomInProgress = true
 			zoomMode = "out"
 
 		end
 
-		if p1x < love.graphics.getWidth() - cameraBuffer and p1x > cameraBuffer and p1y < love.graphics.getHeight() - cameraBuffer and p1y > cameraBuffer and p2x < love.graphics.getWidth() - cameraBuffer and p2x > cameraBuffer and p2y < love.graphics.getHeight() - cameraBuffer and p2y > cameraBuffer then
+		if p1x < love.graphics.getWidth() - cameraBufferX and p1x > cameraBufferX and p1y < love.graphics.getHeight() - cameraBufferY and p1y > cameraBufferY and p2x < love.graphics.getWidth() - cameraBufferX and p2x > cameraBufferX and p2y < love.graphics.getHeight() - cameraBufferY and p2y > cameraBufferY then
 
 			zoomInProgress = true
 			zoomMode = "in"
 
 		end
+
+	end
+
+	toPanTo[#toPanTo+1] = combinedPlayerPos
+
+	if #toPanTo > panBuffer then --WIP
+
+		--cameraX = toPanTo[1][1]
+		--cameraY = toPanTo[1][2]
+		table.remove(toPanTo,1)
 
 	end
 
@@ -149,13 +162,13 @@ function smoothZoom()
 
 		if zoomTimer < zoomDuration then
 
-			if zoomMode == "in" then
+			if zoomMode == "in" and zoom < maxZoom-zoomSpeed then
 
 				zoom = zoom + zoomSpeed
 
 			end
 
-			if zoomMode == "out" then
+			if zoomMode == "out" and zoom > minZoom+zoomSpeed then
 
 				zoom = zoom - zoomSpeed
 
@@ -172,6 +185,14 @@ function smoothZoom()
 
 	end
 
+end
+
+function lowest(a,b)
+	if a < b then return a else return b end
+end
+
+function highest(a,b)
+	if a > b then return a else return b end
 end
 
 return scroll
