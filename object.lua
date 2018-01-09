@@ -52,6 +52,10 @@ function addObject(ID,x,y,w,h,args)
 		objects[ID].projectileIndex = args.projectileIndex
 	end
 
+	if args.owner then
+		objects[ID].owner = args.owner
+	end
+
 end
 
 function removeObject(ID)
@@ -79,7 +83,7 @@ function checkForCollision(args)
 	SubjectID = args.subject
 
 	isColliding = false
-	withWhat = false
+	withWhat = {}
 
 	SmaxX,SminX = objects[SubjectID].x + objects[SubjectID].width, objects[SubjectID].x
 	SmaxY,SminY = objects[SubjectID].y + objects[SubjectID].height, objects[SubjectID].y
@@ -100,7 +104,7 @@ function checkForCollision(args)
 			if (OmaxY > SminY and OminY < SmaxY) and (OmaxX > SminX and OminX < SmaxX) then
 
 				isColliding = true
-				withWhat = objects[ObjectID]
+				withWhat[#withWhat+1] = ObjectID
 
 			end
 

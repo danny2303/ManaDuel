@@ -12,7 +12,7 @@ function player.load()
 
 	maxHealth,maxMana = 20,100
 
-	players = {{image = playerFront,x=0,y=0,"down",health=maxHealth,mana=maxMana},{image = playerFront,x=0,y=0, facing = "down",health=maxHealth,mana=maxMana}}
+	players = {{image = playerFront,x=0,y=0,"down",health=maxHealth,mana=maxMana,facingX=0,facingY=1},{image = playerFront,x=0,y=0, facing = "down",health=maxHealth,mana=maxMana,facingX=0,facingY=1}}
 	playerScale = 0.25
 	playerOffsetX,playerOffsetY = playerFront:getWidth()/2*playerScale,playerFront:getHeight()/2*playerScale
 
@@ -34,8 +34,17 @@ end
 function castSpells()
 
 	for i=1,2 do
+
 		if inputs[i].button1.state == true then
-			cast(i,"fireball",1,1)
+			cast(i,"orbitingSheild")
+		end
+
+		if inputs[i].button2.state == true then
+			cast(i,"fireball")
+		end
+
+		if inputs[i].button3.state == true then
+			cast(i,"wisp")
 		end
 
 	end
@@ -67,6 +76,9 @@ end
 function movePlayers()
 
 	for i=1,2 do	
+
+		players[i].facingX = inputs[i].ballxl
+		players[i].facingY = inputs[i].ballyl
 
 		players[i].x = players[i].x + inputs[i].ballxl*speed
 		players[i].y = players[i].y + inputs[i].ballyl*speed

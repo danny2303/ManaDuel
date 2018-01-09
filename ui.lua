@@ -18,6 +18,7 @@ end
 function ui.draw()
 
 	drawUI()
+	drawStatusEffects()
 
 end
 
@@ -47,6 +48,12 @@ function drawUI()
 
 
 	end
+
+end
+
+function drawStatusEffects()
+
+
 
 end
 
