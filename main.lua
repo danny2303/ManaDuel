@@ -19,10 +19,10 @@ function love.load()
 
 end
 
-function love.update()
+function love.update(dt)
 
 	scroll.update()
-	player.update()
+	player.update(dt)
 	object.update()
 	spell.update()
 

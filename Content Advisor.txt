@@ -1,0 +1,7 @@
+TO ADD A NEW EFFECT:
+
+-create a 300x300 effect image
+-addIt to ui.load and set a nearestNeighbour filter
+-add it to the effectImages list in ui.load()
+-add its function in player - manageStatusEffects()
+

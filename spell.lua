@@ -9,9 +9,9 @@ function spell.load()
 	orbitarsImage = love.graphics.newImage("images/projectiles/orbitarsAnimation.png")
 	orbitarsImage:setFilter("nearest","nearest")
 
-	projectilesIndex = {fireball = {image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 0.2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true},
+	projectilesIndex = {fireball = {image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 0.2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 5},
 						shield = {image = playerFront, width = 0.5, height = 0.5, projectileSpeed = 0, mana = 20, scale= 0.1, collisionMode = "barrier"},
-						wisp = {image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 0.01, damage = 5, mana = 20, scale= 0.1, collisionMode = "wisp",isOffence = true},
+						wisp = {image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 0.01, damage = 5, mana = 20, scale= 0.1, collisionMode = "wisp",isOffence = true, effect = "paralyzed",effectDuration = 2},
 						orbitingSheild = {image = orbitarsImage, isAnimation = true, numFrames = 40, playSpeed = 1, frameWidth = 38, frameHeight = 37, width = 3.5, height = 3.5, projectileSpeed = 0, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
 }
 
@@ -80,6 +80,12 @@ function spell.draw()
 
 end
 
+function addEffect(playerNum,effect)
+
+	players[playerNum].effects[#players[playerNum].effects + 1] = {name = effect, count = 0}
+
+end
+
 function launch(playerNum,projectile)
 
 	x,y = players[playerNum].facingX,players[playerNum].facingY
@@ -94,7 +100,7 @@ function launch(playerNum,projectile)
 
 		players[playerNum].mana = players[playerNum].mana - manacost --dedeuct mana cost
 
-		projectileStack[#projectileStack+1] = {projectileIndex = projectile, objectIndex = uniqueProjectileCode,animationStage = 1, frameTimer = 0} --adds a new projectile to the stack
+		projectileStack[#projectileStack+1] = {projectileIndex = projectile, objectIndex = uniqueProjectileCode,animationStage = 1, frameTimer = 0, playerNum = playerNum} --adds a new projectile to the stack
 
 		uniqueProjectileCode = uniqueProjectileCode + 1
 
@@ -229,6 +235,44 @@ function manageCollision(subjectData,objectsList) --subjectData = the subject's 
 						removeProjectile(findStackIndex(subjectData.objectIndex))
 					end
 
+
+				end
+
+			end
+
+		end
+
+		--effect stuff
+
+		for i=1, #objectsList do
+
+			if objectsList[i] == "player1Hitbox" or objectsList[i] == "player2Hitbox" then
+
+				playerNumHit = "objectHitWasntAPlayer"
+
+				if objectsList[i] == "player1Hitbox" then playerNumHit = 1 end
+				if objectsList[i] == "player2Hitbox" then playerNumHit = 2 end
+
+				if projectilesIndex[subjectData.projectileIndex].effect and not(subjectData.playerNum == playerNumHit) then
+
+					alreadyActive = false
+					indexOfAlreadyActiveEffect = "noIndexFound"
+
+					if #players[playerNumHit].effects > 0 then
+
+						for i =1, #players[playerNumHit].effects do
+
+							if players[playerNumHit].effects[i].name == projectilesIndex[subjectData.projectileIndex].effect then
+								alreadyActive = true
+								indexOfAlreadyActiveEffect = i
+							end
+
+						end
+
+					end
+
+					if alreadyActive == false then players[playerNumHit].effects[#players[playerNumHit].effects+1] = {name = projectilesIndex[subjectData.projectileIndex].effect, counter = projectilesIndex[subjectData.projectileIndex].effectDuration} end
+					if alreadyActive == true then players[playerNumHit].effects[indexOfAlreadyActiveEffect].counter = projectilesIndex[subjectData.projectileIndex].effectDuration end
 
 				end
 

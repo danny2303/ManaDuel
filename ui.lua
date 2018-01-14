@@ -7,11 +7,31 @@ function ui.load()
 	healthLength = 15
 	manaLength = 5
 
+	effectFont = love.graphics.newFont("images/ui/effectFont.ttf", 16)
+	love.graphics.setFont(effectFont)
+
+	timerImage = love.graphics.newImage("images/ui/timer.png")
+	timerImage:setFilter("linear","linear")
+
+	fireIcon = love.graphics.newImage("images/ui/fireIcon.png")
+	fireIcon:setFilter("nearest","nearest")
+
+	poisonIcon = love.graphics.newImage("images/ui/poisonIcon.png")
+	poisonIcon:setFilter("nearest","nearest")
+
+	paralyzedIcon = love.graphics.newImage("images/ui/paralyzedIcon.png")
+	paralyzedIcon:setFilter("nearest","nearest")
+
+	confusedIcon = love.graphics.newImage("images/ui/confusedIcon.png")
+	confusedIcon:setFilter("nearest","nearest")
+
+	effectImages = {burning = fireIcon, poisoned = poisonIcon, paralyzed = paralyzedIcon, confused = confusedIcon}
+
 end
 
 function ui.update()
 
-
+	upholdBarLimits()
 
 end
 
@@ -19,6 +39,12 @@ function ui.draw()
 
 	drawUI()
 	drawStatusEffects()
+
+	if players[1].effects[1] then
+		if players[1].effects[1].name == "test" then
+			--love.graphics.circle("fill",500,500,500,500,500)
+		end
+	end
 
 end
 
@@ -51,9 +77,39 @@ function drawUI()
 
 end
 
+function upholdBarLimits()
+
+	for i=1,2 do
+
+		if players[i].health < 0 then players[i].health = 0 end
+		if players[i].mana < 0 then players[i].mana = 0 end
+
+		if players[i].health > maxHealth then players[i].health = maxHealth end
+		if players[i].mana > maxMana then players[i].mana = maxMana end
+
+	end
+
+end
+
 function drawStatusEffects()
 
+	for i=1, 2 do
 
+		if #players[i].effects > 0 then
+
+			for effectNum =1,#players[i].effects do
+
+				love.graphics.setColor(255,255,255)
+
+				love.graphics.draw(effectImages[players[i].effects[effectNum].name],effectNum*100+(i*barDistance-(barDistance-barPadding)-50),150,0,0.2,0.2)
+				love.graphics.printf(round(players[i].effects[effectNum].counter,0),effectNum*100+(i*barDistance-(barDistance-barPadding)-68),218,100,'center')
+				love.graphics.draw(timerImage,effectNum*100+(i*barDistance-(barDistance-barPadding)-45),213,0.4,0.4)
+
+			end
+
+		end
+
+	end
 
 end
 
