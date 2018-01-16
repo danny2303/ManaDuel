@@ -8,9 +8,9 @@ function object.load()
 
 end
 
-function object.update()
+function object.update(dt)
 
-	applyVelocities()
+	applyVelocities(dt)
 
 end
 
@@ -20,15 +20,15 @@ function object.draw()
 
 end
 
-function applyVelocities()
+function applyVelocities(dt)
 
 	if numObjects > 0 then
 
 		for i=1, numObjects do
 
 			if objects[indexList[i]].active == true then
-				objects[indexList[i]].x = objects[indexList[i]].x + objects[indexList[i]].velx
-				objects[indexList[i]].y = objects[indexList[i]].y + objects[indexList[i]].vely
+				objects[indexList[i]].x = objects[indexList[i]].x + (objects[indexList[i]].velx*dt)
+				objects[indexList[i]].y = objects[indexList[i]].y + (objects[indexList[i]].vely*dt)
 
 			end
 

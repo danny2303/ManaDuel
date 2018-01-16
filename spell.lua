@@ -9,9 +9,11 @@ function spell.load()
 	orbitarsImage = love.graphics.newImage("images/projectiles/orbitarsAnimation.png")
 	orbitarsImage:setFilter("nearest","nearest")
 
-	projectilesIndex = {fireball = {image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 0.2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 5},
+	--speed = pixels/second
+
+	projectilesIndex = {fireball = {image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
 						shield = {image = playerFront, width = 0.5, height = 0.5, projectileSpeed = 0, mana = 20, scale= 0.1, collisionMode = "barrier"},
-						wisp = {image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 0.01, damage = 5, mana = 20, scale= 0.1, collisionMode = "wisp",isOffence = true, effect = "paralyzed",effectDuration = 2},
+						wisp = {image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 1, damage = 5, mana = 20, scale= 0.1, collisionMode = "wisp",isOffence = true, effect = "paralyzed",effectDuration = 5},
 						orbitingSheild = {image = orbitarsImage, isAnimation = true, numFrames = 40, playSpeed = 1, frameWidth = 38, frameHeight = 37, width = 3.5, height = 3.5, projectileSpeed = 0, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
 }
 
@@ -22,6 +24,41 @@ function spell.load()
 	toRemove = {}
 
 	multiCastSpells = {}--spellname = true, ...
+
+end
+
+function home(projectileData,args)
+
+	if args.accuracy then accuracy = args.accuracy else
+    	love.errhand("The spell update 'home' requires an 'accuracy' arguement")
+	end
+
+	if projectileData.homingTimer then
+
+		projectileData.homingTimer = projectileData.homingTimer - 1
+
+		if projectileData.homingTimer < 0 then
+
+			homingspeed = projectilesIndex[projectileData.projectileIndex].projectileSpeed
+
+			if projectileData.playerNum == 1 then target = 2 else target = 1 end
+
+			xDiff, yDiff = (players[target].x - objects[projectileData.objectIndex].x), (players[target].y - objects[projectileData.objectIndex].y)
+
+			totalDistance = math.sqrt((xDiff^2)+(yDiff^2))
+
+			objects[projectileData.objectIndex].velx = (xDiff/totalDistance)*homingspeed
+			objects[projectileData.objectIndex].vely = (yDiff/totalDistance)*homingspeed
+
+			projectileData.homingTimer = (100-accuracy)
+
+		end
+
+	else
+
+		projectileData.homingTimer = 0
+
+	end
 
 end
 
@@ -63,6 +100,7 @@ function spell.update()
 	if #toRemove > 0 then
 		for i=#toRemove,1,-1 do
 
+			removeObject(projectileStack[toRemove[i]].objectIndex)
 			table.remove(projectileStack,toRemove[i])
 			table.remove(toRemove,i)
 
@@ -76,7 +114,6 @@ end
 function spell.draw()
 
 	drawStack()
-
 
 end
 
@@ -287,7 +324,7 @@ function updateProjectile(projectileData)
 	subject = projectilesIndex[projectileData.projectileIndex]
 
 	if subject.updateCall then
-		_G[subject.updateCall](subject.updateArgs)
+		_G[subject.updateCall](projectileData,subject.updateArgs)
 	end
 
 	--Then do standard update stuff

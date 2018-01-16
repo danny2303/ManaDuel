@@ -23,7 +23,7 @@ function love.update(dt)
 
 	scroll.update()
 	player.update(dt)
-	object.update()
+	object.update(dt)
 	spell.update()
 
 	input.update()

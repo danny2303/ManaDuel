@@ -25,7 +25,10 @@ function ui.load()
 	confusedIcon = love.graphics.newImage("images/ui/confusedIcon.png")
 	confusedIcon:setFilter("nearest","nearest")
 
-	effectImages = {burning = fireIcon, poisoned = poisonIcon, paralyzed = paralyzedIcon, confused = confusedIcon}
+	healingIcon = love.graphics.newImage("images/ui/healingIcon.png")
+	healingIcon:setFilter("nearest","nearest")
+
+	effectImages = {burning = fireIcon, poisoned = poisonIcon, paralyzed = paralyzedIcon, confused = confusedIcon, healing = healingIcon}
 
 end
 
