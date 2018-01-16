@@ -22,13 +22,17 @@ end
 
 function applyVelocities(dt)
 
-	if numObjects > 0 then
+	if timeStopped == false then
 
-		for i=1, numObjects do
+		if numObjects > 0 then
 
-			if objects[indexList[i]].active == true then
-				objects[indexList[i]].x = objects[indexList[i]].x + (objects[indexList[i]].velx*dt)
-				objects[indexList[i]].y = objects[indexList[i]].y + (objects[indexList[i]].vely*dt)
+			for i=1, numObjects do
+
+				if objects[indexList[i]].active == true then
+					objects[indexList[i]].x = objects[indexList[i]].x + (objects[indexList[i]].velx*dt)
+					objects[indexList[i]].y = objects[indexList[i]].y + (objects[indexList[i]].vely*dt)
+
+				end
 
 			end
 

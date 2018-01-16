@@ -2,6 +2,9 @@ local spell = {}
 
 function spell.load()
 
+	timeStopped = false
+	timeStoppedTimer = -1
+
 	playerFront = love.graphics.newImage("images/player/playerFront.png")
 
 	fireballImage = love.graphics.newImage("images/projectiles/fireball.png")
@@ -12,7 +15,7 @@ function spell.load()
 	--speed = pixels/second
 
 	projectilesIndex = {fireball = {image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
-						shield = {image = playerFront, width = 0.5, height = 0.5, projectileSpeed = 0, mana = 20, scale= 0.1, collisionMode = "barrier"},
+						timeStop = {width = 0.5, height = 0.5, projectileSpeed = 0, mana = 20, scale= 0.1, collisionMode = "barrier", loadCall = "stopTime", updateCall = "updateTimeStop"},
 						wisp = {image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 1, damage = 5, mana = 20, scale= 0.1, collisionMode = "wisp",isOffence = true, effect = "paralyzed",effectDuration = 5},
 						orbitingSheild = {image = orbitarsImage, isAnimation = true, numFrames = 40, playSpeed = 1, frameWidth = 38, frameHeight = 37, width = 3.5, height = 3.5, projectileSpeed = 0, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
 }
@@ -24,6 +27,23 @@ function spell.load()
 	toRemove = {}
 
 	multiCastSpells = {}--spellname = true, ...
+
+end
+
+function stopTime(playerNum)
+
+	timeStoppedTimer = 10
+	if playerNum == 1 then timeStopped = 2 else timeStopped = 1 end
+
+end
+
+function updateTimeStop(projectileData)
+
+	if timeStoppedTimer < 0 then 
+		timeStopped = false
+	else
+		timeStoppedTimer = timeStoppedTimer - 0.1
+	end
 
 end
 
@@ -142,7 +162,7 @@ function launch(playerNum,projectile)
 		uniqueProjectileCode = uniqueProjectileCode + 1
 
 		if projectilesIndex[projectile].loadCall then
-			_G[projectilesIndex[projectile].loadCall](projectilesIndex[projectile].loadArgs)
+			_G[projectilesIndex[projectile].loadCall](playerNum,projectilesIndex[projectile].loadArgs)
 		end
 
 	end
@@ -165,13 +185,17 @@ function drawStack()
 
 		for i=#projectileStack,1,-1  do
 
-			x,y = getLocation(projectileStack[i].objectIndex)
-			image = projectilesIndex[projectileStack[i].projectileIndex].image
-			scale = projectilesIndex[projectileStack[i].projectileIndex].scale
-			if projectilesIndex[projectileStack[i].projectileIndex].isAnimation then
-				love.graphics.draw(image,getAnimationQuad(projectileStack[i]),applyScroll(x,"x"),applyScroll(y,"y"),0,scale,scale)
-			else
-				love.graphics.draw(image,applyScroll(x,"x"),applyScroll(y,"y"),0,scale,scale)
+			if projectilesIndex[projectileStack[i].projectileIndex].image then
+
+				x,y = getLocation(projectileStack[i].objectIndex)
+				image = projectilesIndex[projectileStack[i].projectileIndex].image
+				scale = projectilesIndex[projectileStack[i].projectileIndex].scale
+				if projectilesIndex[projectileStack[i].projectileIndex].isAnimation then
+					love.graphics.draw(image,getAnimationQuad(projectileStack[i]),applyScroll(x,"x"),applyScroll(y,"y"),0,scale,scale)
+				else
+					love.graphics.draw(image,applyScroll(x,"x"),applyScroll(y,"y"),0,scale,scale)
+				end
+
 			end
 
 		end
@@ -204,10 +228,15 @@ function manageStack()
 		for i=#projectileStack,1,-1  do
 
 			updateProjectile(projectileStack[i])
-			checkForProjectileCollision(projectileStack[i])
 
-			if projectilesIndex[projectileStack[i].projectileIndex].isAnimation then
-				projectileStack[i] = updateAnimation(projectileStack[i])
+			if timeStopped == false then
+
+				checkForProjectileCollision(projectileStack[i])
+
+				if projectilesIndex[projectileStack[i].projectileIndex].isAnimation then
+					projectileStack[i] = updateAnimation(projectileStack[i])
+				end
+
 			end
 
 		end
