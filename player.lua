@@ -12,8 +12,8 @@ function player.load()
 
 	maxHealth,maxMana = 20,100
 
-	spellbooks = {{l1 = "orbitingSheild",l2 = "wisp",r1 = "fireball",r2 = "wisp",s1 = "timeStop",s2 = "wisp",s3 = "fireball",s4 = "wisp"},
-				  {l1 = "orbitingSheild",l2 = "wisp",r1 = "fireball",r2 = "wisp",s1 = "timeStop",s2 = "wisp",s3 = "fireball",s4 = "wisp"}}
+	spellbooks = {{l1 = "dragonsBreath",l2 = "wisp",r1 = "fireball",r2 = "wisp",s1 = "timeStop",s2 = "poisonOrb",s3 = "fireball",s4 = "orbitingSheild"},
+				  {l1 = "orbitingSheild",l2 = "wisp",r1 = "fireball",r2 = "wisp",s1 = "timeStop",s2 = "poisonOrb",s3 = "fireball",s4 = "orbitingSheild"}}
 
 	players = {{manaRegen = 0.1, image = playerFront,x=0,y=0,"down",health=maxHealth,mana=maxMana,facingX=0,facingY=1, effects = {}},{manaRegen = 0.1, image = playerFront,x=0,y=0, facing = "down",health=maxHealth,mana=maxMana,facingX=0,facingY=1, effects = {}}}
 	playerScale = 0.25
@@ -90,14 +90,18 @@ function castSpells()
 
 	for i=1,2 do
 
-		if inputs[i].button1.state == true then cast(i,spellbooks[i].s1) end
-		if inputs[i].button2.state == true then cast(i,spellbooks[i].s2) end
-		if inputs[i].button3.state == true then cast(i,spellbooks[i].s3) end
-		if inputs[i].button4.state == true then cast(i,spellbooks[i].s4) end
-		if inputs[i].tlshoulder.state == true then cast(i,spellbooks[i].l1) end
-		if inputs[i].blshoulder.state == true then cast(i,spellbooks[i].l2) end
-		if inputs[i].trshoulder.state == true then cast(i,spellbooks[i].r1) end
-		if inputs[i].brshoulder.state == true then cast(i,spellbooks[i].r2) end
+		if timeStopped == false then
+
+			if inputs[i].button1.state == true then cast(i,spellbooks[i].s1) end
+			if inputs[i].button2.state == true then cast(i,spellbooks[i].s2) end
+			if inputs[i].button3.state == true then cast(i,spellbooks[i].s3) end
+			if inputs[i].button4.state == true then cast(i,spellbooks[i].s4) end
+			if inputs[i].tlshoulder.state == true then cast(i,spellbooks[i].l1) end
+			if inputs[i].blshoulder.state == true then cast(i,spellbooks[i].l2) end
+			if inputs[i].trshoulder.state == true then cast(i,spellbooks[i].r1) end
+			if inputs[i].brshoulder.state == true then cast(i,spellbooks[i].r2) end
+
+		end
 
 	end
 

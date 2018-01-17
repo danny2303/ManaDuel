@@ -60,6 +60,14 @@ function addObject(ID,x,y,w,h,args)
 		objects[ID].owner = args.owner
 	end
 
+	if args.projectileStackIndex then
+		objects[ID].projectileStackIndex = args.projectileStackIndex
+	end
+
+	if args.removed then
+		objects[ID].removed = args.removed
+	end
+
 end
 
 function removeObject(ID)

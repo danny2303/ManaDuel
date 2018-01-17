@@ -8,16 +8,22 @@ function spell.load()
 	playerFront = love.graphics.newImage("images/player/playerFront.png")
 
 	fireballImage = love.graphics.newImage("images/projectiles/fireball.png")
-
+	poisonOrbImage = love.graphics.newImage("images/projectiles/poison.png")
 	orbitarsImage = love.graphics.newImage("images/projectiles/orbitarsAnimation.png")
+
 	orbitarsImage:setFilter("nearest","nearest")
+	poisonOrbImage:setFilter("nearest","nearest")
+	fireballImage:setFilter("nearest","nearest")
+
 
 	--speed = pixels/second
+	--rotationSpeed = radians/tick/10
 
-	projectilesIndex = {fireball = {image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
-						timeStop = {width = 0.5, height = 0.5, projectileSpeed = 0, mana = 20, scale= 0.1, collisionMode = "barrier", loadCall = "stopTime", updateCall = "updateTimeStop"},
-						wisp = {image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 1, damage = 5, mana = 20, scale= 0.1, collisionMode = "wisp",isOffence = true, effect = "paralyzed",effectDuration = 5},
-						orbitingSheild = {image = orbitarsImage, isAnimation = true, numFrames = 40, playSpeed = 1, frameWidth = 38, frameHeight = 37, width = 3.5, height = 3.5, projectileSpeed = 0, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
+	projectilesIndex = {fireball = {layer = "front", lifetime = 40, rotationSpeed = 1,image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
+						timeStop = {width = 0.5, height = 0.5, projectileSpeed = 0, mana = 100, scale= 0.1, collisionMode = "barrier", loadCall = "stopTime", updateCall = "updateTimeStop"},
+						wisp = {layer = "front",lifetime  = 40, image = fireballImage, width = 0.4, height = 0.5, projectileSpeed = 1, damage = 5, mana = 5, scale= 0.1, collisionMode = "wisp",isOffence = true, effect = "paralyzed",effectDuration = 15},
+						orbitingSheild = {layer = "back",ifetime  =40,image = orbitarsImage, isAnimation = true, numFrames = 40, playSpeed = 1, frameWidth = 35, width = 3.5, height = 3.5, projectileSpeed = 0, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
+						poisonOrb = {layer = "front",lifetime  = 40,image = poisonOrbImage, width = 0.5, height = 0.5, projectileSpeed = 3, damage = 0, mana = 10, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "poisoned",effectDuration = 5, rotationSpeed = 0.5}
 }
 
 	uniqueProjectileCode = 1
@@ -26,13 +32,66 @@ function spell.load()
 
 	toRemove = {}
 
-	multiCastSpells = {}--spellname = true, ...
+	multiCastSpells = {dragonsBreath = {mana = 30}}--spellname = true, ...
+
+end
+
+function cast(playerNum,spell)
+
+	if not (multiCastSpells[spell]) then
+		launch(playerNum,spell,players[playerNum].facingX,players[playerNum].facingY,false)
+	else
+
+		manacost = multiCastSpells[spell].mana
+
+		if players[playerNum].mana >= manacost then
+			players[playerNum].mana = players[playerNum].mana - manacost
+
+			--custom cast code here:
+
+			if spell == "dragonsBreath" then
+				facingX,facingY = players[playerNum].facingX,players[playerNum].facingY
+				for i=-1,1,0.2 do
+					launch(playerNum,"poisonOrb",facingX,i,true)
+				end
+			end
+
+		end
+
+	end
+
+end
+
+function launch(playerNum,projectile,x,y,isCustomCast)
+
+	pspeed = projectilesIndex[projectile].projectileSpeed
+	manacost = projectilesIndex[projectile].mana
+
+	rotation = 0
+	if projectilesIndex[projectile].rotationSpeed then rotation = projectilesIndex[projectile].rotationSpeed end
+
+	if players[playerNum].mana >= manacost or isCustomCast then
+
+		addObject(uniqueProjectileCode,players[playerNum].x+players[playerNum].facingX,players[playerNum].y+players[playerNum].facingY, projectilesIndex[projectile].width,projectilesIndex[projectile].height,{removed = false,projectileStackIndex = #projectileStack+1,projectileIndex = projectile,owner = playerNum}) --todo projectile size - Adds a projectile object - todo multi-shot
+		push(uniqueProjectileCode,x*pspeed,y*pspeed)-- provide initial velocity
+
+		if not isCustomCast then players[playerNum].mana = players[playerNum].mana - manacost end --dedeuct mana cost
+
+		projectileStack[#projectileStack+1] = {uniqueProjectileCode = uniqueProjectileCode,lifetime =projectilesIndex[projectile].lifetime, rotation = rotation, projectileIndex = projectile, objectIndex = uniqueProjectileCode,animationStage = 1, frameTimer = 0, playerNum = playerNum} --adds a new projectile to the stack
+
+		uniqueProjectileCode = uniqueProjectileCode + 1
+
+		if projectilesIndex[projectile].loadCall then
+			_G[projectilesIndex[projectile].loadCall](playerNum,projectilesIndex[projectile].loadArgs)
+		end
+
+	end
 
 end
 
 function stopTime(playerNum)
 
-	timeStoppedTimer = 10
+	timeStoppedTimer = 100
 	if playerNum == 1 then timeStopped = 2 else timeStopped = 1 end
 
 end
@@ -84,7 +143,15 @@ end
 
 function removeProjectile(projectileStackIndex)
 
-	toRemove[#toRemove+1] = projectileStackIndex
+	goodToGo = true
+
+	if #toRemove > 0 then
+		for i=1,#toRemove do
+			if toRemove[i] == projectileStackIndex then goodToGo = false end
+		end
+	end
+
+	if goodToGo == true then toRemove[#toRemove+1] = projectileStackIndex end
 
 end
 
@@ -93,7 +160,7 @@ function getAnimationQuad(projectile)
 	frameWidth, frameHeight = projectilesIndex[projectile.projectileIndex].frameWidth, projectilesIndex[projectile.projectileIndex].frameHeight
 	image = projectilesIndex[projectile.projectileIndex].image
 
-	return love.graphics.newQuad((projectile.animationStage-1)*frameWidth,0,frameWidth,frameHeight,image:getWidth(),image:getHeight())
+	return love.graphics.newQuad((projectile.animationStage-1)*frameWidth,0,frameWidth,image:getHeight(),image:getWidth(),image:getHeight())
 
 end
 
@@ -120,7 +187,7 @@ function spell.update()
 	if #toRemove > 0 then
 		for i=#toRemove,1,-1 do
 
-			removeObject(projectileStack[toRemove[i]].objectIndex)
+			objects[projectileStack[toRemove[i]].objectIndex].removed = true
 			table.remove(projectileStack,toRemove[i])
 			table.remove(toRemove,i)
 
@@ -134,48 +201,11 @@ end
 function spell.draw()
 
 	drawStack()
-
 end
 
 function addEffect(playerNum,effect)
 
 	players[playerNum].effects[#players[playerNum].effects + 1] = {name = effect, count = 0}
-
-end
-
-function launch(playerNum,projectile)
-
-	x,y = players[playerNum].facingX,players[playerNum].facingY
-
-	pspeed = projectilesIndex[projectile].projectileSpeed
-	manacost = projectilesIndex[projectile].mana
-
-	if players[playerNum].mana >= manacost then
-
-		addObject(uniqueProjectileCode,players[playerNum].x+players[playerNum].facingX,players[playerNum].y+players[playerNum].facingY,projectilesIndex[projectile].width,projectilesIndex[projectile].height,{projectileIndex = projectile,owner = playerNum}) --todo projectile size - Adds a projectile object - todo multi-shot
-		push(uniqueProjectileCode,x*pspeed,y*pspeed)-- provide initial velocity
-
-		players[playerNum].mana = players[playerNum].mana - manacost --dedeuct mana cost
-
-		projectileStack[#projectileStack+1] = {projectileIndex = projectile, objectIndex = uniqueProjectileCode,animationStage = 1, frameTimer = 0, playerNum = playerNum} --adds a new projectile to the stack
-
-		uniqueProjectileCode = uniqueProjectileCode + 1
-
-		if projectilesIndex[projectile].loadCall then
-			_G[projectilesIndex[projectile].loadCall](playerNum,projectilesIndex[projectile].loadArgs)
-		end
-
-	end
-
-end
-
-function cast(playerNum,spell)
-
-	if not multiCastSpells.spell then
-		launch(playerNum,spell)
-	else
-
-	end
 
 end
 
@@ -185,7 +215,7 @@ function drawStack()
 
 		for i=#projectileStack,1,-1  do
 
-			if projectilesIndex[projectileStack[i].projectileIndex].image then
+			if projectilesIndex[projectileStack[i].projectileIndex].image and projectilesIndex[projectileStack[i].projectileIndex].layer == "front" then
 
 				x,y = getLocation(projectileStack[i].objectIndex)
 				image = projectilesIndex[projectileStack[i].projectileIndex].image
@@ -193,7 +223,7 @@ function drawStack()
 				if projectilesIndex[projectileStack[i].projectileIndex].isAnimation then
 					love.graphics.draw(image,getAnimationQuad(projectileStack[i]),applyScroll(x,"x"),applyScroll(y,"y"),0,scale,scale)
 				else
-					love.graphics.draw(image,applyScroll(x,"x"),applyScroll(y,"y"),0,scale,scale)
+					love.graphics.draw(image,applyScroll(x,"x"),applyScroll(y,"y"),projectileStack[i].rotation,scale,scale,image:getWidth()/2,image:getHeight()/2)
 				end
 
 			end
@@ -261,56 +291,50 @@ function manageCollision(subjectData,objectsList) --subjectData = the subject's 
 
 		for i=1, #objectsList do
 
-			if objects[objectsList[i]].projectileIndex then
+			if not objects[objectsList[i]].removed then
 
-				objectCollisionMode = projectilesIndex[objects[objectsList[i]].projectileIndex].collisionMode
-				
-				result = calculateProjectileHit(subjectCollisionMode,objectCollisionMode)
+				if objects[objectsList[i]].projectileIndex then
 
-				subjectObjectId = findStackIndex(subjectData.objectIndex)
-				objectObjectId = findStackIndex(objectsList[i])
+					removedOrNot = objects[objectsList[i]].removed
 
-				if not (subjectObjectId == false) then
-					if result[1] == true then removeProjectile(subjectObjectId) end
-				end
-				if not (objectObjectId == false) then
-					if result[2] == true then removeProjectile(objectObjectId) end
-				end
+					objectCollisionMode = projectilesIndex[objects[objectsList[i]].projectileIndex].collisionMode
+					
+					result = calculateProjectileHit(subjectCollisionMode,objectCollisionMode)
 
-			end
+					subjectObjectId = findStackIndex(subjectData.objectIndex)
+					objectObjectId = findStackIndex(objectsList[i])
 
-		end
-
-
-
-		--damage stuff
-
-		for i=1, #objectsList do
-
-			if (objectsList[i] == "player1Hitbox") or (objectsList[i] == "player2Hitbox") then
-
-				if projectilesIndex[subjectData.projectileIndex].isOffence then
-
-					if objectsList[i] == "player1Hitbox" and objects[subjectData.objectIndex].owner == 2 then 
-						players[1].health = players[1].health - projectilesIndex[subjectData.projectileIndex].damage
-						removeProjectile(findStackIndex(subjectData.objectIndex))
+					if not (subjectObjectId == false) then
+						if result[1] == true then removeProjectile(subjectObjectId) end
+					end
+					if not (objectObjectId == false) then
+						if result[2] == true then removeProjectile(objectObjectId) end
 					end
 
-					if objectsList[i] == "player2Hitbox" and objects[subjectData.objectIndex].owner == 1 then 
-						players[2].health = players[2].health - projectilesIndex[subjectData.projectileIndex].damage 
-						removeProjectile(findStackIndex(subjectData.objectIndex))
-					end
-
-
 				end
 
+				--damage stuff
+				if (objectsList[i] == "player1Hitbox") or (objectsList[i] == "player2Hitbox") then
+
+					if projectilesIndex[subjectData.projectileIndex].isOffence then
+
+						if objectsList[i] == "player1Hitbox" and objects[subjectData.objectIndex].owner == 2 then 
+							players[1].health = players[1].health - projectilesIndex[subjectData.projectileIndex].damage
+							removeProjectile(findStackIndex(subjectData.objectIndex))
+						end
+
+						if objectsList[i] == "player2Hitbox" and objects[subjectData.objectIndex].owner == 1 then 
+							players[2].health = players[2].health - projectilesIndex[subjectData.projectileIndex].damage 
+							removeProjectile(findStackIndex(subjectData.objectIndex))
+						end
+
+
+					end
+
+				end
 			end
 
-		end
-
-		--effect stuff
-
-		for i=1, #objectsList do
+			--effect stuff
 
 			if objectsList[i] == "player1Hitbox" or objectsList[i] == "player2Hitbox" then
 
@@ -357,6 +381,19 @@ function updateProjectile(projectileData)
 	end
 
 	--Then do standard update stuff
+
+	if timeStopped == false then
+
+		if subject.rotationSpeed then projectileData.rotation = projectileData.rotation +  subject.rotationSpeed/10 end
+		if projectileData.lifetime then 
+			projectileData.lifetime = projectileData.lifetime - 0.1 
+			if projectileData.lifetime < 0 then
+				removeProjectile(findStackIndex(projectileData.objectIndex))
+			end
+		end
+
+
+	end
 
 end
 

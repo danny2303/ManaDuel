@@ -63,6 +63,29 @@ function love.draw()
 	love.graphics.translate(love.graphics.getWidth()/2,love.graphics.getHeight()/2)
 	love.graphics.scale(zoom)
 
+	--draw back stack
+
+	if #projectileStack > 0 then
+
+		for i=#projectileStack,1,-1  do
+
+			if projectilesIndex[projectileStack[i].projectileIndex].image and projectilesIndex[projectileStack[i].projectileIndex].layer == "back" then
+
+				x,y = getLocation(projectileStack[i].objectIndex)
+				image = projectilesIndex[projectileStack[i].projectileIndex].image
+				scale = projectilesIndex[projectileStack[i].projectileIndex].scale
+				if projectilesIndex[projectileStack[i].projectileIndex].isAnimation then
+					love.graphics.draw(image,getAnimationQuad(projectileStack[i]),applyScroll(x,"x"),applyScroll(y,"y"),0,scale,scale)
+				else
+					love.graphics.draw(image,applyScroll(x,"x"),applyScroll(y,"y"),projectileStack[i].rotation,scale,scale,image:getWidth()/2,image:getHeight()/2)
+				end
+
+			end
+
+		end
+
+	end
+
 	player.draw()
 	object.draw()
 	spell.draw()
