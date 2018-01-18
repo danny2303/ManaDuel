@@ -26,10 +26,8 @@ function updateStates()
 
 	for stickNum = 1, 2 do
 
-		if inputs[stickNum].button1.cooldown < 0 then 
-			inputs[stickNum].button1.state = sticks[stickNum]:isDown(1)
-		end
-		if inputs[stickNum].button2.cooldown < 0 then inputs[stickNum].button2.state= sticks[stickNum]:isDown(2) end
+		if inputs[stickNum].button1.cooldown < 0 then inputs[stickNum].button1.state = sticks[stickNum]:isDown(1) end
+		if inputs[stickNum].button2.cooldown < 0 then inputs[stickNum].button2.state = sticks[stickNum]:isDown(2) end
 		if inputs[stickNum].button3.cooldown < 0 then inputs[stickNum].button3.state = sticks[stickNum]:isDown(3) end
 		if inputs[stickNum].button4.cooldown < 0 then inputs[stickNum].button4.state = sticks[stickNum]:isDown(4) end
 		if inputs[stickNum].tlshoulder.cooldown < 0 then inputs[stickNum].tlshoulder.state = sticks[stickNum]:isDown(5) end
