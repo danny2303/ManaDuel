@@ -4,6 +4,7 @@ object = require "object"
 input = require "input"
 ui = require "ui"
 spell = require "spell"
+lslui = require "lslui"
 
 function love.load()
 
@@ -16,6 +17,7 @@ function love.load()
 
 	input.load()
 	ui.load()
+	lslui.load()
 
 end
 
@@ -28,6 +30,7 @@ function love.update(dt)
 
 	input.update()
 	ui.update()
+	lslui.update()
 
 end
 
@@ -95,7 +98,8 @@ function love.draw()
 
 
 	input.draw()
-	ui.draw()   
+	ui.draw()
+	lslui.draw()
 
 
 	if showZoomBoarders then
