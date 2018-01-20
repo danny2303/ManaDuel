@@ -22,7 +22,7 @@ function spell.load()
 	projectilesIndex = {fireball = {layer = "front", lifetime = 40, rotationSpeed = 1,image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
 						timeStop = {width = 0.5, height = 0.5, projectileSpeed = 0, mana = 100, scale= 0.1, collisionMode = "barrier", loadCall = "stopTime", updateCall = "updateTimeStop"},
 						wisp = {layer = "front",lifetime  = 40, image = fireballImage, width = 0.4, height = 0.5, projectileSpeed = 1, damage = 5, mana = 5, scale= 0.1, collisionMode = "wisp",isOffence = true, effect = "paralyzed",effectDuration = 15},
-						orbitingSheild = {layer = "back",ifetime  =40,image = orbitarsImage, isAnimation = true, numFrames = 40, playSpeed = 1, frameWidth = 35, width = 3.5, height = 3.5, projectileSpeed = 0, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
+						orbitingSheild = {layer = "back",lifetime  =40,image = orbitarsImage, isAnimation = true, numFrames = 40, playSpeed = 1, frameWidth = 35, width = 3.5, height = 3.5, projectileSpeed = 0, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
 						poisonOrb = {layer = "front",lifetime  = 40,image = poisonOrbImage, width = 0.5, height = 0.5, projectileSpeed = 3, damage = 0, mana = 10, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "poisoned",effectDuration = 5, rotationSpeed = 0.5}
 }
 
@@ -98,7 +98,6 @@ function launch(playerNum,projectile,x,y,isCustomCast)
 		if not isCustomCast then players[playerNum].mana = players[playerNum].mana - manacost end --dedeuct mana cost
 
 		projectileStack[#projectileStack+1] = {removed = false, lifetime = projectilesIndex[projectile].lifetime, rotation = rotation, projectileIndex = projectile, objectIndex = uniqueProjectileCode,animationStage = 1, frameTimer = 0, playerNum = playerNum} --adds a new projectile to the stack
-
 		uniqueProjectileCode = uniqueProjectileCode + 1
 
 		if projectilesIndex[projectile].loadCall then
@@ -164,6 +163,7 @@ end
 function removeProjectile(projectileStackIndex)
 
 	projectileStack[projectileStackIndex].removed = true
+	objects[projectileStack[projectileStackIndex].objectIndex].removed = true
 
 end
 
@@ -216,8 +216,7 @@ function drawStack()
 	if #projectileStack > 0 then
 
 		for i=#projectileStack,1,-1  do
-
-			if not projectileStack[i].removed then
+			if (not projectileStack[i].removed)then
 
 				if projectilesIndex[projectileStack[i].projectileIndex].image and projectilesIndex[projectileStack[i].projectileIndex].layer == "front" then
 
@@ -393,7 +392,6 @@ function updateProjectile(projectileData)
 	--Then do standard update stuff
 
 	if timeStopped == false then
-
 		if subject.rotationSpeed then projectileData.rotation = projectileData.rotation +  subject.rotationSpeed/10 end
 		if projectileData.lifetime then 
 			projectileData.lifetime = projectileData.lifetime - 0.1 
