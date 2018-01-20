@@ -1,35 +1,38 @@
-local ui = {}
+local lslui = {}
 
 local font = love.graphics.getFont()
 local utf8 = require("utf8")
 
-function ui.load()
+function lslui.load()
+
+	sticks = love.joystick.getJoysticks()
 
 	menuPage = 0
-	runPage = "inGame"
+	runPage = "run"
 	inGame = false
 	inGameMenuOpen = false
+	canOpenMenu = true
 
 	lineTimer = 0
 
 	mouseX, mouseY = love.mouse.getPosition()
 	
-	click = love.audio.newSource("click.wav")
+	click = love.audio.newSource("sounds/click.wav")
 
 	backgrounds = {} --template {page,backgroundType,background}
 	buttonArray = {{}}
 
 end
 
-function ui.inGameMenu(key,inGameMenuPage)
+function lslui.inGameMenu(key,inGameMenuPage)
 
 	if inGame == true then
-		if love.keyboard.isDown(key) == true then
+		if sticks[1]:isDown(8) == true or sticks[2]:isDown(8) == true then
 			if canOpenMenu == true then
 				inGameMenuOpen = not inGameMenuOpen
 				canOpenMenu = false
 			end
-		elseif love.keyboard.isDown(key) == false then
+		elseif sticks[1]:isDown(8) == false and sticks[2]:isDown(8) == false then
 			canOpenMenu = true
 		end
 		if inGameMenuOpen == true then
@@ -46,12 +49,22 @@ function ui.inGameMenu(key,inGameMenuPage)
 
 end
 
-function ui.addButton(x,y,xsize,ysize,r,g,b,text,textx,texty,page,action)
+function lslui.addButton(x,y,xsize,ysize,r,g,b,text,textx,texty,page,action)
 
 	if action == "inputText" then
 		buttonArray[#buttonArray+1]={x,y,xsize,ysize,r,g,b,text,textx,texty,page,action,""}
 	else
 		buttonArray[#buttonArray+1]={x,y,xsize,ysize,r,g,b,text,textx,texty,page,action}
+	end
+
+end
+
+function lslui.replaceButton(x,y,xsize,ysize,r,g,b,text,textx,texty,page,action,buttonNumber)
+
+	if action == "inputText" then
+		buttonArray[buttonNumber]={x,y,xsize,ysize,r,g,b,text,textx,texty,page,action,""}
+	else
+		buttonArray[buttonNumber]={x,y,xsize,ysize,r,g,b,text,textx,texty,page,action}
 	end
 
 end
@@ -122,6 +135,9 @@ function mousepressed()
 				        	love.event.quit()
 				        elseif buttonArray[i][12] == "run" then
 				        	menuPage = runPage
+				        elseif buttonArray[i][12] == "fullscreen" then
+				        	if love.window.getFullscreen() == true then love.window.setFullscreen(false) elseif love.window.getFullscreen() == false then love.window.setFullscreen(true) end
+				        	canClick = false
 				        elseif buttonArray[i][12] == "inputText" then
 				        	buttonArray[i][12] = "typing"
 				        	lineTimer = 0
@@ -182,7 +198,7 @@ function drawMenuBackgrounds() --Image or colour
 	end
 end
 
-function ui.setMenuBackground(args)
+function lslui.setMenuBackground(args)
 
 	bType = "nil"
 	bData = "nil"
@@ -200,15 +216,15 @@ function ui.setMenuBackground(args)
 
 end
 
-function ui.setPage(page)
+function lslui.setPage(page)
 	menuPage = page
 end
 
-function ui.getPage()
+function lslui.getPage()
 	return menuPage
 end
 
-function ui.getInputButtonText(ID)
+function lslui.getInputButtonText(ID)
 	if buttonArray[ID+1][13] ~= nil then
 		return buttonArray[ID+1][13]
 	else
@@ -216,7 +232,7 @@ function ui.getInputButtonText(ID)
 	end
 end
 
-function ui.update()
+function lslui.update()
 
 	mouseX, mouseY = love.mouse.getPosition()
 	mousepressed()
@@ -231,7 +247,7 @@ function ui.update()
 
 end
 
-function ui.draw()
+function lslui.draw()
 
 	drawMenuBackgrounds()
 	drawButton()
@@ -239,4 +255,4 @@ function ui.draw()
 
 end
 
-return ui
+return lslui

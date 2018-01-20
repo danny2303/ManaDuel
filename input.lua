@@ -33,7 +33,7 @@ function updateStates()
 		if inputs[stickNum].tlshoulder.cooldown < 0 then inputs[stickNum].tlshoulder.state = sticks[stickNum]:isDown(5) end
 		if inputs[stickNum].blshoulder.cooldown < 0 then inputs[stickNum].blshoulder.state = sticks[stickNum]:isDown(6) end
 		if inputs[stickNum].trshoulder.cooldown < 0 then inputs[stickNum].trshoulder.state = sticks[stickNum]:isDown(7) end
-		if inputs[stickNum].brshoulder.cooldown < 0 then inputs[stickNum].brshoulder.state = sticks[stickNum]:isDown(8) end
+		if inputs[stickNum].brshoulder.cooldown < 0 then inputs[stickNum].brshoulder.state = sticks[stickNum]:isDown(9) end
 
 		inputs[stickNum].ballxl, inputs[stickNum].ballyl, inputs[stickNum].ballxr, inputs[stickNum].ballyr = sticks[stickNum]:getAxes()
 
