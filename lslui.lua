@@ -9,7 +9,6 @@ function lslui.load()
 
 	menuPage = 0
 	runPage = "run"
-	inGame = false
 	inGameMenuOpen = false
 	canOpenMenu = true
 
@@ -183,19 +182,22 @@ end
 
 function drawMenuBackgrounds() --Image or colour
 
-	for i=1,#backgrounds do
-		for j=1,#backgrounds[i][1] do
-			if menuPage == backgrounds[i][1][j] then
-				if backgrounds[i][2] == "colour" then
-					love.graphics.setBackgroundColor(backgrounds[i][3][1], backgrounds[i][3][2], backgrounds[i][3][3])
-				elseif backgrounds[i][2] == "image" then
-					background = love.graphics.newImage(backgrounds[i][3])
-					love.graphics.setColor(255,255,255)
-					love.graphics.draw(background, 0, 0, 0, love.graphics.getWidth()/background:getWidth(), love.graphics.getHeight()/background:getHeight())
+	if menuPage ~= "gameMenu1" then
+		for i=1,#backgrounds do
+			for j=1,#backgrounds[i][1] do
+				if menuPage == backgrounds[i][1][j] then
+					if backgrounds[i][2] == "colour" then
+						love.graphics.setBackgroundColor(backgrounds[i][3][1], backgrounds[i][3][2], backgrounds[i][3][3])
+					elseif backgrounds[i][2] == "image" then
+						background = love.graphics.newImage(backgrounds[i][3])
+						love.graphics.setColor(255,255,255)
+						love.graphics.draw(background, 0, 0, 0, love.graphics.getWidth()/background:getWidth(), love.graphics.getHeight()/background:getHeight())
+					end
 				end
 			end
 		end
 	end
+
 end
 
 function lslui.setMenuBackground(args)

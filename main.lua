@@ -8,6 +8,8 @@ lslui = require "lslui"
 
 function love.load()
 
+	inGame = false
+
 	love.window.setFullscreen(true)
 
 	scroll.load()
@@ -31,13 +33,13 @@ function love.load()
 	lslui.addButton(love.graphics.getWidth()/2-190,love.graphics.getHeight()/2-30,280,60,255,255,255,"Back to menu",5,0,"gameMenu1",0)
 	lslui.addButton(love.graphics.getWidth()/2-160,love.graphics.getHeight()/2+170,220,60,255,255,255,"Exit",2,0,"gameMenu1","exit")
 
-	lslui.setMenuBackground({page = {0,1,2},colour = {100,100,255}})
+	lslui.setMenuBackground({page = {0,1},image = "images/backgroundPicture.png"})
 
 end
 
 function love.update(dt)
 
-	if(lslui.getPage() == "run")then
+	if(inGame == true and lslui.getPage() ~= "gameMenu1")then
 		scroll.update()
 		player.update(dt)
 		object.update(dt)
@@ -58,7 +60,7 @@ end
 
 function love.draw()
 
-	if(lslui.getPage() == "run")then
+	if(inGame == true)then
 		love.graphics.push()
 
 		love.graphics.translate(love.graphics.getWidth()/2,love.graphics.getHeight()/2)
@@ -78,8 +80,6 @@ function love.draw()
 		end
 
 		love.graphics.pop()
-
-
 
 		love.graphics.push()
 
@@ -116,8 +116,6 @@ function love.draw()
 		spell.draw()
 
 		love.graphics.pop()
-
-
 
 		input.draw()
 		ui.draw()
