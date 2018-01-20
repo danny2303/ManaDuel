@@ -36,6 +36,24 @@ function spell.load()
 
 end
 
+function convertVector(vector)
+
+	mag = math.sqrt(vector.x^2 + vector.y^2)
+	dir = math.atan(vector.x/vector.y)
+
+	return mag,dir
+
+end
+
+function convertDirection(dir,mag)
+
+	x = (mag * math.cos(1.5708-dir))
+	y = (mag * math.sin(1.5708-dir))
+
+	return {x = x, y = y}
+
+end
+
 function cast(playerNum,spell)
 
 	if not (multiCastSpells[spell]) then
@@ -52,7 +70,9 @@ function cast(playerNum,spell)
 			if spell == "dragonsBreath" then
 				facingX,facingY = players[playerNum].facingX,players[playerNum].facingY
 				for i=-1,1,0.2 do
-					launch(playerNum,"poisonOrb",facingX,i,true)
+					mag,dir = convertVector({x=facingX,y=facingY})
+					vector = convertDirection(dir + i, mag)
+					launch(playerNum,"poisonOrb",vector.x,vector.y,true)
 				end
 			end
 
