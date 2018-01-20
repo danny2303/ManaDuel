@@ -77,7 +77,7 @@ function launch(playerNum,projectile,x,y,isCustomCast)
 
 		if not isCustomCast then players[playerNum].mana = players[playerNum].mana - manacost end --dedeuct mana cost
 
-		projectileStack[#projectileStack+1] = {uniqueProjectileCode = uniqueProjectileCode,lifetime =projectilesIndex[projectile].lifetime, rotation = rotation, projectileIndex = projectile, objectIndex = uniqueProjectileCode,animationStage = 1, frameTimer = 0, playerNum = playerNum} --adds a new projectile to the stack
+		projectileStack[#projectileStack+1] = {removed = false, lifetime = projectilesIndex[projectile].lifetime, rotation = rotation, projectileIndex = projectile, objectIndex = uniqueProjectileCode,animationStage = 1, frameTimer = 0, playerNum = playerNum} --adds a new projectile to the stack
 
 		uniqueProjectileCode = uniqueProjectileCode + 1
 
@@ -143,15 +143,7 @@ end
 
 function removeProjectile(projectileStackIndex)
 
-	goodToGo = true
-
-	if #toRemove > 0 then
-		for i=1,#toRemove do
-			if toRemove[i] == projectileStackIndex then goodToGo = false end
-		end
-	end
-
-	if goodToGo == true then toRemove[#toRemove+1] = projectileStackIndex end
+	projectileStack[projectileStackIndex].removed = true
 
 end
 
@@ -184,16 +176,6 @@ end
 
 function spell.update()
 
-	if #toRemove > 0 then
-		for i=#toRemove,1,-1 do
-
-			objects[projectileStack[toRemove[i]].objectIndex].removed = true
-			table.remove(projectileStack,toRemove[i])
-			table.remove(toRemove,i)
-
-		end
-	end
-
 	manageStack()
 
 end
@@ -215,15 +197,19 @@ function drawStack()
 
 		for i=#projectileStack,1,-1  do
 
-			if projectilesIndex[projectileStack[i].projectileIndex].image and projectilesIndex[projectileStack[i].projectileIndex].layer == "front" then
+			if not projectileStack[i].removed then
 
-				x,y = getLocation(projectileStack[i].objectIndex)
-				image = projectilesIndex[projectileStack[i].projectileIndex].image
-				scale = projectilesIndex[projectileStack[i].projectileIndex].scale
-				if projectilesIndex[projectileStack[i].projectileIndex].isAnimation then
-					love.graphics.draw(image,getAnimationQuad(projectileStack[i]),applyScroll(x,"x"),applyScroll(y,"y"),0,scale,scale)
-				else
-					love.graphics.draw(image,applyScroll(x,"x"),applyScroll(y,"y"),projectileStack[i].rotation,scale,scale,image:getWidth()/2,image:getHeight()/2)
+				if projectilesIndex[projectileStack[i].projectileIndex].image and projectilesIndex[projectileStack[i].projectileIndex].layer == "front" then
+
+					x,y = getLocation(projectileStack[i].objectIndex)
+					image = projectilesIndex[projectileStack[i].projectileIndex].image
+					scale = projectilesIndex[projectileStack[i].projectileIndex].scale
+					if projectilesIndex[projectileStack[i].projectileIndex].isAnimation then
+						love.graphics.draw(image,getAnimationQuad(projectileStack[i]),applyScroll(x,"x"),applyScroll(y,"y"),0,scale,scale)
+					else
+						love.graphics.draw(image,applyScroll(x,"x"),applyScroll(y,"y"),projectileStack[i].rotation,scale,scale,image:getWidth()/2,image:getHeight()/2)
+					end
+
 				end
 
 			end
@@ -257,14 +243,18 @@ function manageStack()
 
 		for i=#projectileStack,1,-1  do
 
-			updateProjectile(projectileStack[i])
+			if not projectileStack[i].removed then
 
-			if timeStopped == false then
+				updateProjectile(projectileStack[i])
 
-				checkForProjectileCollision(projectileStack[i])
+				if timeStopped == false then
 
-				if projectilesIndex[projectileStack[i].projectileIndex].isAnimation then
-					projectileStack[i] = updateAnimation(projectileStack[i])
+					checkForProjectileCollision(projectileStack[i])
+
+					if projectilesIndex[projectileStack[i].projectileIndex].isAnimation then
+						projectileStack[i] = updateAnimation(projectileStack[i])
+					end
+
 				end
 
 			end
