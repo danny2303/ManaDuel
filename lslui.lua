@@ -61,9 +61,9 @@ end
 function lslui.replaceButton(x,y,xsize,ysize,r,g,b,text,textx,texty,page,action,buttonNumber)
 
 	if action == "inputText" then
-		buttonArray[buttonNumber]={x,y,xsize,ysize,r,g,b,text,textx,texty,page,action,""}
+		buttonArray[buttonNumber+1]={x,y,xsize,ysize,r,g,b,text,textx,texty,page,action,""}
 	else
-		buttonArray[buttonNumber]={x,y,xsize,ysize,r,g,b,text,textx,texty,page,action}
+		buttonArray[buttonNumber+1]={x,y,xsize,ysize,r,g,b,text,textx,texty,page,action}
 	end
 
 end
