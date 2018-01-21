@@ -36,13 +36,13 @@ function spell.load()
 
 	toRemove = {}
 
-	multiCastSpells = {dragonsBreath = {mana = 30}, heal = {mana = 10, amount = 10}}--spellname = true, ...
+	multiCastSpells = {dragonsBreath = {mana = 0}, heal = {mana = 10, amount = 10}}--spellname = true, ...
 
 end
 
 function convertVector(vector)
 
-	mag = math.sqrt(vector.x^2 + vector.y^2)
+	if vector.x > 0 and vector.y > 0 then mag = math.sqrt(vector.x^2 + vector.y^2) else mag = math.sqrt(vector.x^2 + vector.y^2) + math.pi end
 	dir = math.atan(vector.x/vector.y)
 
 	return mag,dir

@@ -17,13 +17,13 @@ function scroll.load()
 
 	minZoom,maxZoom = 2,20
 
-	cameraBoarderX,cameraBoarderY = 100,100
+	cameraBoarderX,cameraBoarderY = 100,150
 	cameraBufferX,cameraBufferY = 600,450
 
 	zoomInProgress = false
 	zoomMode = "in"
 	zoomDuration = 100
-	zoomSpeed = 0.03
+	zoomMultiplier = 0.00666666666
 	zoomTimer = 0
 
 	tilemap = love.graphics.newImage("images/tilemap.png")
@@ -139,6 +139,10 @@ function panCamera()
 end
 
 function smoothZoom()
+
+	zoomSpeed = zoomMultiplier*zoom
+
+	print(zoom)
 
 	if zoomInProgress then
 
