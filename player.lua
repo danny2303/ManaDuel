@@ -5,10 +5,12 @@ function player.load()
 	playerFront = love.graphics.newImage("images/player/playerFront.png")
 	playerBack = love.graphics.newImage("images/player/playerBack.png")
 	playerSide = love.graphics.newImage("images/player/playerSide.png")
+	playerDead = love.graphics.newImage("images/player/playerDead.png")
 
 	playerFront:setFilter("nearest","nearest")
 	playerBack:setFilter("nearest","nearest")
 	playerSide:setFilter("nearest","nearest")
+	playerDead:setFilter("nearest","nearest")
 
 	maxHealth,maxMana = 20,100
 
@@ -33,15 +35,28 @@ function player.update(dt)
 	castSpells()
 	manageStatusEffects(dt)
 	regenerateMana()
+	die()
+
+end
+
+function die()
+
+	for i=1,2 do
+		if players[i].health == 0 then
+			players[i].image = playerDead
+			players[i].mana = 0
+			players[i].facing = "front"
+		end
+	end
 
 end
 
 function regenerateMana()
 
 	for i=1,2 do
-
-		players[i].mana = players[i].mana + players[i].manaRegen
-
+		if timeStopped ~= i and players[i].image ~= playerDead then
+			players[i].mana = players[i].mana + players[i].manaRegen
+		end
 	end
 
 end	
@@ -50,7 +65,7 @@ function manageStatusEffects(dt)
 
 	for i=1,2 do
 
-		if #players[i].effects > 0 then
+		if #players[i].effects > 0 and timeStopped ~= i and players[i].image ~= playerDead then
 
 			for effectNum = #players[i].effects, 1, -1 do
 
@@ -90,7 +105,7 @@ function castSpells()
 
 	for i=1,2 do
 
-		if timeStopped == false then
+		if timeStopped == false and players[i].image ~= playerDead then
 
 			if inputs[i].button1.state == true then cast(i,spellbooks[i].s1) end
 			if inputs[i].button2.state == true then cast(i,spellbooks[i].s2) end
@@ -133,7 +148,7 @@ function movePlayers()
 
 	for i=1,2 do
 
-		if not(timeStopped == i) then
+		if timeStopped ~= i and players[i].image ~= playerDead then
 
 			movementModifier = "none"
 
