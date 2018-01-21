@@ -10,10 +10,13 @@ function spell.load()
 	fireballImage = love.graphics.newImage("images/projectiles/fireball.png")
 	poisonOrbImage = love.graphics.newImage("images/projectiles/poison.png")
 	orbitarsImage = love.graphics.newImage("images/projectiles/orbitarsAnimation.png")
+	whirlwindImage = love.graphics.newImage("images/projectiles/whirlwindAnimation.png")
 
 	orbitarsImage:setFilter("nearest","nearest")
 	poisonOrbImage:setFilter("nearest","nearest")
 	fireballImage:setFilter("nearest","nearest")
+	orbitarsImage:setFilter("nearest","nearest")
+	whirlwindImage:setFilter("nearest","nearest")
 
 
 	--speed = pixels/second
@@ -22,8 +25,9 @@ function spell.load()
 	projectilesIndex = {fireball = {layer = "front", lifetime = 40, rotationSpeed = 1,image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
 						timeStop = {width = 0.5, height = 0.5, projectileSpeed = 0, mana = 100, scale= 0.1, collisionMode = "barrier", loadCall = "stopTime", updateCall = "updateTimeStop"},
 						wisp = {layer = "front",lifetime  = 40, image = fireballImage, width = 0.4, height = 0.5, projectileSpeed = 1, damage = 5, mana = 5, scale= 0.1, collisionMode = "wisp",isOffence = true, effect = "paralyzed",effectDuration = 15},
-						orbitingSheild = {layer = "back",lifetime  = 40,image = orbitarsImage, isAnimation = true, numFrames = 40, playSpeed = 1, frameWidth = 35, width = 3.5, height = 3.5, projectileSpeed = 0, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
-						poisonOrb = {layer = "front",lifetime  = 40,image = poisonOrbImage, width = 0.5, height = 0.5, projectileSpeed = 3, damage = 0, mana = 10, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "poisoned",effectDuration = 5, rotationSpeed = 0.5}
+						orbitingSheild = {layer = "back",lifetime  = 40,image = orbitarsImage, isAnimation = true, numFrames = 40, playSpeed = 10, frameWidth = 35, width = 3.5, height = 3.5, projectileSpeed = 0, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
+						poisonOrb = {layer = "front",lifetime  = 40,image = poisonOrbImage, width = 0.5, height = 0.5, projectileSpeed = 3, damage = 0, mana = 10, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "poisoned",effectDuration = 5, rotationSpeed = 0.5},
+						whirlwind = {layer = "back",lifetime  = 40,scale = 0.05,image = whirlwindImage, isAnimation = true, numFrames = 6, playSpeed = 5, frameWidth = 27, width = 3.5, height = 3.5, projectileSpeed = 2, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false}
 }
 
 	uniqueProjectileCode = 1
@@ -248,8 +252,8 @@ end
 function updateAnimation(projectile)
 
 	if projectile.frameTimer <= 0 then
-		projectile.frameTimer = projectilesIndex[projectile.projectileIndex].playSpeed
-		if projectile.animationStage < 40 then
+		projectile.frameTimer = 10/projectilesIndex[projectile.projectileIndex].playSpeed
+		if projectile.animationStage < projectilesIndex[projectile.projectileIndex].numFrames then
 			projectile.animationStage = projectile.animationStage + 1
 		else
 			projectile.animationStage = 1
