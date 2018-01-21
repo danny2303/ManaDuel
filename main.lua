@@ -8,6 +8,9 @@ lslui = require "lslui"
 
 function love.load()
 
+	soundtrack = love.audio.newSource("sounds/soundtrack.wav")
+	soundtrack:play()
+
 	inGame = false
 
 	love.window.setFullscreen(true)
