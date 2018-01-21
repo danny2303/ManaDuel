@@ -22,7 +22,7 @@ function spell.load()
 	projectilesIndex = {fireball = {layer = "front", lifetime = 40, rotationSpeed = 1,image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
 						timeStop = {width = 0.5, height = 0.5, projectileSpeed = 0, mana = 100, scale= 0.1, collisionMode = "barrier", loadCall = "stopTime", updateCall = "updateTimeStop"},
 						wisp = {layer = "front",lifetime  = 40, image = fireballImage, width = 0.4, height = 0.5, projectileSpeed = 1, damage = 5, mana = 5, scale= 0.1, collisionMode = "wisp",isOffence = true, effect = "paralyzed",effectDuration = 15},
-						orbitingSheild = {layer = "back",lifetime  =40,image = orbitarsImage, isAnimation = true, numFrames = 40, playSpeed = 1, frameWidth = 35, width = 3.5, height = 3.5, projectileSpeed = 0, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
+						orbitingSheild = {layer = "back",lifetime  = 40,image = orbitarsImage, isAnimation = true, numFrames = 40, playSpeed = 1, frameWidth = 35, width = 3.5, height = 3.5, projectileSpeed = 0, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
 						poisonOrb = {layer = "front",lifetime  = 40,image = poisonOrbImage, width = 0.5, height = 0.5, projectileSpeed = 3, damage = 0, mana = 10, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "poisoned",effectDuration = 5, rotationSpeed = 0.5}
 }
 
@@ -32,7 +32,7 @@ function spell.load()
 
 	toRemove = {}
 
-	multiCastSpells = {dragonsBreath = {mana = 30}}--spellname = true, ...
+	multiCastSpells = {dragonsBreath = {mana = 30}, heal = {mana = 10, amount = 10}}--spellname = true, ...
 
 end
 
@@ -74,6 +74,12 @@ function cast(playerNum,spell)
 					vector = convertDirection(dir + i, mag)
 					launch(playerNum,"poisonOrb",vector.x,vector.y,true)
 				end
+			end
+
+			if spell == "heal" then
+
+				players[playerNum].health = players[playerNum].health + multiCastSpells["heal"].amount
+
 			end
 
 		end
