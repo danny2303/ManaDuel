@@ -42,8 +42,8 @@ end
 
 function convertVector(vector)
 
-	if vector.x > 0 and vector.y > 0 then mag = math.sqrt(vector.x^2 + vector.y^2) else mag = math.sqrt(vector.x^2 + vector.y^2) + math.pi end
-	dir = math.atan(vector.x/vector.y)
+	mag = math.sqrt(vector.x^2 + vector.y^2)
+	if vector.y >= 0 then dir = math.atan(vector.x/vector.y) else dir = math.atan(vector.x/vector.y)+math.pi end
 
 	return mag,dir
 
