@@ -23,6 +23,7 @@ function love.load()
 
 	lslui.addButton(170,180,240,60,255,255,255,"Play",0,0,0,"run")
 	lslui.addButton(170,290,240,60,255,255,255,"Options",0,0,0,1)
+	lslui.addButton(170,400,240,60,255,255,255,"Spellbook",0,0,0,2)
 	lslui.addButton(170,510,240,60,255,255,255,"Exit",0,0,0,"exit")
 
 	lslui.addButton(170,180,280,60,255,255,255,"Volume:100",0,0,1,1)
@@ -33,7 +34,8 @@ function love.load()
 	lslui.addButton(love.graphics.getWidth()/2-190,love.graphics.getHeight()/2-30,280,60,255,255,255,"Back to menu",5,0,"gameMenu1",0)
 	lslui.addButton(love.graphics.getWidth()/2-160,love.graphics.getHeight()/2+170,220,60,255,255,255,"Exit",2,0,"gameMenu1","exit")
 
-	lslui.setMenuBackground({page = {0,1},image = "images/backgroundPicture.png"})
+	lslui.setMenuBackground({page = {0,1},image = "images/ui/backgroundPicture.png"})
+	lslui.setMenuBackground({page = {2},image = "images/ui/spellbook.png"})
 
 end
 

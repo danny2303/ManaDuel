@@ -142,8 +142,6 @@ function smoothZoom()
 
 	zoomSpeed = zoomMultiplier*zoom
 
-	print(zoom)
-
 	if zoomInProgress then
 
 		if zoomTimer < zoomDuration then
