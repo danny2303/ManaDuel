@@ -362,27 +362,32 @@ function manageCollision(subjectData,objectsList) --subjectData = the subject's 
 				if objectsList[i] == "player1Hitbox" then playerNumHit = 1 end
 				if objectsList[i] == "player2Hitbox" then playerNumHit = 2 end
 
-				if projectilesIndex[subjectData.projectileIndex].effect and not(subjectData.playerNum == playerNumHit) then
+				if players[playerNumHit].image == playerDead then
+					playerNumHit = "objectHitWasntAPlayer"
+				else
 
-					alreadyActive = false
-					indexOfAlreadyActiveEffect = "noIndexFound"
+					if projectilesIndex[subjectData.projectileIndex].effect and not(subjectData.playerNum == playerNumHit) then
 
-					if #players[playerNumHit].effects > 0 then
+						alreadyActive = false
+						indexOfAlreadyActiveEffect = "noIndexFound"
 
-						for i =1, #players[playerNumHit].effects do
+						if #players[playerNumHit].effects > 0 then
 
-							if players[playerNumHit].effects[i].name == projectilesIndex[subjectData.projectileIndex].effect then
-								alreadyActive = true
-								indexOfAlreadyActiveEffect = i
+							for i =1, #players[playerNumHit].effects do
+
+								if players[playerNumHit].effects[i].name == projectilesIndex[subjectData.projectileIndex].effect then
+									alreadyActive = true
+									indexOfAlreadyActiveEffect = i
+								end
+
 							end
 
 						end
 
+						if alreadyActive == false then players[playerNumHit].effects[#players[playerNumHit].effects+1] = {name = projectilesIndex[subjectData.projectileIndex].effect, counter = projectilesIndex[subjectData.projectileIndex].effectDuration} end
+						if alreadyActive == true then players[playerNumHit].effects[indexOfAlreadyActiveEffect].counter = projectilesIndex[subjectData.projectileIndex].effectDuration end
+
 					end
-
-					if alreadyActive == false then players[playerNumHit].effects[#players[playerNumHit].effects+1] = {name = projectilesIndex[subjectData.projectileIndex].effect, counter = projectilesIndex[subjectData.projectileIndex].effectDuration} end
-					if alreadyActive == true then players[playerNumHit].effects[indexOfAlreadyActiveEffect].counter = projectilesIndex[subjectData.projectileIndex].effectDuration end
-
 				end
 
 			end

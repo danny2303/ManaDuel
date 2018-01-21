@@ -46,6 +46,9 @@ function die()
 			players[i].image = playerDead
 			players[i].mana = 0
 			players[i].facing = "front"
+			for effectNum=1,#players[i].effects do
+				table.remove(players[i].effects,effectNum)
+			end
 		end
 	end
 
@@ -70,13 +73,10 @@ function manageStatusEffects(dt)
 			for effectNum = #players[i].effects, 1, -1 do
 
 				currentEffect = players[i].effects[effectNum].name
-
 				players[i].effects[effectNum].counter = players[i].effects[effectNum].counter - dt
 
 				if players[i].effects[effectNum].counter < 1 then
-
 					table.remove(players[i].effects,effectNum)
-
 				end
 
 				--applyEffects
@@ -146,6 +146,8 @@ end
 
 function movePlayers()
 
+	sticks = love.joystick.getJoysticks()
+
 	for i=1,2 do
 
 		if timeStopped ~= i and players[i].image ~= playerDead then
@@ -164,8 +166,10 @@ function movePlayers()
 				players[i].facingX = inputs[i].ballxl
 				players[i].facingY = inputs[i].ballyl
 
-				players[i].x = players[i].x + inputs[i].ballxl*speed
-				players[i].y = players[i].y + inputs[i].ballyl*speed
+				if sticks[1]:isDown(10) == false then
+					players[i].x = players[i].x + inputs[i].ballxl*speed
+					players[i].y = players[i].y + inputs[i].ballyl*speed
+				end
 
 				if math.abs(inputs[i].ballxl) > math.abs(inputs[i].ballyl) then
 					if inputs[i].ballxl < 0 then
