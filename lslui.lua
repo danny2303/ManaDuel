@@ -5,6 +5,8 @@ local utf8 = require("utf8")
 
 function lslui.load()
 
+	buttonScrollBuffer = 0
+
 	sticks = love.joystick.getJoysticks()
 
 	menuPage = 0
@@ -20,6 +22,8 @@ function lslui.load()
 
 	backgrounds = {} --template {page,backgroundType,background}
 	buttonArray = {{}}
+
+	selectedButton = 7
 
 end
 
@@ -48,12 +52,12 @@ function lslui.inGameMenu(key,inGameMenuPage)
 
 end
 
-function lslui.addButton(x,y,xsize,ysize,r,g,b,text,textx,texty,page,action)
+function lslui.addButton(x,y,xsize,ysize,r,g,b,text,textx,texty,page,action,up,down,left,right,autoButtonSelect)
 
 	if action == "inputText" then
 		buttonArray[#buttonArray+1]={x,y,xsize,ysize,r,g,b,text,textx,texty,page,action,""}
 	else
-		buttonArray[#buttonArray+1]={x,y,xsize,ysize,r,g,b,text,textx,texty,page,action}
+		buttonArray[#buttonArray+1]={x,y,xsize,ysize,r,g,b,text,textx,texty,page,action,#buttonArray+1,up,down,left,right,autoButtonSelect}
 	end
 
 end
@@ -76,6 +80,9 @@ function drawButton()
 		    	love.graphics.setColor(buttonArray[i][5]-150, buttonArray[i][6]-150, buttonArray[i][7]-150)
 		    else
 		        love.graphics.setColor(buttonArray[i][5], buttonArray[i][6], buttonArray[i][7])
+		    end
+		    if selectedButton == i then
+		    	love.graphics.setColor(100,100,100)
 		    end
 		    love.graphics.rectangle("fill", buttonArray[i][1], buttonArray[i][2], buttonArray[i][3], buttonArray[i][4])
 		    love.graphics.setColor(0, 0, 0)
@@ -238,6 +245,7 @@ function lslui.update()
 
 	mouseX, mouseY = love.mouse.getPosition()
 	mousepressed()
+	if inGame == false then checkForJoystickMovement() end
 
 	if menuPage == runPage then
 		inGame = true
@@ -254,6 +262,41 @@ function lslui.draw()
 	drawMenuBackgrounds()
 	drawButton()
 	drawInputText()
+
+end
+
+function checkForJoystickMovement()
+
+	if buttonScrollBuffer <= 0 then
+
+		if inputs[1].ballyl < 0 then
+		   selectedButton = buttonArray[selectedButton][14]
+		   buttonScrollBuffer = 2
+		end
+
+		if inputs[1].ballyl > 0 then
+			selectedButton = buttonArray[selectedButton][15]
+			buttonScrollBuffer = 2
+		end
+
+		if inputs[1].ballxl < 0 then
+			selectedButton = buttonArray[selectedButton][16]
+			buttonScrollBuffer = 2
+		end
+
+		if inputs[1].ballxl > 0 then
+		    selectedButton = buttonArray[selectedButton][17]
+		   buttonScrollBuffer = 2
+		end
+
+	end
+
+	if inputs[1].button1.state == true then
+			menuPage = buttonArray[selectedButton][12]
+			selectedButton = buttonArray[selectedButton][18]
+	end
+
+	buttonScrollBuffer = buttonScrollBuffer - 0.5
 
 end
 
