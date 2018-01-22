@@ -76,7 +76,7 @@ function drawButton()
 
 	for i=1,#buttonArray do
 		if buttonArray[i][11] == menuPage then
-			if mouseX > buttonArray[i][1] and mouseX < buttonArray[i][1]+buttonArray[i][3] and mouseY > buttonArray[i][2] and mouseY < buttonArray[i][2]+buttonArray[i][4] then
+			if takeMouseInputsForUI and mouseX > buttonArray[i][1] and mouseX < buttonArray[i][1]+buttonArray[i][3] and mouseY > buttonArray[i][2] and mouseY < buttonArray[i][2]+buttonArray[i][4] then
 		    	love.graphics.setColor(buttonArray[i][5]-150, buttonArray[i][6]-150, buttonArray[i][7]-150)
 		    else
 		        love.graphics.setColor(buttonArray[i][5], buttonArray[i][6], buttonArray[i][7])
@@ -244,7 +244,7 @@ end
 function lslui.update()
 
 	mouseX, mouseY = love.mouse.getPosition()
-	mousepressed()
+	if takeMouseInputsForUI then mousepressed() end
 	if inGame == false then checkForJoystickMovement() end
 
 	if menuPage == runPage then

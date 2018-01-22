@@ -8,6 +8,8 @@ lslui = require "lslui"
 
 function love.load()
 
+	takeMouseInputsForUI = false
+
 	soundtrack = love.audio.newSource("sounds/soundtrack.wav")
 	soundtrack:play()
 
