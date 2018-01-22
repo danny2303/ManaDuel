@@ -23,7 +23,7 @@ function lslui.load()
 	backgrounds = {} --template {page,backgroundType,background}
 	buttonArray = {{}}
 
-	selectedButton = 7
+	selectedButton = 5
 
 end
 

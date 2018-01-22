@@ -41,7 +41,7 @@ function love.load()
 	lslui.addButton(170,290,280,60,255,255,255,"Fullscreen",-15,-6,1,"fullscreen",9,11,10,10,10) --10
 	lslui.addButton(170,400,240,60,255,255,255,"Back",3,-5,1,0,10,11,11,11,6) --11
 
-	lslui.addButton(50,700,240,60,255,255,255,"Back",3,-5,2,0,12,12,12,12,7) --12
+	lslui.addButton(50,1000,240,60,255,255,255,"Back",3,-5,2,0,12,12,12,12,7) --12
 
 	lslui.setMenuBackground({page = {0,1},image = "images/ui/backgroundPicture.png"})
 	lslui.setMenuBackground({page = {2},image = "images/ui/spellbook.png"})
