@@ -36,7 +36,7 @@ function spell.load()
 
 	toRemove = {}
 
-	multiCastSpells = {dragonsBreath = {mana = 0}, heal = {mana = 10, amount = 10}}--spellname = true, ...
+	multiCastSpells = {dragonsBreath = {mana = 30}, heal = {mana = 10, amount = 10}}--spellname = true, ...
 
 end
 

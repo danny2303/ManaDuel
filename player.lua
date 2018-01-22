@@ -35,14 +35,14 @@ function player.update(dt)
 	castSpells()
 	manageStatusEffects(dt)
 	regenerateMana()
-	die()
+	checkIfDead()
 
 end
 
-function die()
+function checkIfDead()
 
 	for i=1,2 do
-		if players[i].health == 0 then
+		if players[i].health <= 0 then
 			players[i].image = playerDead
 			players[i].mana = 0
 			players[i].facing = "front"
@@ -136,7 +136,11 @@ function player.draw()
 		if players[i].facing == "left" then
 			love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX+(playerFront:getWidth()*playerScale),applyScroll(players[i].y,"y")-playerOffsetY,0,-playerScale,playerScale)
 		else
-			love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0,playerScale,playerScale)
+			if players[i].image == playerDead then
+				love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0.5,playerScale,playerScale,players[i].image:getWidth()/2-playerOffsetX,players[i].image:getHeight()/2-playerOffsetY)
+			else
+				love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0,playerScale,playerScale)
+			end
 		end
 
 	end
