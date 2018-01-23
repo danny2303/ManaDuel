@@ -50,6 +50,8 @@ end
 
 function love.update(dt)
 
+	lslui.moveButton(love.mouse.getX(),love.mouse.getY(),5) --test code
+
 	uiscale = love.graphics.getWidth()/1200
 
 	input.update()

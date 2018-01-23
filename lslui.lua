@@ -72,10 +72,23 @@ function lslui.replaceButton(x,y,xsize,ysize,r,g,b,text,textx,texty,page,action,
 
 end
 
+function lslui.moveButton(x,y,buttonNumber)
+
+	buttonArray[buttonNumber][1] = x
+	buttonArray[buttonNumber][2] = y
+
+end
+
 function drawButton()
 
 	for i=1,#buttonArray do
 		if buttonArray[i][11] == menuPage then
+
+			 if not (selectedButton == i) then 
+			 	love.graphics.setColor(50,50,50)
+			 	love.graphics.rectangle("fill", buttonArray[i][1]-10, buttonArray[i][2], buttonArray[i][3]+10, buttonArray[i][4]+10) 
+			 end
+
 			if takeMouseInputsForUI and mouseX > buttonArray[i][1] and mouseX < buttonArray[i][1]+buttonArray[i][3] and mouseY > buttonArray[i][2] and mouseY < buttonArray[i][2]+buttonArray[i][4] then
 		    	love.graphics.setColor(buttonArray[i][5]-150, buttonArray[i][6]-150, buttonArray[i][7]-150)
 		    else
@@ -86,7 +99,8 @@ function drawButton()
 		    end
 		    love.graphics.rectangle("fill", buttonArray[i][1], buttonArray[i][2], buttonArray[i][3], buttonArray[i][4])
 		    love.graphics.setColor(0, 0, 0)
-		    love.graphics.rectangle("line", buttonArray[i][1], buttonArray[i][2], buttonArray[i][3], buttonArray[i][4])
+		 --   love.graphics.rectangle("line", buttonArray[i][1], buttonArray[i][2], buttonArray[i][3], buttonArray[i][4])
+
 		    if buttonArray[i][12] == "inputText" or buttonArray[i][12] == "typing" then
 		    	love.graphics.print(buttonArray[i][8], buttonArray[i][1]+buttonArray[i][9]+10, buttonArray[i][2]+buttonArray[i][10]+10, 0, 3, 3)
 		    	love.graphics.setColor(255, 255, 255)
