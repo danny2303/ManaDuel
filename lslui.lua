@@ -52,12 +52,13 @@ function lslui.inGameMenu(key,inGameMenuPage)
 
 end
 
-function lslui.addButton(x,y,xsize,ysize,r,g,b,text,textx,texty,page,action,up,down,left,right,autoButtonSelect)
+function lslui.addButton(args)
 
 	if action == "inputText" then
-		buttonArray[#buttonArray+1]={x,y,xsize,ysize,r,g,b,text,textx,texty,page,action,""}
+		args.space = ""
+		buttonArray[#buttonArray+1]=args
 	else
-		buttonArray[#buttonArray+1]={x,y,xsize,ysize,r,g,b,text,textx,texty,page,action,#buttonArray+1,up,down,left,right,autoButtonSelect}
+		buttonArray[#buttonArray+1]=args
 	end
 
 end
@@ -82,34 +83,36 @@ end
 function drawButton()
 
 	for i=1,#buttonArray do
-		if buttonArray[i][11] == menuPage then
+		if buttonArray[i].page == menuPage then
 
 			 if not (selectedButton == i) then 
 			 	love.graphics.setColor(50,50,50)
-			 	love.graphics.rectangle("fill", buttonArray[i][1]-10, buttonArray[i][2], buttonArray[i][3]+10, buttonArray[i][4]+10) 
+			 	love.graphics.rectangle("fill", buttonArray[i].pos.x-10, buttonArray[i].pos.y, buttonArray[i].size.xsize+10, buttonArray[i].size.ysize+10) 
 			 end
 
-			if takeMouseInputsForUI and mouseX > buttonArray[i][1] and mouseX < buttonArray[i][1]+buttonArray[i][3] and mouseY > buttonArray[i][2] and mouseY < buttonArray[i][2]+buttonArray[i][4] then
-		    	love.graphics.setColor(buttonArray[i][5]-150, buttonArray[i][6]-150, buttonArray[i][7]-150)
+			if takeMouseInputsForUI and mouseX > buttonArray[i].pos.x and mouseX < buttonArray[i].pos.x+buttonArray[i].size.xsize and mouseY > buttonArray[i].pos.y and mouseY < buttonArray[i].pos.y+buttonArray[i].size.ysize then
+		    	love.graphics.setColor(buttonArray[i].color.r-150, buttonArray[i].color.b-150, buttonArray[i].color.g-150)
 		    else
-		        love.graphics.setColor(buttonArray[i][5], buttonArray[i][6], buttonArray[i][7])
+		        love.graphics.setColor(buttonArray[i].color.r, buttonArray[i].color.b, buttonArray[i].color.g)
 		    end
 		    if selectedButton == i then
-		    	love.graphics.setColor(100,100,100)
+			love.graphics.setColor(100,100,100)
 		    end
-		    love.graphics.rectangle("fill", buttonArray[i][1], buttonArray[i][2], buttonArray[i][3], buttonArray[i][4])
+		    love.graphics.rectangle("fill", buttonArray[i].pos.x, buttonArray[i].pos.y, buttonArray[i].size.xsize, buttonArray[i].size.ysize)
 		    love.graphics.setColor(0, 0, 0)
-		 --   love.graphics.rectangle("line", buttonArray[i][1], buttonArray[i][2], buttonArray[i][3], buttonArray[i][4])
+		 --   love.graphics.rectangle("line", buttonArray[i].pos.x, buttonArray[i].pos.y, buttonArray[i].size.xsize, buttonArray[i].size.ysize)
 
-		    if buttonArray[i][12] == "inputText" or buttonArray[i][12] == "typing" then
-		    	love.graphics.print(buttonArray[i][8], buttonArray[i][1]+buttonArray[i][9]+10, buttonArray[i][2]+buttonArray[i][10]+10, 0, 3, 3)
+		    if buttonArray[i].action == "inputText" or buttonArray[i].action == "typing" then
+		    	love.graphics.print(buttonArray[i].textData.text, buttonArray[i].pos.x+buttonArray[i].textData.textx+10, buttonArray[i].pos.y+buttonArray[i].textData.texty+10, 0, 3, 3)
 		    	love.graphics.setColor(255, 255, 255)
-		    	love.graphics.rectangle("fill", buttonArray[i][1]+font:getWidth(buttonArray[i][8])*3+10, buttonArray[i][2]+5, -font:getWidth(buttonArray[i][8])*3-10+buttonArray[i][3]-5, buttonArray[i][4]-10)
+		    	love.graphics.rectangle("fill", buttonArray[i].pos.x+font:getWidth(buttonArray[i].textData.text)*3+10, buttonArray[i].pos.y+5, -font:getWidth(buttonArray[i].textData.text)*3-10+buttonArray[i].size.xsize-5, buttonArray[i].size.ysize-10)
 		    else
 			    --NOTE : Text centralisation doesn't work amazingly so use textx and texty to get it right vv
-			    love.graphics.print(buttonArray[i][8], buttonArray[i][1]+buttonArray[i][3]/2-font:getWidth(buttonArray[i][8])*1.5-5+buttonArray[i][9], buttonArray[i][2]+buttonArray[i][4]/2-20+buttonArray[i][10], 0, 3, 3)
+			    love.graphics.print(buttonArray[i].textData.text, buttonArray[i].pos.x+buttonArray[i].size.xsize/2-font:getWidth(buttonArray[i].textData.text)*1.5-5+buttonArray[i].textData.textx, buttonArray[i].pos.y+buttonArray[i].size.ysize/2-20+buttonArray[i].textData.texty, 0, 3, 3)
 			end
+
 		end
+
 	end
 
 end
@@ -117,27 +120,27 @@ end
 function drawInputText()
 
 	for i=1,#buttonArray do
-		if buttonArray[i][11] == menuPage then
+		if buttonArray[i].page == menuPage then
 			love.graphics.setColor(0, 0, 0)
-	    	if buttonArray[i][12] == "typing" then
-	    		if (love.mouse.isDown(1) == true and (mouseX < buttonArray[i][1] or mouseX > buttonArray[i][1]+buttonArray[i][3] or mouseY < buttonArray[i][2] or mouseY > buttonArray[i][2]+buttonArray[i][4])) or menuPage ~= buttonArray[i][11] then
-					buttonArray[i][12] = "inputText"
+	    	if buttonArray[i].action == "typing" then
+	    		if (love.mouse.isDown(1) == true and (mouseX < buttonArray[i].pos.x or mouseX > buttonArray[i].pos.x+buttonArray[i].size.xsize or mouseY < buttonArray[i].pos.y or mouseY > buttonArray[i].pos.y +buttonArray[i].size.ysize)) or menuPage ~= buttonArray[i].page then
+					buttonArray[i].action = "inputText"
 					lineTimer = 1
 				end
 	    		lineTimer = lineTimer - 0.05
 	    		if lineTimer <= 0 then
-	    			if buttonArray[i][13] == "" then
-						love.graphics.print("|",buttonArray[i][1]+string.len(buttonArray[i][8])*22+font:getWidth(buttonArray[i][13])*3+string.len(buttonArray[i][13])*5-4,buttonArray[i][2]+1, 0, 3.6, 3.63)
+	    			if buttonArray[i].space == "" then
+						love.graphics.print("|",buttonArray[i].pos.x+string.len(buttonArray[i].textData.text)*22+font:getWidth(buttonArray[i].space)*3+string.len(buttonArray[i].space)*5-4,buttonArray[i].pos.y+1, 0, 3.6, 3.63)
 					else
-						love.graphics.print("|",buttonArray[i][1]+string.len(buttonArray[i][8])*22+font:getWidth(buttonArray[i][13])*3+string.len(buttonArray[i][13])*5-10,buttonArray[i][2]+1, 0, 3.6, 3.63)
+						love.graphics.print("|",buttonArray[i].pos.x+string.len(buttonArray[i].textData.text)*22+font:getWidth(buttonArray[i].space)*3+string.len(buttonArray[i].space)*5-10,buttonArray[i].pos.y+1, 0, 3.6, 3.63)
 					end
 				end
 				if lineTimer <= -1 then
 					lineTimer = 1
 				end
 			end
-			if buttonArray[i][12] == "inputText" or buttonArray[i][12] == "typing" then
-				love.graphics.print(buttonArray[i][13],buttonArray[i][1]+font:getWidth(buttonArray[i][8])*3+10,buttonArray[i][2]+10, 0, 3.6, 3.63)
+			if buttonArray[i].action == "inputText" or buttonArray[i].action == "typing" then
+				love.graphics.print(buttonArray[i].space,buttonArray[i].pos.x+font:getWidth(buttonArray[i].textData.text)*3+10,buttonArray[i].pos.y+10, 0, 3.6, 3.63)
 			end
 		end
 	end
@@ -147,25 +150,11 @@ end
 function mousepressed()
 
 	for i=1,#buttonArray do
-		if buttonArray[i][11] == menuPage then
+		if buttonArray[i].page == menuPage then
 			if love.mouse.isDown(1) == true then
 				if canClick == true then
-					if mouseX > buttonArray[i][1] and mouseX < buttonArray[i][1]+buttonArray[i][3] and mouseY > buttonArray[i][2] and mouseY < buttonArray[i][2]+buttonArray[i][4] then
-						if buttonArray[i][12] == "exit" then
-				        	love.event.quit()
-				        elseif buttonArray[i][12] == "run" then
-				        	menuPage = runPage
-				        elseif buttonArray[i][12] == "fullscreen" then
-				        	if love.window.getFullscreen() == true then love.window.setFullscreen(false) elseif love.window.getFullscreen() == false then love.window.setFullscreen(true) end
-				        	canClick = false
-				        elseif buttonArray[i][12] == "inputText" then
-				        	buttonArray[i][12] = "typing"
-				        	lineTimer = 0
-				        elseif buttonArray[i][12] ~= "typing" then
-				        	menuPage = buttonArray[i][12]
-				            canClick = false
-				        end
-				        click:play()
+					if mouseX > buttonArray[i].pos.x and mouseX < buttonArray[i].pos.x+buttonArray[i].size.xsize and mouseY > buttonArray[i].pos.y and mouseY < buttonArray[i].pos.y+buttonArray[i].size.ysize then
+						manageClick(i)
 				    end
 				end
 			elseif love.mouse.isDown(1) == false then
@@ -179,8 +168,8 @@ end
 function love.textinput(text)
 
 	for i=1,#buttonArray do
-		if buttonArray[i][12] == "typing" and buttonArray[i][1]+string.len(buttonArray[i][8])*22+font:getWidth(buttonArray[i][13])*3+string.len(buttonArray[i][13])*5-4 < buttonArray[i][1]+font:getWidth(buttonArray[i][8])*3+10-font:getWidth(buttonArray[i][8])*3-10+buttonArray[i][3]-5 then
-			buttonArray[i][13] = buttonArray[i][13] .. text
+		if buttonArray[i].action == "typing" and buttonArray[i].pos.x+string.len(buttonArray[i].textData.text)*22+font:getWidth(buttonArray[i].space)*3+string.len(buttonArray[i].space)*5-4 < buttonArray[i].pos.x+font:getWidth(buttonArray[i].textData.text)*3+10-font:getWidth(buttonArray[i].textData.text)*3-10+buttonArray[i].size.xsize-5 then
+			buttonArray[i].space = buttonArray[i].space .. text
 		end
 	end
 
@@ -189,11 +178,11 @@ end
 function love.keypressed(key)
 
 	for i=1,#buttonArray do
-		if buttonArray[i][12] == "typing" then
+		if buttonArray[i].action == "typing" then
 		    if key == "backspace" then
-		        local byteoffset = utf8.offset(buttonArray[i][13], -1)
+		        local byteoffset = utf8.offset(buttonArray[i].space, -1)
 		        if byteoffset then
-		            buttonArray[i][13] = string.sub(buttonArray[i][13], 1, byteoffset - 1)
+		            buttonArray[i].space = string.sub(buttonArray[i].space, 1, byteoffset - 1)
 		        end
 		    end
 		end
@@ -249,7 +238,7 @@ end
 
 function lslui.getInputButtonText(ID)
 	if buttonArray[ID+1][13] ~= nil then
-		return buttonArray[ID+1][13]
+		return buttonArray[ID+1].space
 	else
 		return nil
 	end
@@ -284,33 +273,54 @@ function checkForJoystickMovement()
 	if buttonScrollBuffer <= 0 then
 
 		if inputs[1].ballyl < 0 then
-		   selectedButton = buttonArray[selectedButton][14]
+		   selectedButton = buttonArray[selectedButton].joystickActions.up
 		   buttonScrollBuffer = 2
 		end
 
 		if inputs[1].ballyl > 0 then
-			selectedButton = buttonArray[selectedButton][15]
+			selectedButton = buttonArray[selectedButton].joystickActions.down
 			buttonScrollBuffer = 2
 		end
 
 		if inputs[1].ballxl < 0 then
-			selectedButton = buttonArray[selectedButton][16]
+			selectedButton = buttonArray[selectedButton].joystickActions.left
 			buttonScrollBuffer = 2
 		end
 
 		if inputs[1].ballxl > 0 then
-		    selectedButton = buttonArray[selectedButton][17]
+		    selectedButton = buttonArray[selectedButton].joystickActions.right
 		   buttonScrollBuffer = 2
 		end
 
 	end
 
 	if inputs[1].button1.state == true then
-			menuPage = buttonArray[selectedButton][12]
-			selectedButton = buttonArray[selectedButton][18]
+		manageClick(selectedButton)
 	end
 
 	buttonScrollBuffer = buttonScrollBuffer - 0.5
+
+end
+
+function manageClick(buttonID)
+
+	if buttonArray[buttonID].action == "exit" then
+		love.event.quit()
+	elseif buttonArray[buttonID].action == "run" then
+		menuPage = runPage
+	elseif buttonArray[buttonID].action == "fullscreen" then
+	if love.window.getFullscreen() == true then love.window.setFullscreen(false) elseif love.window.getFullscreen() == false then love.window.setFullscreen(true) end
+		canClick = false
+	elseif buttonArray[buttonID].action == "inputText" then
+		buttonArray[buttonID].action = "typing"
+		lineTimer = 0
+	elseif buttonArray[buttonID].action ~= "typing" then
+		menuPage = buttonArray[buttonID].action
+		canClick = false
+	end
+
+	click:play()	
+	selectedButton = buttonArray[selectedButton].joystickActions.autoButtonSelect
 
 end
 
