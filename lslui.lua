@@ -25,6 +25,23 @@ function lslui.load()
 
 	selectedButton = 5
 
+	inactiveRunes = love.graphics.newImage("images/ui/inactiveRunes.png")
+	glowingRunes = love.graphics.newImage("images/ui/glowingRunes.png")
+
+
+end
+
+function drawRune(x,y,num,state)
+
+	love.graphics.setColor(255,255,255)
+
+	quad = love.graphics.newQuad(0,(num-1)*100, 100, 100, 100, 800 )
+
+	image = inactiveRunes
+	if state == "glowing" then image = glowingRunes end
+
+	love.graphics.draw(image,quad,x,y)
+
 end
 
 function lslui.inGameMenu(key,inGameMenuPage)
@@ -224,6 +241,7 @@ function drawMenuBackgrounds() --Image or colour
 						love.graphics.setBackgroundColor(backgrounds[i][3][1], backgrounds[i][3][2], backgrounds[i][3][3])
 					elseif backgrounds[i][2] == "image" then
 						background = love.graphics.newImage(backgrounds[i][3])
+						background:setFilter("linear","linear")
 						love.graphics.setColor(255,255,255)
 						love.graphics.draw(background, 0, 0, 0, love.graphics.getWidth()/background:getWidth(), love.graphics.getHeight()/background:getHeight())
 					end
@@ -238,9 +256,9 @@ function lslui.setMenuBackground(args)
 
 	bType = "nil"
 	bData = "nil"
-	if args.image then 
+	if args.image then
 		bType = "image"
-		bData = args.image
+		bData = args.image		
 	end
 
 	if args.colour then 

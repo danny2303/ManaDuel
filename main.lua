@@ -51,7 +51,7 @@ function love.load()
 
 	lslui.addButton({pos  = {x = 50,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Back",textx = 3,texty = -5},page = 2,action = 0,joystickActions = {autoButtonSelect = 7}}) --12
 
-	lslui.setMenuBackground({page = {0,1},image = "images/ui/backgroundPicture.png"})
+	lslui.setMenuBackground({page = {0,1},image = "images/ui/ancientWall.png"})
 	lslui.setMenuBackground({page = {2},image = "images/ui/spellbook.png"})
 
 end
@@ -80,6 +80,7 @@ function love.update(dt)
 end
 
 function love.draw()
+
 
 	if(inGame == true)then
 		love.graphics.push()
@@ -143,6 +144,9 @@ function love.draw()
 	end
 
 	lslui.draw()
+	for i = 1,10 do
+		drawRune(math.random(0,1800),math.random(0,1000),math.random(1,8),"inactive")
+	end
 
 	--debugging tools
 
