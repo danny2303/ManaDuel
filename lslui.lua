@@ -52,7 +52,22 @@ function lslui.inGameMenu(key,inGameMenuPage)
 
 end
 
+function lslui.getButton(buttonNumber)
+
+	return buttonArray[buttonNumber]
+
+end
+
 function lslui.addButton(args)
+
+	if not(args.color) then args.color = {r=255,g=255,b=255} end
+
+	if not(args.joystickActions.up) then args.joystickActions.up = #buttonArray+1 end
+	if not(args.joystickActions.down) then args.joystickActions.down = #buttonArray+1 end
+	if not(args.joystickActions.left) then args.joystickActions.left = #buttonArray+1 end
+	if not(args.joystickActions.right) then args.joystickActions.right = #buttonArray+1 end
+
+	if not(args.joystickActions.autoButtonSelect) then args.joystickActions.autoButtonSelect = #buttonArray+1 end
 
 	if action == "inputText" then
 		args.space = ""
@@ -63,12 +78,21 @@ function lslui.addButton(args)
 
 end
 
-function lslui.replaceButton(x,y,xsize,ysize,r,g,b,text,textx,texty,page,action,buttonNumber)
+function lslui.changeButton(args,buttonNumber)
 
+	if not(args.color) then args.color = {r=255,g=255,b=255} end
+
+	if not(args.joystickActions.up) then args.joystickActions.up = #buttonArray+1 end
+	if not(args.joystickActions.down) then args.joystickActions.down = #buttonArray+1 end
+	if not(args.joystickActions.left) then args.joystickActions.left = #buttonArray+1 end
+	if not(args.joystickActions.right) then args.joystickActions.right = #buttonArray+1 end
+
+	if not(args.joystickActions.autoButtonSelect) then args.joystickActions.autoButtonSelect = #buttonArray+1 end
+	
 	if action == "inputText" then
-		buttonArray[buttonNumber+1]={x,y,xsize,ysize,r,g,b,text,textx,texty,page,action,""}
+		buttonArray[buttonNumber]=args
 	else
-		buttonArray[buttonNumber+1]={x,y,xsize,ysize,r,g,b,text,textx,texty,page,action}
+		buttonArray[buttonNumber]=args
 	end
 
 end
