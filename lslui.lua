@@ -35,7 +35,7 @@ function lslui.load()
 
 end
 
-function drawRune(x,y,num,state,r,b,g)
+function drawRune(x,y,num,state,r,b,g,size,rotation)
 
 	if state == "glowing" then love.graphics.setColor(r,b,g) else love.graphics.setColor(255,255,255) end
 
@@ -44,7 +44,7 @@ function drawRune(x,y,num,state,r,b,g)
 	image = inactiveRunes
 	if state == "glowing" then image = glowingRunes end
 
-	love.graphics.draw(image,quad,x,y)
+	love.graphics.draw(image,quad,x+50,y+50,rotation,size,size,50,50)
 
 end
 
@@ -168,9 +168,9 @@ function drawButton()
 				love.graphics.setFont(runeFont)
 
 				if selectedButton == i then 
-					drawRune(buttonArray[i].pos.x,buttonArray[i].pos.y,buttonArray[i].buttonType.runeNum,"glowing",buttonArray[i].buttonType.r,buttonArray[i].buttonType.b,buttonArray[i].buttonType.g)
+					drawRune(buttonArray[i].pos.x,buttonArray[i].pos.y,buttonArray[i].buttonType.runeNum,"glowing",buttonArray[i].buttonType.r,buttonArray[i].buttonType.b,buttonArray[i].buttonType.g,1)
 				else
-					drawRune(buttonArray[i].pos.x,buttonArray[i].pos.y,buttonArray[i].buttonType.runeNum,"inactive",buttonArray[i].buttonType.r,buttonArray[i].buttonType.b,buttonArray[i].buttonType.g)
+					drawRune(buttonArray[i].pos.x,buttonArray[i].pos.y,buttonArray[i].buttonType.runeNum,"inactive",buttonArray[i].buttonType.r,buttonArray[i].buttonType.b,buttonArray[i].buttonType.g,1)
 				end
 
 				love.graphics.setColor(0, 0, 0)				
@@ -276,6 +276,17 @@ function drawMenuBackgrounds() --Image or colour
 		end
 	end
 
+	if menuPage == 0 then
+
+		drawRune(800,900,5,"inactive",0,0,0,6,-1)
+		drawRune(900,100,6,"inactive",0,0,0,4,-0.5)
+		drawRune(1600,900,7,"inactive",0,0,0,4,1)
+		drawRune(1200,500,8,"inactive",0,0,0,6,1)
+		drawRune(1700,50,3,"inactive",0,0,0,8,-0.5)
+
+
+	end
+
 end
 
 function lslui.setMenuBackground(args)
@@ -362,12 +373,18 @@ function checkForJoystickMovement()
 
 	end
 
-	if inputs[1].button1.state and not(prevXDown) then
+
+	if sticks[1]:isDown(1) and prevXDown == false then
 		manageClick(selectedButton)
-		prevXDown = true
 	end
 
-	if not(inputs[1].button1.state) then prevXDown = false end
+	if sticks[1]:isDown(1) then  
+		prevXDown = true
+	end	
+
+	if sticks[1]:isDown(1) == false then 
+		prevXDown = false 
+	end
 
 	buttonScrollBuffer = buttonScrollBuffer - 0.1
 
