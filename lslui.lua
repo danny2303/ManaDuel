@@ -5,6 +5,10 @@ local utf8 = require("utf8")
 
 function lslui.load()
 
+	prevXDown = false
+
+	runeFont = love.graphics.newFont("images/ui/runeFont.ttf", 18)
+
 	buttonScrollBuffer = 0
 
 	sticks = love.joystick.getJoysticks()
@@ -130,6 +134,8 @@ function drawButton()
 
 			if buttonArray[i].buttonType.name == "button" then
 
+				love.graphics.setNewFont(12)
+
 				 if not (selectedButton == i) then 
 				 	love.graphics.setColor(50,50,50)
 				 	love.graphics.rectangle("fill", buttonArray[i].pos.x-10, buttonArray[i].pos.y, buttonArray[i].size.xsize+10, buttonArray[i].size.ysize+10) 
@@ -159,15 +165,16 @@ function drawButton()
 
 			if buttonArray[i].buttonType.name == "rune" then
 
+				love.graphics.setFont(runeFont)
+
 				if selectedButton == i then 
 					drawRune(buttonArray[i].pos.x,buttonArray[i].pos.y,buttonArray[i].buttonType.runeNum,"glowing",buttonArray[i].buttonType.r,buttonArray[i].buttonType.b,buttonArray[i].buttonType.g)
-					love.graphics.setColor(buttonArray[i].buttonType.r,buttonArray[i].buttonType.b,buttonArray[i].buttonType.g)
 				else
 					drawRune(buttonArray[i].pos.x,buttonArray[i].pos.y,buttonArray[i].buttonType.runeNum,"inactive",buttonArray[i].buttonType.r,buttonArray[i].buttonType.b,buttonArray[i].buttonType.g)
-					love.graphics.setColor(0, 0, 0)
 				end
 
-				love.graphics.print(buttonArray[i].textData.text,buttonArray[i].pos.x + 100,buttonArray[i].pos.y+20, 0, 3, 3)
+				love.graphics.setColor(0, 0, 0)				
+				love.graphics.print(buttonArray[i].textData.text,buttonArray[i].pos.x + 100,buttonArray[i].pos.y+5, 0, 3, 3)
 
 			end
 
@@ -355,9 +362,12 @@ function checkForJoystickMovement()
 
 	end
 
-	if inputs[1].button1.state == true then
+	if inputs[1].button1.state and not(prevXDown) then
 		manageClick(selectedButton)
+		prevXDown = true
 	end
+
+	if not(inputs[1].button1.state) then prevXDown = false end
 
 	buttonScrollBuffer = buttonScrollBuffer - 0.1
 

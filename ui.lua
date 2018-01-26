@@ -8,7 +8,6 @@ function ui.load()
 	manaLength = 5
 
 	effectFont = love.graphics.newFont("images/ui/effectFont.ttf", 16)
-	love.graphics.setFont(effectFont)
 
 	timerImage = love.graphics.newImage("images/ui/timer.png")
 	timerImage:setFilter("linear","linear")
@@ -39,6 +38,8 @@ function ui.update()
 end
 
 function ui.draw()
+
+	love.graphics.setFont(effectFont)
 
 	drawUI()
 	drawStatusEffects()
