@@ -86,6 +86,8 @@ function lslui.addButton(args)
 
 	if not(args.joystickActions.autoButtonSelect) then args.joystickActions.autoButtonSelect = #buttonArray+1 end
 
+	if not(args.buttonType) then args.buttonType = {name = "button"} end
+
 	if action == "inputText" then
 		args.space = ""
 		buttonArray[#buttonArray+1]=args
@@ -126,30 +128,47 @@ function drawButton()
 	for i=1,#buttonArray do
 		if buttonArray[i].page == menuPage then
 
-			 if not (selectedButton == i) then 
-			 	love.graphics.setColor(50,50,50)
-			 	love.graphics.rectangle("fill", buttonArray[i].pos.x-10, buttonArray[i].pos.y, buttonArray[i].size.xsize+10, buttonArray[i].size.ysize+10) 
-			 end
+			if buttonArray[i].buttonType.name == "button" then
 
-			if takeMouseInputsForUI and mouseX > buttonArray[i].pos.x and mouseX < buttonArray[i].pos.x+buttonArray[i].size.xsize and mouseY > buttonArray[i].pos.y and mouseY < buttonArray[i].pos.y+buttonArray[i].size.ysize then
-		    	love.graphics.setColor(buttonArray[i].color.r-150, buttonArray[i].color.b-150, buttonArray[i].color.g-150)
-		    else
-		        love.graphics.setColor(buttonArray[i].color.r, buttonArray[i].color.b, buttonArray[i].color.g)
-		    end
-		    if selectedButton == i then
-			love.graphics.setColor(100,100,100)
-		    end
-		    love.graphics.rectangle("fill", buttonArray[i].pos.x, buttonArray[i].pos.y, buttonArray[i].size.xsize, buttonArray[i].size.ysize)
-		    love.graphics.setColor(0, 0, 0)
-		 --   love.graphics.rectangle("line", buttonArray[i].pos.x, buttonArray[i].pos.y, buttonArray[i].size.xsize, buttonArray[i].size.ysize)
+				 if not (selectedButton == i) then 
+				 	love.graphics.setColor(50,50,50)
+				 	love.graphics.rectangle("fill", buttonArray[i].pos.x-10, buttonArray[i].pos.y, buttonArray[i].size.xsize+10, buttonArray[i].size.ysize+10) 
+				 end
 
-		    if buttonArray[i].action == "inputText" or buttonArray[i].action == "typing" then
-		    	love.graphics.print(buttonArray[i].textData.text, buttonArray[i].pos.x+buttonArray[i].textData.textx+10, buttonArray[i].pos.y+buttonArray[i].textData.texty+10, 0, 3, 3)
-		    	love.graphics.setColor(255, 255, 255)
-		    	love.graphics.rectangle("fill", buttonArray[i].pos.x+font:getWidth(buttonArray[i].textData.text)*3+10, buttonArray[i].pos.y+5, -font:getWidth(buttonArray[i].textData.text)*3-10+buttonArray[i].size.xsize-5, buttonArray[i].size.ysize-10)
-		    else
-			    --NOTE : Text centralisation doesn't work amazingly so use textx and texty to get it right vv
-			    love.graphics.print(buttonArray[i].textData.text, buttonArray[i].pos.x+buttonArray[i].size.xsize/2-font:getWidth(buttonArray[i].textData.text)*1.5-5+buttonArray[i].textData.textx, buttonArray[i].pos.y+buttonArray[i].size.ysize/2-20+buttonArray[i].textData.texty, 0, 3, 3)
+				if takeMouseInputsForUI and mouseX > buttonArray[i].pos.x and mouseX < buttonArray[i].pos.x+buttonArray[i].size.xsize and mouseY > buttonArray[i].pos.y and mouseY < buttonArray[i].pos.y+buttonArray[i].size.ysize then
+			    	love.graphics.setColor(buttonArray[i].color.r-150, buttonArray[i].color.b-150, buttonArray[i].color.g-150)
+			    else
+			        love.graphics.setColor(buttonArray[i].color.r, buttonArray[i].color.b, buttonArray[i].color.g)
+			    end
+			    if selectedButton == i then
+				love.graphics.setColor(100,100,100)
+			    end
+			    love.graphics.rectangle("fill", buttonArray[i].pos.x, buttonArray[i].pos.y, buttonArray[i].size.xsize, buttonArray[i].size.ysize)
+			    love.graphics.setColor(0, 0, 0)
+
+			    if buttonArray[i].action == "inputText" or buttonArray[i].action == "typing" then
+			    	love.graphics.print(buttonArray[i].textData.text, buttonArray[i].pos.x+buttonArray[i].textData.textx+10, buttonArray[i].pos.y+buttonArray[i].textData.texty+10, 0, 3, 3)
+			    	love.graphics.setColor(255, 255, 255)
+			    	love.graphics.rectangle("fill", buttonArray[i].pos.x+font:getWidth(buttonArray[i].textData.text)*3+10, buttonArray[i].pos.y+5, -font:getWidth(buttonArray[i].textData.text)*3-10+buttonArray[i].size.xsize-5, buttonArray[i].size.ysize-10)
+			    else
+				    --NOTE : Text centralisation doesn't work amazingly so use textx and texty to get it right vv
+				    love.graphics.print(buttonArray[i].textData.text, buttonArray[i].pos.x+buttonArray[i].size.xsize/2-font:getWidth(buttonArray[i].textData.text)*1.5-5+buttonArray[i].textData.textx, buttonArray[i].pos.y+buttonArray[i].size.ysize/2-20+buttonArray[i].textData.texty, 0, 3, 3)
+				end
+
+			end
+
+			if buttonArray[i].buttonType.name == "rune" then
+
+				if selectedButton == i then 
+					drawRune(buttonArray[i].pos.x,buttonArray[i].pos.y,buttonArray[i].buttonType.runeNum,"glowing",buttonArray[i].buttonType.r,buttonArray[i].buttonType.b,buttonArray[i].buttonType.g)
+					love.graphics.setColor(buttonArray[i].buttonType.r,buttonArray[i].buttonType.b,buttonArray[i].buttonType.g)
+				else
+					drawRune(buttonArray[i].pos.x,buttonArray[i].pos.y,buttonArray[i].buttonType.runeNum,"inactive",buttonArray[i].buttonType.r,buttonArray[i].buttonType.b,buttonArray[i].buttonType.g)
+					love.graphics.setColor(0, 0, 0)
+				end
+
+				love.graphics.print(buttonArray[i].textData.text,buttonArray[i].pos.x + 100,buttonArray[i].pos.y+20, 0, 3, 3)
+
 			end
 
 		end
@@ -340,7 +359,7 @@ function checkForJoystickMovement()
 		manageClick(selectedButton)
 	end
 
-	buttonScrollBuffer = buttonScrollBuffer - 0.5
+	buttonScrollBuffer = buttonScrollBuffer - 0.1
 
 end
 
