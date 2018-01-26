@@ -145,7 +145,7 @@ function love.draw()
 
 	lslui.draw()
 	for i = 1,10 do
-		drawRune(math.random(0,1800),math.random(0,1000),math.random(1,8),"inactive")
+		drawRune(math.random(0,1800),math.random(0,1000),math.random(1,8),"glowing",math.random(0,255),math.random(0,255),math.random(0,255))
 	end
 
 	--debugging tools

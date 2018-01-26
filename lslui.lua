@@ -31,9 +31,9 @@ function lslui.load()
 
 end
 
-function drawRune(x,y,num,state)
+function drawRune(x,y,num,state,r,b,g)
 
-	love.graphics.setColor(255,255,255)
+	if state == "glowing" then love.graphics.setColor(r,b,g) else love.graphics.setColor(255,255,255) end
 
 	quad = love.graphics.newQuad(0,(num-1)*100, 100, 100, 100, 800 )
 
