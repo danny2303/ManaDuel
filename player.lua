@@ -13,6 +13,7 @@ function player.load()
 	playerDead:setFilter("nearest","nearest")
 
 	maxHealth,maxMana = 20,100
+	timeSinceDead = 5
 
 	spellbooks = {{l1 = "dragonsBreath",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "timeStop",s2 = "poisonOrb",s3 = "fireball",s4 = "orbitingSheild"},
 				  {l1 = "whirlwind",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "timeStop",s2 = "poisonOrb",s3 = "fireball",s4 = "orbitingSheild"}}
@@ -35,11 +36,11 @@ function player.update(dt)
 	castSpells()
 	manageStatusEffects(dt)
 	regenerateMana()
-	checkIfDead()
+	checkIfDead(dt)
 
 end
 
-function checkIfDead()
+function checkIfDead(dt)
 
 	for i=1,2 do
 		if players[i].health <= 0 then
@@ -49,9 +50,18 @@ function checkIfDead()
 			for effectNum=1,#players[i].effects do
 				table.remove(players[i].effects,effectNum)
 			end
+			timeSinceDead = timeSinceDead - dt
+			if(timeSinceDead <= 0)then
+				newRound = true
+			end
 		end
 	end
 
+end
+
+function player.getPlayersState()
+	if(players[1].image == playerDead or players[2].image == playerDead)then return("dead")
+	else return("alive") end
 end
 
 function regenerateMana()
@@ -132,7 +142,6 @@ end
 function player.draw()
 
 	for i=1,2 do
-
 		if players[i].facing == "left" then
 			love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX+(playerFront:getWidth()*playerScale),applyScroll(players[i].y,"y")-playerOffsetY,0,-playerScale,playerScale)
 		else
@@ -142,9 +151,7 @@ function player.draw()
 				love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0,playerScale,playerScale)
 			end
 		end
-
 	end
-
 
 end
 

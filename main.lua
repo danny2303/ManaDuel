@@ -14,6 +14,7 @@ function love.load()
 	soundtrack:play()
 
 	inGame = false
+	newRound = false
 
 	love.window.setFullscreen(true)
 
@@ -76,6 +77,14 @@ function love.update(dt)
 	lslui.update()
 
 	lslui.inGameMenu("start","gameMenu1")
+
+	if(newRound == true)then
+		scroll.load()
+		spell.load()
+		object.load()
+		player.load()
+		newRound = false
+	end
 
 end
 
@@ -160,6 +169,12 @@ function love.draw()
 		love.graphics.line(love.graphics.getWidth() - cameraBufferX, cameraBufferY, love.graphics.getWidth()- cameraBufferX, love.graphics.getHeight() - cameraBufferY)
 		love.graphics.line(love.graphics.getWidth()- cameraBufferX, love.graphics.getHeight() - cameraBufferY,cameraBufferX, love.graphics.getHeight() - cameraBufferY)
 		love.graphics.line(cameraBufferX, cameraBufferY,cameraBufferX, love.graphics.getHeight() - cameraBufferY)
+	end
+
+	if player.getPlayersState() == "dead" then
+		local roundedTime = math.floor(timeSinceDead * 10^(2 or 0) + 0.5) / 10^(2 or 0)
+		love.graphics.setColor(255,255,255)
+		love.graphics.print(roundedTime,love.graphics.getWidth()/2-50,love.graphics.getHeight()/2-50,0,5,5)
 	end
 
 end
