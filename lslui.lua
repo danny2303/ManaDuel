@@ -7,7 +7,7 @@ function lslui.load()
 
 	prevXDown = false
 
-	runeFont = love.graphics.newFont("images/ui/runeFont.ttf", 18)
+	runeFont = love.graphics.newFont("images/ui/runeFont.ttf", 36)
 
 	buttonScrollBuffer = 0
 
@@ -31,6 +31,7 @@ function lslui.load()
 
 	inactiveRunes = love.graphics.newImage("images/ui/inactiveRunes.png")
 	glowingRunes = love.graphics.newImage("images/ui/glowingRunes.png")
+	button = love.graphics.newImage("images/ui/button.png")
 
 
 end
@@ -82,6 +83,8 @@ end
 function lslui.addButton(args)
 
 	if not(args.color) then args.color = {r=255,g=255,b=255} end
+
+	if not(args.textData.size) then args.textData.size = 3 end	
 
 	if not(args.joystickActions.up) then args.joystickActions.up = #buttonArray+1 end
 	if not(args.joystickActions.down) then args.joystickActions.down = #buttonArray+1 end
@@ -138,7 +141,7 @@ function drawButton()
 
 				 if not (selectedButton == i) then 
 				 	love.graphics.setColor(50,50,50)
-				 	love.graphics.rectangle("fill", buttonArray[i].pos.x-10, buttonArray[i].pos.y, buttonArray[i].size.xsize+10, buttonArray[i].size.ysize+10) 
+				-- 	love.graphics.rectangle("fill", buttonArray[i].pos.x-10, buttonArray[i].pos.y, buttonArray[i].size.xsize+10, buttonArray[i].size.ysize+10) 
 				 end
 
 				if takeMouseInputsForUI and mouseX > buttonArray[i].pos.x and mouseX < buttonArray[i].pos.x+buttonArray[i].size.xsize and mouseY > buttonArray[i].pos.y and mouseY < buttonArray[i].pos.y+buttonArray[i].size.ysize then
@@ -149,7 +152,7 @@ function drawButton()
 			    if selectedButton == i then
 				love.graphics.setColor(100,100,100)
 			    end
-			    love.graphics.rectangle("fill", buttonArray[i].pos.x, buttonArray[i].pos.y, buttonArray[i].size.xsize, buttonArray[i].size.ysize)
+			    love.graphics.draw(button, buttonArray[i].pos.x, buttonArray[i].pos.y)
 			    love.graphics.setColor(0, 0, 0)
 
 			    if buttonArray[i].action == "inputText" or buttonArray[i].action == "typing" then
@@ -158,7 +161,7 @@ function drawButton()
 			    	love.graphics.rectangle("fill", buttonArray[i].pos.x+font:getWidth(buttonArray[i].textData.text)*3+10, buttonArray[i].pos.y+5, -font:getWidth(buttonArray[i].textData.text)*3-10+buttonArray[i].size.xsize-5, buttonArray[i].size.ysize-10)
 			    else
 				    --NOTE : Text centralisation doesn't work amazingly so use textx and texty to get it right vv
-				    love.graphics.print(buttonArray[i].textData.text, buttonArray[i].pos.x+buttonArray[i].size.xsize/2-font:getWidth(buttonArray[i].textData.text)*1.5-5+buttonArray[i].textData.textx, buttonArray[i].pos.y+buttonArray[i].size.ysize/2-20+buttonArray[i].textData.texty, 0, 3, 3)
+				    love.graphics.print(buttonArray[i].textData.text, buttonArray[i].pos.x+buttonArray[i].size.xsize/2-font:getWidth(buttonArray[i].textData.text)*1.5-5+buttonArray[i].textData.textx, buttonArray[i].pos.y+buttonArray[i].size.ysize/2-20+buttonArray[i].textData.texty, 0, buttonArray[i].textData.size, buttonArray[i].textData.size)
 				end
 
 			end
@@ -168,13 +171,13 @@ function drawButton()
 				love.graphics.setFont(runeFont)
 
 				if selectedButton == i then 
-					drawRune(buttonArray[i].pos.x,buttonArray[i].pos.y,buttonArray[i].buttonType.runeNum,"glowing",buttonArray[i].buttonType.r,buttonArray[i].buttonType.b,buttonArray[i].buttonType.g,1)
+					drawRune(buttonArray[i].pos.x-50,buttonArray[i].pos.y+50,buttonArray[i].buttonType.runeNum,"glowing",buttonArray[i].buttonType.r,buttonArray[i].buttonType.b,buttonArray[i].buttonType.g,buttonArray[i].buttonType.size)
 				else
-					drawRune(buttonArray[i].pos.x,buttonArray[i].pos.y,buttonArray[i].buttonType.runeNum,"inactive",buttonArray[i].buttonType.r,buttonArray[i].buttonType.b,buttonArray[i].buttonType.g,1)
+					drawRune(buttonArray[i].pos.x-50,buttonArray[i].pos.y+50,buttonArray[i].buttonType.runeNum,"inactive",buttonArray[i].buttonType.r,buttonArray[i].buttonType.b,buttonArray[i].buttonType.g,buttonArray[i].buttonType.size)
 				end
 
 				love.graphics.setColor(0, 0, 0)				
-				love.graphics.print(buttonArray[i].textData.text,buttonArray[i].pos.x + 100,buttonArray[i].pos.y+5, 0, 3, 3)
+				love.graphics.print(buttonArray[i].textData.text,buttonArray[i].pos.x + 100,buttonArray[i].pos.y+5, 0, buttonArray[i].textData.size, buttonArray[i].textData.size)
 
 			end
 
@@ -258,7 +261,7 @@ function love.keypressed(key)
 end
 
 function drawMenuBackgrounds() --Image or colour
-
+	
 	if menuPage ~= "gameMenu1" then
 		for i=1,#backgrounds do
 			for j=1,#backgrounds[i][1] do
@@ -269,7 +272,7 @@ function drawMenuBackgrounds() --Image or colour
 						background = love.graphics.newImage(backgrounds[i][3])
 						background:setFilter("linear","linear")
 						love.graphics.setColor(255,255,255)
-						love.graphics.draw(background, 0, 0, 0, love.graphics.getWidth()/background:getWidth(), love.graphics.getHeight()/background:getHeight())
+						love.graphics.draw(background, 0, 0, 0, love.graphics.getWidth()/background:getWidth()/uiscale, love.graphics.getHeight()/background:getHeight()/uiscale)
 					end
 				end
 			end

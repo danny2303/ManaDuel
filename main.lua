@@ -36,10 +36,10 @@ function love.load()
 
 	--main menu (0)
 
-	lslui.addButton({pos  = {x = 170,y = 180},size = {xsize = 240,ysize = 60}, textData = {text = "Play"},page = 0,action = "run",joystickActions = {up = 8,down = 6,autoButtonSelect = 2},buttonType = {name = "rune", r= 255, b=0, g=0, runeNum = 1}}) --5
-	lslui.addButton({pos  = {x = 170,y = 290},size = {xsize = 240,ysize = 60}, textData = {text = "Options"},page = 0,action = 1,joystickActions = {up = 5,down = 7,autoButtonSelect = 11},buttonType = {name = "rune", r= 0, b=255, g=0, runeNum = 2}}) --6
-	lslui.addButton({pos  = {x = 170,y = 400},size = {xsize = 240,ysize = 60}, textData = {text = "Spellbook"},page = 0,action = 2,joystickActions = {up = 6,down = 8,autoButtonSelect = 12},buttonType = {name = "rune", r= 255, b=255, g=0, runeNum = 3}}) --7
-	lslui.addButton({pos  = {x = 170,y = 510},size = {xsize = 240,ysize = 60}, textData = {text = "Exit"},page = 0,action = "exit",joystickActions = {up = 7,down =5 ,autoButtonSelect = 5},buttonType = {name = "rune", r= 0, b=255, g=255, runeNum = 4}}) --8
+	lslui.addButton({pos  = {x = 170,y = 100},size = {xsize = 240,ysize = 60}, textData = {text = "Fight"},page = 0,action = "run",joystickActions = {up = 8,down = 6,autoButtonSelect = 2},buttonType = {name = "rune", r= 255, b=0, g=0, runeNum = 1,size = 2}}) --5
+	lslui.addButton({pos  = {x = 170,y = 270},size = {xsize = 240,ysize = 60}, textData = {text = "Options"},page = 0,action = 1,joystickActions = {up = 5,down = 7,autoButtonSelect = 11},buttonType = {name = "rune", r= 0, b=255, g=0, runeNum = 2,size = 2}}) --6
+	lslui.addButton({pos  = {x = 170,y = 440},size = {xsize = 240,ysize = 60}, textData = {text = "Spellbook"},page = 0,action = 2,joystickActions = {up = 6,down = 8,autoButtonSelect = 12},buttonType = {name = "rune", r= 0, b=0, g=255, runeNum = 3,size = 2}}) --7
+	lslui.addButton({pos  = {x = 170,y = 610},size = {xsize = 240,ysize = 60}, textData = {text = "Exit"},page = 0,action = "exit",joystickActions = {up = 7,down =5 ,autoButtonSelect = 5},buttonType = {name = "rune", r= 30, b=30, g=30, runeNum = 4,size = 2}}) --8
 
 	--options menu (1)
 
@@ -60,7 +60,7 @@ function love.update(dt)
 
 	--lslui.moveButton(love.mouse.getX(),love.mouse.getY(),5) --test code
 
-	uiscale = love.graphics.getWidth()/1200
+	uiscale = love.graphics.getWidth()/1920
 
 	input.update()
 
@@ -81,6 +81,8 @@ end
 
 function love.draw()
 
+	love.graphics.push()
+	love.graphics.scale(uiscale)
 
 	if(inGame == true)then
 		love.graphics.push()
@@ -147,6 +149,8 @@ function love.draw()
 	for i = 1,10 do
 	--	drawRune(math.random(0,1800),math.random(0,1000),math.random(1,8),"glowing",math.random(0,255),math.random(0,255),math.random(0,255))
 	end
+
+	love.graphics.pop()
 
 	--debugging tools
 
