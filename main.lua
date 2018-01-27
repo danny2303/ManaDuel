@@ -50,10 +50,12 @@ function love.load()
 
 	--spellbook back (2)
 
-	lslui.addButton({pos  = {x = 50,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Back",textx = 3,texty = -5},page = 2,action = 0,joystickActions = {autoButtonSelect = 7}}) --12
+	lslui.addButton({pos  = {x = 50,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Back",textx = 3,texty = -5},page = 2,action = 0,joystickActions = {up=16,right=16,autoButtonSelect = 7}}) --12
 
 	lslui.setMenuBackground({page = {0,1},image = "images/ui/ancientWall.png"})
 	lslui.setMenuBackground({page = {2},image = "images/ui/spellbook.png"})
+
+	lslui.loadSpellbookButtons()
 
 end
 

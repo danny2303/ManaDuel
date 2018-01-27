@@ -5,9 +5,15 @@ local utf8 = require("utf8")
 
 function lslui.load()
 
+	spellbookScroll = 0
+	spellbookScrollDir = 0 
+
+	menuScrollSpeed = 0.1
+
 	prevXDown = false
 
 	runeFont = love.graphics.newFont("images/ui/runeFont.ttf", 36)
+	runeFontSmall = love.graphics.newFont("images/ui/runeFont.ttf", 18)
 
 	buttonScrollBuffer = 0
 
@@ -29,10 +35,12 @@ function lslui.load()
 
 	selectedButton = 5
 
+	numMenuButtons=0
+
 	inactiveRunes = love.graphics.newImage("images/ui/inactiveRunes.png")
 	glowingRunes = love.graphics.newImage("images/ui/glowingRunes.png")
 	button = love.graphics.newImage("images/ui/button.png")
-
+	longButton = love.graphics.newImage("images/ui/longButton.png")
 
 end
 
@@ -108,12 +116,16 @@ function lslui.changeButton(args,buttonNumber)
 
 	if not(args.color) then args.color = {r=255,g=255,b=255} end
 
-	if not(args.joystickActions.up) then args.joystickActions.up = #buttonArray+1 end
-	if not(args.joystickActions.down) then args.joystickActions.down = #buttonArray+1 end
-	if not(args.joystickActions.left) then args.joystickActions.left = #buttonArray+1 end
-	if not(args.joystickActions.right) then args.joystickActions.right = #buttonArray+1 end
+	if not(args.textData.size) then args.textData.size = 3 end	
 
-	if not(args.joystickActions.autoButtonSelect) then args.joystickActions.autoButtonSelect = #buttonArray+1 end
+	if not(args.joystickActions.up) then args.joystickActions.up = buttonNumber end
+	if not(args.joystickActions.down) then args.joystickActions.down = buttonNumber end
+	if not(args.joystickActions.left) then args.joystickActions.left = buttonNumber end
+	if not(args.joystickActions.right) then args.joystickActions.right = buttonNumber end
+
+	if not(args.joystickActions.autoButtonSelect) then args.joystickActions.autoButtonSelect = buttonNumber end
+
+	if not(args.buttonType) then args.buttonType = {name = "button"} end
 	
 	if action == "inputText" then
 		buttonArray[buttonNumber]=args
@@ -125,8 +137,8 @@ end
 
 function lslui.moveButton(x,y,buttonNumber)
 
-	buttonArray[buttonNumber][1] = x
-	buttonArray[buttonNumber][2] = y
+	buttonArray[buttonNumber].pos.x = x
+	buttonArray[buttonNumber].pos.y = y
 
 end
 
@@ -272,7 +284,7 @@ function drawMenuBackgrounds() --Image or colour
 						background = love.graphics.newImage(backgrounds[i][3])
 						background:setFilter("linear","linear")
 						love.graphics.setColor(255,255,255)
-						love.graphics.draw(background, 10, 10, 0, love.graphics.getWidth()/background:getWidth()/uiscale, love.graphics.getHeight()/background:getHeight()/uiscale)
+						love.graphics.draw(background, 0, 0, 0, love.graphics.getWidth()/background:getWidth()/uiscale, love.graphics.getHeight()/background:getHeight()/uiscale)
 					end
 				end
 			end
@@ -328,6 +340,8 @@ end
 
 function lslui.update()
 
+	if menuPage == 2 then menuScrollSpeed = 1 else menuScrollSpeed  = 0.1 end
+
 	mouseX, mouseY = love.mouse.getPosition()
 	if takeMouseInputsForUI then mousepressed() end
 	if inGame == false then checkForJoystickMovement() end
@@ -338,6 +352,14 @@ function lslui.update()
 	elseif menuPage == 0 then
 		inGame = false
 		inGameMenuOpen = false
+	end
+
+	if generatedSpellbookButtons then
+		for i=numMenuButtons+1,numMenuButtons+#allCastableSpells do
+			lslui.moveButton(1150,(i-numMenuButtons)*100+50+(spellbookScroll),i)
+		end
+		lslui.changeButton({pos  = {x = 50,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Back",textx = 3,texty = -5},page = 2,action = 0,joystickActions = {up=16-(spellbookScroll/100),right=16-(spellbookScroll/100),autoButtonSelect = 7}},12)
+		if menuPage == 2 and not(selectedButton==12) then selectedButton = 16-(spellbookScroll/100) end
 	end
 
 end
@@ -353,27 +375,35 @@ end
 
 function checkForJoystickMovement()
 
+	print(spellbookScroll)
+
 	if buttonScrollBuffer <= 0 then
 
 		if inputs[1].ballyl < 0 then
 		   selectedButton = buttonArray[selectedButton].joystickActions.up
 		   buttonScrollBuffer = 2
+		   	if menuPage == 2 and not(selectedButton==12) and spellbookScroll < 300 then
+				spellbookScroll = spellbookScroll + 100
+		   	end
 		end
 
 		if inputs[1].ballyl > 0 then
 			selectedButton = buttonArray[selectedButton].joystickActions.down
 			buttonScrollBuffer = 2
+			if menuPage == 2 and not(selectedButton==12) and spellbookScroll > -(#allCastableSpells-4)*100 then
+				spellbookScroll = spellbookScroll - 100
+		   	end
 		end
 
-		if inputs[1].ballxl < 0 then
-			selectedButton = buttonArray[selectedButton].joystickActions.left
-			buttonScrollBuffer = 2
-		end
+			if inputs[1].ballxl < 0 then
+				selectedButton = buttonArray[selectedButton].joystickActions.left
+				buttonScrollBuffer = 2
+			end
 
-		if inputs[1].ballxl > 0 then
-		    selectedButton = buttonArray[selectedButton].joystickActions.right
-		   buttonScrollBuffer = 2
-		end
+			if inputs[1].ballxl > 0 then
+			    selectedButton = buttonArray[selectedButton].joystickActions.right
+			   buttonScrollBuffer = 2
+			end
 
 	end
 
@@ -390,7 +420,7 @@ function checkForJoystickMovement()
 		prevXDown = false 
 	end
 
-	buttonScrollBuffer = buttonScrollBuffer - 0.1
+	buttonScrollBuffer = buttonScrollBuffer - menuScrollSpeed
 
 end
 
@@ -418,7 +448,38 @@ end
 
 function drawScrollingSpellbook()
 
+	for i=1,#buttonArray do
+		if buttonArray[i].page == menuPage then
 
+			if buttonArray[i].buttonType.name == "spell" then
+
+				if selectedButton == i then
+					love.graphics.setColor(100,100,100)
+			    else
+			    	love.graphics.setColor(255,255,255)
+			    end
+
+			    love.graphics.draw(longButton, buttonArray[i].pos.x, buttonArray[i].pos.y)
+
+			    love.graphics.setFont(runeFontSmall)
+				love.graphics.setColor(0, 0, 0)
+				love.graphics.print(buttonArray[i].textData.text, buttonArray[i].pos.x+50, buttonArray[i].pos.y+10, 0, buttonArray[i].textData.size, buttonArray[i].textData.size)
+
+			end
+		end
+	end
+
+end
+
+function lslui.loadSpellbookButtons()
+
+	numMenuButtons = #buttonArray
+
+	for i=1,#allCastableSpells do
+		lslui.addButton({pos  = {x = 1150,y = i*100+50},size = {xsize = 360,ysize = 100}, textData = {text = allCastableSpells[i][3],textx = 0,texty = 0},page = 2,action = "doNothing",joystickActions = {up = #buttonArray,down = #buttonArray+2,left = 12,right = #buttonArray+1,autoButtonSelect = #buttonArray+1},buttonType={name="spell"}})
+	end
+
+	generatedSpellbookButtons = true
 
 end
 

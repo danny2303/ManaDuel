@@ -22,6 +22,12 @@ function spell.load()
 	--speed = pixels/second
 	--rotationSpeed = radians/tick/10
 
+
+	--{indexInThisArray,arrayItIsIn,indexInThatArray}
+	allCastableSpells = {{1,"proj","fireball"},{2,"proj","timeStop"},{3,"proj","wisp"},{4,"proj","orbitingSheild"},{5,"proj","poisonOrb"},
+						{6,"proj","whirlwind"},{7,"multi","dragonsBreath"},{8,"multi","heal"},{8,"multi","test"},{9,"multi","test"},{10,"multi","test"},
+						{11,"multi","test"},{12,"multi","test"},{13,"multi","test"},{14,"multi","test"}}
+
 	projectilesIndex = {fireball = {layer = "front", lifetime = 40, rotationSpeed = 1,image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
 						timeStop = {width = 0.5, height = 0.5, projectileSpeed = 0, mana = 100, scale= 0.1, collisionMode = "barrier", loadCall = "stopTime", updateCall = "updateTimeStop"},
 						wisp = {layer = "front",lifetime  = 40, image = fireballImage, width = 0.4, height = 0.5, projectileSpeed = 1, damage = 5, mana = 5, scale= 0.1, collisionMode = "wisp",isOffence = true, effect = "paralyzed",effectDuration = 15},
