@@ -261,7 +261,7 @@ function love.keypressed(key)
 end
 
 function drawMenuBackgrounds() --Image or colour
-	
+
 	if menuPage ~= "gameMenu1" then
 		for i=1,#backgrounds do
 			for j=1,#backgrounds[i][1] do
@@ -272,7 +272,7 @@ function drawMenuBackgrounds() --Image or colour
 						background = love.graphics.newImage(backgrounds[i][3])
 						background:setFilter("linear","linear")
 						love.graphics.setColor(255,255,255)
-						love.graphics.draw(background, 0, 0, 0, love.graphics.getWidth()/background:getWidth()/uiscale, love.graphics.getHeight()/background:getHeight()/uiscale)
+						love.graphics.draw(background, 10, 10, 0, love.graphics.getWidth()/background:getWidth()/uiscale, love.graphics.getHeight()/background:getHeight()/uiscale)
 					end
 				end
 			end
@@ -344,6 +344,7 @@ end
 
 function lslui.draw()
 
+	drawScrollingSpellbook()
 	drawMenuBackgrounds()
 	drawButton()
 	drawInputText()
@@ -412,6 +413,12 @@ function manageClick(buttonID)
 
 	click:play()	
 	selectedButton = buttonArray[selectedButton].joystickActions.autoButtonSelect
+
+end
+
+function drawScrollingSpellbook()
+
+
 
 end
 
