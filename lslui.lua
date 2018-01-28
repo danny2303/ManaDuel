@@ -13,7 +13,7 @@ function lslui.load()
 	prevXDown = false
 
 	runeFont = love.graphics.newFont("images/ui/runeFont.ttf", 36)
-	runeFontSmall = love.graphics.newFont("images/ui/runeFont.ttf", 18)
+	writingFont = love.graphics.newFont("images/ui/bookWriting.ttf", 36)
 
 	buttonScrollBuffer = 0
 
@@ -41,6 +41,7 @@ function lslui.load()
 	glowingRunes = love.graphics.newImage("images/ui/glowingRunes.png")
 	button = love.graphics.newImage("images/ui/button.png")
 	longButton = love.graphics.newImage("images/ui/longButton.png")
+	selectedLongButton = love.graphics.newImage("images/ui/selectedLongButton.png")
 
 end
 
@@ -340,7 +341,7 @@ end
 
 function lslui.update()
 
-	if menuPage == 2 then menuScrollSpeed = 1 else menuScrollSpeed  = 0.1 end
+	if menuPage == 2 then menuScrollSpeed = 2 else menuScrollSpeed  = 0.1 end
 
 	mouseX, mouseY = love.mouse.getPosition()
 	if takeMouseInputsForUI then mousepressed() end
@@ -356,10 +357,10 @@ function lslui.update()
 
 	if generatedSpellbookButtons then
 		for i=numMenuButtons+1,numMenuButtons+#allCastableSpells do
-			lslui.moveButton(1150,(i-numMenuButtons)*100+50+(spellbookScroll),i)
+			lslui.moveButton(1140,(i-numMenuButtons)*100+50+(spellbookScroll),i)
 		end
-		lslui.changeButton({pos  = {x = 50,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Back",textx = 3,texty = -5},page = 2,action = 0,joystickActions = {up=16-(spellbookScroll/100),right=16-(spellbookScroll/100),autoButtonSelect = 7}},12)
-		if menuPage == 2 and not(selectedButton==12) then selectedButton = 16-(spellbookScroll/100) end
+		lslui.changeButton({pos  = {x = 50,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Back",textx = 3,texty = -5},page = 2,action = 0,joystickActions = {up=16-(round(spellbookScroll/100,0)),right=16-(round(spellbookScroll/100,0)),autoButtonSelect = 7}},12)
+		if menuPage == 2 and not(selectedButton==12) then selectedButton = 16-(round(spellbookScroll/100,0)) end
 	end
 
 end
@@ -375,23 +376,21 @@ end
 
 function checkForJoystickMovement()
 
-	print(spellbookScroll)
-
 	if buttonScrollBuffer <= 0 then
 
 		if inputs[1].ballyl < 0 then
 		   selectedButton = buttonArray[selectedButton].joystickActions.up
 		   buttonScrollBuffer = 2
-		   	if menuPage == 2 and not(selectedButton==12) and spellbookScroll < 300 then
-				spellbookScroll = spellbookScroll + 100
+		   	if menuPage == 2 and not(selectedButton==12) and spellbookScroll < 0 then
+				spellbookScroll = spellbookScroll + 10
 		   	end
 		end
 
 		if inputs[1].ballyl > 0 then
 			selectedButton = buttonArray[selectedButton].joystickActions.down
 			buttonScrollBuffer = 2
-			if menuPage == 2 and not(selectedButton==12) and spellbookScroll > -(#allCastableSpells-4)*100 then
-				spellbookScroll = spellbookScroll - 100
+			if menuPage == 2 and not(selectedButton==12) and spellbookScroll > -(#allCastableSpells-8)*100 then
+				spellbookScroll = spellbookScroll - 10
 		   	end
 		end
 
@@ -453,17 +452,19 @@ function drawScrollingSpellbook()
 
 			if buttonArray[i].buttonType.name == "spell" then
 
+				love.graphics.setColor(255,255,255)
+
 				if selectedButton == i then
-					love.graphics.setColor(100,100,100)
+			    	love.graphics.draw(selectedLongButton, buttonArray[i].pos.x+2, buttonArray[i].pos.y-1)
 			    else
-			    	love.graphics.setColor(255,255,255)
+			    	
+			    	love.graphics.draw(longButton, buttonArray[i].pos.x+2, buttonArray[i].pos.y-1)
 			    end
 
-			    love.graphics.draw(longButton, buttonArray[i].pos.x, buttonArray[i].pos.y)
 
-			    love.graphics.setFont(runeFontSmall)
+			    love.graphics.setFont(writingFont)
 				love.graphics.setColor(0, 0, 0)
-				love.graphics.print(buttonArray[i].textData.text, buttonArray[i].pos.x+50, buttonArray[i].pos.y+10, 0, buttonArray[i].textData.size, buttonArray[i].textData.size)
+				love.graphics.print(buttonArray[i].textData.text, buttonArray[i].pos.x+50, buttonArray[i].pos.y-25, 0, buttonArray[i].textData.size, buttonArray[i].textData.size)
 
 			end
 		end
@@ -476,11 +477,16 @@ function lslui.loadSpellbookButtons()
 	numMenuButtons = #buttonArray
 
 	for i=1,#allCastableSpells do
-		lslui.addButton({pos  = {x = 1150,y = i*100+50},size = {xsize = 360,ysize = 100}, textData = {text = allCastableSpells[i][3],textx = 0,texty = 0},page = 2,action = "doNothing",joystickActions = {up = #buttonArray,down = #buttonArray+2,left = 12,right = #buttonArray+1,autoButtonSelect = #buttonArray+1},buttonType={name="spell"}})
+		lslui.addButton({pos  = {x = 1,y = 1},size = {xsize = 360,ysize = 100}, textData = {text = allCastableSpells[i][3],textx = 0,texty = 0},page = 2,action = "doNothing",joystickActions = {left = 12,autoButtonSelect = #buttonArray+1},buttonType={name="spell"}})
 	end
 
 	generatedSpellbookButtons = true
 
+end
+
+function round(num, numDecimalPlaces)
+  local mult = 10^(numDecimalPlaces or 0)
+  return math.floor(num * mult + 0.5) / mult
 end
 
 return lslui
