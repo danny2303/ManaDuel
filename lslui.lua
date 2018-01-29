@@ -42,6 +42,8 @@ function lslui.load()
 	button = love.graphics.newImage("images/ui/button.png")
 	longButton = love.graphics.newImage("images/ui/longButton.png")
 	selectedLongButton = love.graphics.newImage("images/ui/selectedLongButton.png")
+	scrollingBackground = love.graphics.newImage("images/ui/scrollingPageBackdrop.png")
+	scrollingBackground:setFilter("nearest","linear")
 
 end
 
@@ -447,23 +449,26 @@ end
 
 function drawScrollingSpellbook()
 
+	love.graphics.setColor(255,255,255)
+	love.graphics.draw(scrollingBackground,1140,100,0,2,1.5)
+
 	for i=1,#buttonArray do
 		if buttonArray[i].page == menuPage then
 
 			if buttonArray[i].buttonType.name == "spell" then
 
-				love.graphics.setColor(255,255,255)
 
 				if selectedButton == i then
-			    	love.graphics.draw(selectedLongButton, buttonArray[i].pos.x+2, buttonArray[i].pos.y-1)
+				love.graphics.setColor(100,100,100)			
+			    --	love.graphics.draw(selectedLongButton, buttonArray[i].pos.x+2, buttonArray[i].pos.y-1)
 			    else
-			    	
-			    	love.graphics.draw(longButton, buttonArray[i].pos.x+2, buttonArray[i].pos.y-1)
+			    	love.graphics.setColor(0,0,0)
+			    	--love.graphics.draw(longButton, buttonArray[i].pos.x+2, buttonArray[i].pos.y-1)
 			    end
 
 
 			    love.graphics.setFont(writingFont)
-				love.graphics.setColor(0, 0, 0)
+				--love.graphics.setColor(0, 0, 0)
 				love.graphics.print(buttonArray[i].textData.text, buttonArray[i].pos.x+50, buttonArray[i].pos.y-25, 0, buttonArray[i].textData.size, buttonArray[i].textData.size)
 
 			end
