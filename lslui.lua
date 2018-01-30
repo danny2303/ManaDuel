@@ -512,7 +512,7 @@ function drawScrollingSpellbook()
 	end
 
 end
-
+--
 function lslui.loadSpellbookButtons()
 
 	numMenuButtons = #buttonArray
