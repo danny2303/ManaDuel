@@ -24,9 +24,9 @@ function spell.load()
 
 
 	--{indexInThisArray,arrayItIsIn,indexInThatArray}
-	allCastableSpells = {{1,"proj","fireball"},{2,"proj","timeStop"},{3,"proj","wisp"},{4,"proj","orbitingSheild"},{5,"proj","poisonOrb"},
-						{6,"proj","whirlwind"},{7,"multi","dragonsBreath"},{8,"multi","heal"},{8,"multi","test"},{9,"multi","test"},{10,"multi","test"},
-						{11,"multi","test"},{12,"multi","test"},{13,"multi","test"},{14,"multi","test"}}
+	allCastableSpells = {{1,"proj","fireball","Fireball","A firey inferno!"},{2,"proj","timeStop","Time Freeze","Stops time itself for a short while."},{3,"proj","wisp","Wisp","A cheap but light projectile."},{4,"proj","orbitingSheild","Sheild","A sheild to guard you in battle!"},{5,"proj","poisonOrb","Poison Orb","A pure orb of deadly poison!"},
+						{6,"proj","whirlwind","Tornado",""},{7,"multi","dragonsBreath","Dragon's Breath",""},{8,"multi","heal","Heal",""},{9,"multi","heal","Heal",""},{10,"multi","heal","Heal",""},{11,"multi","heal","Heal",""}
+						,{12,"multi","heal","Heal",""},{13,"multi","heal","Heal",""},{14,"multi","heal","Heal",""},{15,"multi","heal","Heal",""},{16,"multi","heal","Heal",""},{17,"multi","heal","Heal",""}}
 
 	projectilesIndex = {fireball = {layer = "front", lifetime = 40, rotationSpeed = 1,image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
 						timeStop = {width = 0.5, height = 0.5, projectileSpeed = 0, mana = 100, scale= 0.1, collisionMode = "barrier", loadCall = "stopTime", updateCall = "updateTimeStop"},

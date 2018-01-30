@@ -48,6 +48,8 @@ function lslui.load()
 	selectedLongButton = love.graphics.newImage("images/ui/selectedLongButton.png")
 	scrollingBackground = love.graphics.newImage("images/ui/scrollingPageBackdrop.png")
 	scrollingBackground:setFilter("nearest","linear")
+	woodenSign = love.graphics.newImage("images/ui/woodenSign.png")
+	woodenSign:setFilter("nearest","linear")
 
 end
 
@@ -385,6 +387,7 @@ function lslui.draw()
 	drawMenuBackgrounds()
 	drawButton()
 	drawInputText()
+	if menuPage == 2 then drawSpellbook() end
 
 end
 
@@ -515,7 +518,7 @@ function lslui.loadSpellbookButtons()
 	numMenuButtons = #buttonArray
 
 	for i=1,#allCastableSpells do
-		lslui.addButton({pos  = {x = 1,y = 1},size = {xsize = 360,ysize = 100}, textData = {text = allCastableSpells[i][3],textx = 0,texty = 0},page = 2,action = "equipSpell",joystickActions = {left = 12,autoButtonSelect = #buttonArray+1},buttonType={name="spell",spellID = allCastableSpells[i]}})
+		lslui.addButton({pos  = {x = 1,y = 1},size = {xsize = 360,ysize = 100}, textData = {text = allCastableSpells[i][4],textx = 0,texty = 0},page = 2,action = "equipSpell",joystickActions = {left = 12,autoButtonSelect = #buttonArray+1},buttonType={name="spell",spellID = allCastableSpells[i]}})
 	end
 
 	generatedSpellbookButtons = true
@@ -525,6 +528,17 @@ end
 function round(num, numDecimalPlaces)
   local mult = 10^(numDecimalPlaces or 0)
   return math.floor(num * mult + 0.5) / mult
+end
+
+function drawSpellbook()
+
+	love.graphics.setColor(50,50,50)
+	love.graphics.setFont(writingFont)
+
+	 if not(selectedButton == 12) then 
+	 	love.graphics.print(buttonArray[selectedButton].textData.text..":\n"..buttonArray[selectedButton].buttonType.spellID[5],200,200,0,2,2)
+	 end
+
 end
 
 return lslui
