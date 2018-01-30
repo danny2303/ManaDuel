@@ -31,9 +31,9 @@ function love.load()
 
 	--pause menu (gameMenu1)
 
-	lslui.addButton({pos  = {x = love.graphics.getWidth()/2-160,y = love.graphics.getHeight()/2-230},size = {xsize = 220,ysize = 60}, textData = {text = "Resume",textx = 5,texty = 0},page = "gameMenu1",action = "run",joystickActions = {up = 2,down = 2,autoButtonSelect = 5}}) --2
-	lslui.addButton({pos  = {x = love.graphics.getWidth()/2-190,y = love.graphics.getHeight()/2-30},size = {xsize = 280,ysize = 60}, textData = {text = "Back to menu",textx = 5,texty = 0},page = "gameMenu1",action = 0,joystickActions = {up = 3,down = 3,autoButtonSelect = 5}}) --3
-	lslui.addButton({pos  = {x = love.graphics.getWidth()/2-160,y = love.graphics.getHeight()/2+170},size = {xsize = 220,ysize = 60}, textData = {text = "Exit",textx = 0,texty = 0},page = "gameMenu1",action = "exit",joystickActions = {up = 4,down = 4,left = 4,right = 4,autoButtonSelect = 5}}) -- 4
+	lslui.addButton({pos  = {x = love.graphics.getWidth()/2-160,y = love.graphics.getHeight()/2-230},size = {xsize = 220,ysize = 60}, textData = {text = "Resume",textx = 5,texty = 0},page = "gameMenu1",action = "run",joystickActions = {up = 2,down = 3,autoButtonSelect = 5}}) --2
+	lslui.addButton({pos  = {x = love.graphics.getWidth()/2-190,y = love.graphics.getHeight()/2-30},size = {xsize = 280,ysize = 60}, textData = {text = "Back to menu",textx = 5,texty = 0},page = "gameMenu1",action = 0,joystickActions = {up = 2,down = 4,autoButtonSelect = 5}}) --3
+	lslui.addButton({pos  = {x = love.graphics.getWidth()/2-160,y = love.graphics.getHeight()/2+170},size = {xsize = 220,ysize = 60}, textData = {text = "Exit",textx = 0,texty = 0},page = "gameMenu1",action = "exit",joystickActions = {up = 3,down = 4,autoButtonSelect = 5}}) -- 4
 
 	--main menu (0)
 

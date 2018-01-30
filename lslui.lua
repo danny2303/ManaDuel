@@ -10,6 +10,10 @@ function lslui.load()
 
 	menuScrollSpeed = 0.1
 
+	spellbookMenuScrollSpeed = 0.3
+	defaultMenuScrollSpeed = 0.1
+	scrollLocked = false
+
 	prevXDown = false
 
 	runeFont = love.graphics.newFont("images/ui/runeFont.ttf", 36)
@@ -62,16 +66,18 @@ end
 
 function lslui.inGameMenu(key,inGameMenuPage)
 
+	pauseKey = 9
+
 	if inGame == true then
-		if sticks[1]:isDown(8) == true or sticks[2]:isDown(8) == true then
-			if canOpenMenu == true then
+		if sticks[1]:isDown(pauseKey) or sticks[2]:isDown(pauseKey) then
+			if canOpenMenu then
 				inGameMenuOpen = not inGameMenuOpen
 				canOpenMenu = false
 			end
-		elseif sticks[1]:isDown(8) == false and sticks[2]:isDown(8) == false then
+		elseif sticks[1]:isDown(pauseKey) == false and sticks[2]:isDown(pauseKey) == false then
 			canOpenMenu = true
 		end
-		if inGameMenuOpen == true then
+		if inGameMenuOpen then
 			menuPage = inGameMenuPage
 		elseif inGameMenuOpen == false then
 			menuPage = runPage
@@ -343,11 +349,11 @@ end
 
 function lslui.update()
 
-	if menuPage == 2 then menuScrollSpeed = 2 else menuScrollSpeed  = 0.1 end
+	if menuPage == 2 then menuScrollSpeed = spellbookMenuScrollSpeed else menuScrollSpeed  = defaultMenuScrollSpeed end
 
 	mouseX, mouseY = love.mouse.getPosition()
 	if takeMouseInputsForUI then mousepressed() end
-	if inGame == false then checkForJoystickMovement() end
+	checkForJoystickMovement()
 
 	if menuPage == runPage then
 		inGame = true
@@ -357,19 +363,25 @@ function lslui.update()
 		inGameMenuOpen = false
 	end
 
+
 	if generatedSpellbookButtons then
+		if (spellbookScroll >= 0) or (spellbookScroll <= -(#allCastableSpells-8)*100) or selectedButton ~=  16-(round(spellbookScroll/100,0)) then
+			scrollLocked = true
+		else
+			scrollLocked = false
+		end
 		for i=numMenuButtons+1,numMenuButtons+#allCastableSpells do
 			lslui.moveButton(1140,(i-numMenuButtons)*100+50+(spellbookScroll),i)
 		end
 		lslui.changeButton({pos  = {x = 50,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Back",textx = 3,texty = -5},page = 2,action = 0,joystickActions = {up=16-(round(spellbookScroll/100,0)),right=16-(round(spellbookScroll/100,0)),autoButtonSelect = 7}},12)
-		if menuPage == 2 and not(selectedButton==12) then selectedButton = 16-(round(spellbookScroll/100,0)) end
+		if menuPage == 2 and not(selectedButton==12) and not (scrollLocked) then selectedButton = 16-(round(spellbookScroll/100,0)) end
 	end
 
 end
 
 function lslui.draw()
 
-	drawScrollingSpellbook()
+	if menuPage == 2 then drawScrollingSpellbook() end
 	drawMenuBackgrounds()
 	drawButton()
 	drawInputText()
@@ -378,21 +390,24 @@ end
 
 function checkForJoystickMovement()
 
+	if inputs[1].ballyl < 0 and menuPage == 2 and not(selectedButton==12) and spellbookScroll < 0 then spellbookScroll = spellbookScroll + 7 end
+	if inputs[1].ballyl > 0 and menuPage == 2 and not(selectedButton==12) and spellbookScroll > -(#allCastableSpells-8)*100 then spellbookScroll = spellbookScroll - 7 end
+
 	if buttonScrollBuffer <= 0 then
 
 		if inputs[1].ballyl < 0 then
 		   selectedButton = buttonArray[selectedButton].joystickActions.up
 		   buttonScrollBuffer = 2
-		   	if menuPage == 2 and not(selectedButton==12) and spellbookScroll < 0 then
-				spellbookScroll = spellbookScroll + 10
+		   	if menuPage == 2 and scrollLocked and not (selectedButton == numMenuButtons+1) then
+		   		selectedButton = selectedButton - 1
 		   	end
 		end
 
 		if inputs[1].ballyl > 0 then
 			selectedButton = buttonArray[selectedButton].joystickActions.down
 			buttonScrollBuffer = 2
-			if menuPage == 2 and not(selectedButton==12) and spellbookScroll > -(#allCastableSpells-8)*100 then
-				spellbookScroll = spellbookScroll - 10
+		   	if menuPage == 2 and scrollLocked and not (selectedButton == numMenuButtons+#allCastableSpells) then
+		   		selectedButton = selectedButton + 1
 		   	end
 		end
 
@@ -408,19 +423,37 @@ function checkForJoystickMovement()
 
 	end
 
+	--equip spells
 
-	if sticks[1]:isDown(1) and prevXDown == false then
-		manageClick(selectedButton)
+	if inGame == false or inGameMenuOpen then
+
+		if sticks[1]:isDown(1) == true and buttonArray[selectedButton].action == "equipSpell" then spellbooks[1].s1 = buttonArray[selectedButton].buttonType.spellID[3]
+		elseif sticks[1]:isDown(2) == true and buttonArray[selectedButton].action == "equipSpell" then spellbooks[1].s2 = buttonArray[selectedButton].buttonType.spellID[3]
+		elseif sticks[1]:isDown(3) == true and buttonArray[selectedButton].action == "equipSpell" then spellbooks[1].s3 = buttonArray[selectedButton].buttonType.spellID[3]
+		elseif sticks[1]:isDown(4) == true and buttonArray[selectedButton].action == "equipSpell" then spellbooks[1].s4 = buttonArray[selectedButton].buttonType.spellID[3]
+		elseif sticks[1]:isDown(5) == true and buttonArray[selectedButton].action == "equipSpell" then spellbooks[1].l1 = buttonArray[selectedButton].buttonType.spellID[3]
+		elseif sticks[1]:isDown(6) == true and buttonArray[selectedButton].action == "equipSpell" then spellbooks[1].l2 = buttonArray[selectedButton].buttonType.spellID[3]
+		elseif sticks[1]:isDown(7) == true and buttonArray[selectedButton].action == "equipSpell" then spellbooks[1].r1 = buttonArray[selectedButton].buttonType.spellID[3]
+		elseif sticks[1]:isDown(8) == true and buttonArray[selectedButton].action == "equipSpell" then spellbooks[1].r2 = buttonArray[selectedButton].buttonType.spellID[3] 
+		else
+
+			if sticks[1]:isDown(1) and prevXDown == false then
+				manageClick(selectedButton)
+			end
+
+			if sticks[1]:isDown(1) then  
+				prevXDown = true
+			end	
+
+			if sticks[1]:isDown(1) == false then 
+				prevXDown = false 
+			end
+
+		end
+
 	end
 
-	if sticks[1]:isDown(1) then  
-		prevXDown = true
-	end	
-
-	if sticks[1]:isDown(1) == false then 
-		prevXDown = false 
-	end
-
+	
 	buttonScrollBuffer = buttonScrollBuffer - menuScrollSpeed
 
 end
@@ -482,7 +515,7 @@ function lslui.loadSpellbookButtons()
 	numMenuButtons = #buttonArray
 
 	for i=1,#allCastableSpells do
-		lslui.addButton({pos  = {x = 1,y = 1},size = {xsize = 360,ysize = 100}, textData = {text = allCastableSpells[i][3],textx = 0,texty = 0},page = 2,action = "doNothing",joystickActions = {left = 12,autoButtonSelect = #buttonArray+1},buttonType={name="spell"}})
+		lslui.addButton({pos  = {x = 1,y = 1},size = {xsize = 360,ysize = 100}, textData = {text = allCastableSpells[i][3],textx = 0,texty = 0},page = 2,action = "equipSpell",joystickActions = {left = 12,autoButtonSelect = #buttonArray+1},buttonType={name="spell",spellID = allCastableSpells[i]}})
 	end
 
 	generatedSpellbookButtons = true
