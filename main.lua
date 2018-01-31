@@ -39,7 +39,7 @@ function love.load()
 
 	lslui.addButton({pos  = {x = 170,y = 100},size = {xsize = 240,ysize = 60}, textData = {text = "Fight"},page = 0,action = "run",joystickActions = {up = 8,down = 6,autoButtonSelect = 2},buttonType = {name = "rune", r= 255, b=0, g=0, runeNum = 1,size = 2}}) --5
 	lslui.addButton({pos  = {x = 170,y = 270},size = {xsize = 240,ysize = 60}, textData = {text = "Options"},page = 0,action = 1,joystickActions = {up = 5,down = 7,autoButtonSelect = 11},buttonType = {name = "rune", r= 0, b=255, g=0, runeNum = 2,size = 2}}) --6
-	lslui.addButton({pos  = {x = 170,y = 440},size = {xsize = 240,ysize = 60}, textData = {text = "Spellbook"},page = 0,action = 2,joystickActions = {up = 6,down = 8,autoButtonSelect = 12},buttonType = {name = "rune", r= 0, b=0, g=255, runeNum = 3,size = 2}}) --7
+	lslui.addButton({pos  = {x = 170,y = 440},size = {xsize = 240,ysize = 60}, textData = {text = "Spellbook"},page = 0,action = "enterSpellbook",joystickActions = {up = 6,down = 8,autoButtonSelect = 12},buttonType = {name = "rune", r= 0, b=0, g=255, runeNum = 3,size = 2}}) --7
 	lslui.addButton({pos  = {x = 170,y = 610},size = {xsize = 240,ysize = 60}, textData = {text = "Exit"},page = 0,action = "exit",joystickActions = {up = 7,down =5 ,autoButtonSelect = 5},buttonType = {name = "rune", r= 30, b=30, g=30, runeNum = 4,size = 2}}) --8
 
 	--options menu (1)
@@ -48,9 +48,10 @@ function love.load()
 	lslui.addButton({pos  = {x = 170,y = 290},size = {xsize = 280,ysize = 60}, textData = {text = "Fullscreen",textx = -15,texty = -6},page = 1,action = "fullscreen",joystickActions = {up = 9,down = 11,autoButtonSelect = 10}}) --10
 	lslui.addButton({pos  = {x = 170,y = 400},size = {xsize = 240,ysize = 60}, textData = {text = "Back",textx = 3,texty = -5},page = 1,action = 0,joystickActions = {up = 10,down = 11,autoButtonSelect = 6}}) --11
 
-	--spellbook back (2)
+	--spellbook(2)
 
-	lslui.addButton({pos  = {x = 50,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Back",textx = 3,texty = -5},page = 2,action = 0,joystickActions = {up=16,right=16,autoButtonSelect = 7}}) --12
+	lslui.addButton({pos  = {x = 20,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Back",textx = 3,texty = -5},page = 2,action = 0,joystickActions = {up=16,right=16,down=16,autoButtonSelect = 7}}) --12
+	lslui.addButton({pos  = {x = 1600,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Next",textx = 3,texty = -5},page = 2,action = "nextcontrollingPlayer",joystickActions = {up=16,left=16,autoButtonSelect = 13}}) --13
 
 	lslui.setMenuBackground({page = {0,1},image = "images/ui/ancientWall.png"})
 	lslui.setMenuBackground({page = {2},image = "images/ui/spellbook.png"})
