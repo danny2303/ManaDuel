@@ -551,7 +551,13 @@ function drawSpellbook()
 	 	love.graphics.print(buttonArray[selectedButton].textData.text..":\n",300,200,0,1.1,1.1)
 
 	 	love.graphics.setColor(50,50,50)
-	 	love.graphics.print(buttonArray[selectedButton].buttonType.spellID[5],300,300,0,1,1)	 	
+	 	love.graphics.print(buttonArray[selectedButton].buttonType.spellID[5],300,300,0,1,1)	
+
+	 	if buttonArray[selectedButton].buttonType.spellID[2] == "proj" and projectilesIndex[buttonArray[selectedButton].buttonType.spellID[3]].effect then 
+	 		love.graphics.print("Applies the effect:",300,400,0,0.8,0.8) 
+	 		love.graphics.setColor(216, 203, 15)
+	 		love.graphics.print(projectilesIndex[buttonArray[selectedButton].buttonType.spellID[3]].effect,300,450,0,0.8,0.8) 
+	 	end	
 	 end
 
 	love.graphics.setColor(math.random(0,255),255,255)
