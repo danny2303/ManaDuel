@@ -137,7 +137,7 @@ function love.draw()
 						if projectilesIndex[projectileStack[i].projectileIndex].isAnimation then
 							love.graphics.draw(image,getAnimationQuad(projectileStack[i]),applyScroll(x,"x"),applyScroll(y,"y"),0,scale,scale)
 						else
-							love.graphics.draw(image,applyScroll(x,"x"),applyScroll(y,"y"),projectileStack[i].rotation,scale,scale,image:getWidth()/2,image:getHeight()/2)
+							love.graphics.draw(image,applyScroll(x,"x")+2.5,applyScroll(y,"y")+2.5,projectileStack[i].rotation,scale,scale,image:getWidth()/2,image:getHeight()/2)
 						end
 
 					end

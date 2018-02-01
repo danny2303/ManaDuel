@@ -34,7 +34,7 @@ function spell.load()
 						wisp = {layer = "front",lifetime  = 40, image = fireballImage, width = 0.4, height = 0.5, projectileSpeed = 1, damage = 5, mana = 5, scale= 0.1, collisionMode = "wisp",isOffence = true, effect = "paralyzed",effectDuration = 15},
 						orbitingSheild = {layer = "back",lifetime  = 40,image = orbitarsImage, isAnimation = true, numFrames = 40, playSpeed = 10, frameWidth = 35, width = 3.5, height = 3.5, projectileSpeed = 0, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
 						poisonOrb = {layer = "front",lifetime  = 40,image = poisonOrbImage, width = 0.5, height = 0.5, projectileSpeed = 3, damage = 0, mana = 10, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "poisoned",effectDuration = 5, rotationSpeed = 0.5},
-						whirlwind = {layer = "back",lifetime  = 40,scale = 0.05,image = whirlwindImage, isAnimation = true, numFrames = 6, playSpeed = 5, frameWidth = 27, width = 3.5, height = 3.5, projectileSpeed = 2, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false}
+						whirlwind = {layer = "back",lifetime  = 40,scale = 0.05,image = whirlwindImage, isAnimation = true, numFrames = 6, playSpeed = 5, frameWidth = 27, width = 2.9, height = 2.9, projectileSpeed = 2, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false}
 }
 
 	uniqueProjectileCode = 1
@@ -47,11 +47,27 @@ function spell.load()
 
 end
 
+function drawAllHitboxes()
+
+	if #objects > 0 then
+
+		for i=1, #objects do
+
+			drawObject(i)
+
+		end
+
+	end
+
+end
+
+function isnan(x) return x ~= x end
+
 function convertVector(vector)
 
+	division = vector.x/vector.y
 	mag = math.sqrt(vector.x^2 + vector.y^2)
-	if vector.y >= 0 then dir = math.atan(vector.x/vector.y) else dir = math.atan(vector.x/vector.y)+math.pi end
-
+	if vector.y >= 0 then dir = math.atan(division) else dir = math.atan(division)+math.pi end
 	return mag,dir
 
 end
@@ -110,7 +126,13 @@ function launch(playerNum,projectile,x,y,isCustomCast)
 	if players[playerNum].mana >= manacost or isCustomCast then
 
 		addObject(uniqueProjectileCode,players[playerNum].x+players[playerNum].facingX,players[playerNum].y+players[playerNum].facingY, projectilesIndex[projectile].width,projectilesIndex[projectile].height,{removed = false,projectileStackIndex = #projectileStack+1,projectileIndex = projectile,owner = playerNum}) --todo projectile size - Adds a projectile object - todo multi-shot
-		push(uniqueProjectileCode,x*pspeed,y*pspeed)-- provide initial velocity
+		
+		--remove variable magnitude of launch vectors
+
+		mag,dir = convertVector({x=x,y=y})
+		mag = pspeed
+		vector = convertDirection(dir,mag)
+		push(uniqueProjectileCode,vector.x,vector.y)-- provide initial velocity
 
 		if not isCustomCast then players[playerNum].mana = players[playerNum].mana - manacost end --dedeuct mana cost
 
@@ -220,6 +242,8 @@ end
 function spell.draw()
 
 	drawStack()
+
+	drawAllHitboxes()
 end
 
 function addEffect(playerNum,effect)
@@ -241,9 +265,9 @@ function drawStack()
 					image = projectilesIndex[projectileStack[i].projectileIndex].image
 					scale = projectilesIndex[projectileStack[i].projectileIndex].scale
 					if projectilesIndex[projectileStack[i].projectileIndex].isAnimation then
-						love.graphics.draw(image,getAnimationQuad(projectileStack[i]),applyScroll(x,"x"),applyScroll(y,"y"),0,scale,scale)
+						love.graphics.draw(image,getAnimationQuad(projectileStack[i]),applyScroll(x,"x")+2.5,applyScroll(y,"y")+2.5,0,scale,scale)
 					else
-						love.graphics.draw(image,applyScroll(x,"x"),applyScroll(y,"y"),projectileStack[i].rotation,scale,scale,image:getWidth()/2,image:getHeight()/2)
+						love.graphics.draw(image,applyScroll(x,"x")+2.5,applyScroll(y,"y")+2.5,projectileStack[i].rotation,scale,scale,image:getWidth()/2,image:getHeight()/2)
 					end
 
 				end
