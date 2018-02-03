@@ -5,6 +5,9 @@ local utf8 = require("utf8")
 
 function lslui.load()
 
+	cantClickTimer = 0
+	cantClickColor = {132, 74, 77}
+
 	joystickPrecision = 0.1
 
 	spellbookScroll = 0
@@ -60,7 +63,11 @@ end
 
 function drawRune(x,y,num,state,r,b,g,size,rotation)
 
-	if state == "glowing" then love.graphics.setColor(r,b,g) else love.graphics.setColor(255,255,255) end
+	if state == "glowing" then 
+		if cantClickTimer  == 0 then  love.graphics.setColor(r,b,g) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
+	else 
+		if cantClickTimer  == 0 then  love.graphics.setColor(255,255,255) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
+	end
 
 	quad = love.graphics.newQuad(0,(num-1)*100, 100, 100, 100, 800 )
 
@@ -168,24 +175,24 @@ function drawButton()
 				love.graphics.setNewFont(12)
 
 				 if not (selectedButton == i) then 
-				 	love.graphics.setColor(50,50,50)
+				 	if cantClickTimer  == 0 then  love.graphics.setColor(50,50,50) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
 				-- 	love.graphics.rectangle("fill", buttonArray[i].pos.x-10, buttonArray[i].pos.y, buttonArray[i].size.xsize+10, buttonArray[i].size.ysize+10) 
 				 end
 
 				if takeMouseInputsForUI and mouseX > buttonArray[i].pos.x and mouseX < buttonArray[i].pos.x+buttonArray[i].size.xsize and mouseY > buttonArray[i].pos.y and mouseY < buttonArray[i].pos.y+buttonArray[i].size.ysize then
-			    	love.graphics.setColor(buttonArray[i].color.r-150, buttonArray[i].color.b-150, buttonArray[i].color.g-150)
+			    	if cantClickTimer  == 0 then  love.graphics.setColor(buttonArray[i].color.r-150, buttonArray[i].color.b-150, buttonArray[i].color.g-150) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
 			    else
-			        love.graphics.setColor(buttonArray[i].color.r, buttonArray[i].color.b, buttonArray[i].color.g)
+			        if cantClickTimer  == 0 then  love.graphics.setColor(buttonArray[i].color.r, buttonArray[i].color.b, buttonArray[i].color.g) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
 			    end
 			    if selectedButton == i then
-				love.graphics.setColor(100,100,100)
+				if cantClickTimer  == 0 then  love.graphics.setColor(100,100,100) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
 			    end
 			    love.graphics.draw(button, buttonArray[i].pos.x, buttonArray[i].pos.y)
-			    love.graphics.setColor(0, 0, 0)
+			    if cantClickTimer  == 0 then  love.graphics.setColor(0,0,0) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
 
 			    if buttonArray[i].action == "inputText" or buttonArray[i].action == "typing" then
 			    	love.graphics.print(buttonArray[i].textData.text, buttonArray[i].pos.x+buttonArray[i].textData.textx+10, buttonArray[i].pos.y+buttonArray[i].textData.texty+10, 0, 3, 3)
-			    	love.graphics.setColor(255, 255, 255)
+			    	if cantClickTimer  == 0 then  love.graphics.setColor(255,255,255) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
 			    	love.graphics.rectangle("fill", buttonArray[i].pos.x+font:getWidth(buttonArray[i].textData.text)*3+10, buttonArray[i].pos.y+5, -font:getWidth(buttonArray[i].textData.text)*3-10+buttonArray[i].size.xsize-5, buttonArray[i].size.ysize-10)
 			    else
 				    --NOTE : Text centralisation doesn't work amazingly so use textx and texty to get it right vv
@@ -204,7 +211,7 @@ function drawButton()
 					drawRune(buttonArray[i].pos.x-50,buttonArray[i].pos.y+50,buttonArray[i].buttonType.runeNum,"inactive",buttonArray[i].buttonType.r,buttonArray[i].buttonType.b,buttonArray[i].buttonType.g,buttonArray[i].buttonType.size)
 				end
 
-				love.graphics.setColor(0, 0, 0)				
+				if cantClickTimer  == 0 then  love.graphics.setColor(0,0,0) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end	
 				love.graphics.print(buttonArray[i].textData.text,buttonArray[i].pos.x + 100,buttonArray[i].pos.y+5, 0, buttonArray[i].textData.size/2, buttonArray[i].textData.size/2)
 
 			end
@@ -219,7 +226,7 @@ function drawInputText()
 
 	for i=1,#buttonArray do
 		if buttonArray[i].page == menuPage then
-			love.graphics.setColor(0, 0, 0)
+			if cantClickTimer  == 0 then  love.graphics.setColor(0,0,0) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end	
 	    	if buttonArray[i].action == "typing" then
 	    		if (love.mouse.isDown(1) == true and (mouseX < buttonArray[i].pos.x or mouseX > buttonArray[i].pos.x+buttonArray[i].size.xsize or mouseY < buttonArray[i].pos.y or mouseY > buttonArray[i].pos.y +buttonArray[i].size.ysize)) or menuPage ~= buttonArray[i].page then
 					buttonArray[i].action = "inputText"
@@ -299,7 +306,11 @@ function drawMenuBackgrounds() --Image or colour
 					elseif backgrounds[i][2] == "image" then
 						background = love.graphics.newImage(backgrounds[i][3])
 						background:setFilter("linear","linear")
-						love.graphics.setColor(255,255,255)
+						if cantClickTimer  == 0 then  
+							if cantClickTimer  == 0 then  love.graphics.setColor(255,255,255) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
+						else 
+							if cantClickTimer  == 0 then  love.graphics.setColor(109,13,19) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
+						end
 						love.graphics.draw(background, 0, 0, 0, love.graphics.getWidth()/background:getWidth()/uiscale, love.graphics.getHeight()/background:getHeight()/uiscale)
 					end
 				end
@@ -395,6 +406,15 @@ function lslui.draw()
 end
 
 function checkForJoystickMovement()
+
+	if controllingPlayer == 1 then notcontrollingPlayer = 2 else notcontrollingPlayer =1 end
+	if inputs[notcontrollingPlayer].ballxl ~= 0 or inputs[notcontrollingPlayer].ballyl ~= 0 then
+		cantClickTimer = 10
+	else 
+		cantClickTimer = cantClickTimer - 1
+	end
+
+	if cantClickTimer < 0 then cantClickTimer = 0 end
 
 	if inputs[controllingPlayer].ballyl < 0 and menuPage == 2 and not(selectedButton==12) and spellbookScroll < 0 then spellbookScroll = spellbookScroll + 7 end
 	if inputs[controllingPlayer].ballyl > 0 and menuPage == 2 and not(selectedButton==12) and spellbookScroll > -(#allCastableSpells-8)*100 then spellbookScroll = spellbookScroll - 7 end
@@ -496,7 +516,7 @@ end
 
 function drawScrollingSpellbook()
 
-	love.graphics.setColor(255,255,255)
+	if cantClickTimer  == 0 then  love.graphics.setColor(255,255,255) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
 	love.graphics.draw(scrollingBackground,1140,100,0,2,1.5)
 
 	for i=1,#buttonArray do
@@ -506,10 +526,10 @@ function drawScrollingSpellbook()
 
 
 				if selectedButton == i then
-				love.graphics.setColor(100,100,100)			
+				if cantClickTimer  == 0 then  love.graphics.setColor(100,100,100) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end		
 			    --	love.graphics.draw(selectedLongButton, buttonArray[i].pos.x+2, buttonArray[i].pos.y-1)
 			    else
-			    	love.graphics.setColor(0,0,0)
+			    	if cantClickTimer  == 0 then  love.graphics.setColor(0,0,0) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
 			    	--love.graphics.draw(longButton, buttonArray[i].pos.x+2, buttonArray[i].pos.y-1)
 			    end
 
@@ -547,24 +567,24 @@ function drawSpellbook()
 	 if not(selectedButton == 12 or selectedButton == 13) and menuPage == 2 then 
 	 	love.graphics.setFont(writingFont)
 
-	 	love.graphics.setColor(0,0,0)
+	 	if cantClickTimer  == 0 then  love.graphics.setColor(0,0,0) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
 	 	love.graphics.print(buttonArray[selectedButton].textData.text..":\n",300,200,0,1.1,1.1)
 
-	 	love.graphics.setColor(50,50,50)
+	 	if cantClickTimer  == 0 then  love.graphics.setColor(50,50,50) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
 	 	love.graphics.print(buttonArray[selectedButton].buttonType.spellID[5],300,300,0,1,1)	
 
 	 	if buttonArray[selectedButton].buttonType.spellID[2] == "proj" and projectilesIndex[buttonArray[selectedButton].buttonType.spellID[3]].effect then 
 	 		love.graphics.print("Applies the effect:",300,400,0,0.8,0.8) 
-	 		love.graphics.setColor(216, 203, 15)
+	 		if cantClickTimer  == 0 then  love.graphics.setColor(216,203,15) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
 	 		love.graphics.print(projectilesIndex[buttonArray[selectedButton].buttonType.spellID[3]].effect,300,450,0,0.8,0.8) 
 	 	end	
 	 end
 
-	love.graphics.setColor(math.random(0,255),255,255)
+	if cantClickTimer  == 0 then  love.graphics.setColor(math.random(0,255),255,255) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
 	love.graphics.draw(decorativeCircle,20,18,0,0.5,0.5)
 	love.graphics.setFont(digitalFont)
 
-	love.graphics.setColor(0,0,0)
+	if cantClickTimer  == 0 then  love.graphics.setColor(0,0,0) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
 	love.graphics.print(controllingPlayer,87,40,0,2,2)
 
 

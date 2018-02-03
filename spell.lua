@@ -243,7 +243,7 @@ function spell.draw()
 
 	drawStack()
 
-	drawAllHitboxes()
+	--drawAllHitboxes() --DEBUG TOOL
 end
 
 function addEffect(playerNum,effect)
