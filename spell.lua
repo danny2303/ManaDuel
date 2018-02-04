@@ -25,7 +25,7 @@ function spell.load()
 
 	--{indexInThisArray,arrayItIsIn,indexInThatArray}
 	allCastableSpells = {{1,"proj","fireball","Fireball","A firey inferno!"},{2,"proj","timeStop","Time Freeze","Stops time itself for a short while."},{3,"proj","wisp","Wisp","A cheap but light projectile."},{4,"proj","orbitingSheild","Sheild","A sheild to guard you in battle!"},{5,"proj","poisonOrb","Poison Orb","A pure orb of deadly poison!"},
-						{6,"proj","whirlwind","Tornado","A whirling wall of wind."},{7,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{8,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{9,"multi","heal","Heal",""},{10,"multi","heal","Heal",""},{11,"multi","heal","Heal",""},
+						{6,"proj","whirlwind","Tornado","A whirling wall of wind."},{7,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{8,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{9,"multi","blink","Blink","Teleports you a few meters in the direction you desire."},{10,"multi","heal","Heal",""},{11,"multi","heal","Heal",""},
 						{12,"proj","whirlwind","Tornado","A whirling wall of wind."},{13,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{14,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{15,"multi","heal","Heal",""},{16,"multi","heal","Heal",""},{17,"multi","heal","Heal",""}}
 						
 
@@ -43,7 +43,7 @@ function spell.load()
 
 	toRemove = {}
 
-	multiCastSpells = {dragonsBreath = {mana = 30}, heal = {mana = 10, amount = 10}}--spellname = true, ...
+	otherSpellIndex = {dragonsBreath = {mana = 30}, heal = {mana = 10, amount = 10}, blink = {mana = 0, distance = 4}}--spellname = true, ...
 
 end
 
@@ -83,11 +83,11 @@ end
 
 function cast(playerNum,spell)
 
-	if not (multiCastSpells[spell]) then
+	if not (otherSpellIndex[spell]) then
 		launch(playerNum,spell,players[playerNum].facingX,players[playerNum].facingY,false)
 	else
 
-		manacost = multiCastSpells[spell].mana
+		manacost = otherSpellIndex[spell].mana
 
 		if players[playerNum].mana >= manacost then
 			players[playerNum].mana = players[playerNum].mana - manacost
@@ -105,7 +105,18 @@ function cast(playerNum,spell)
 
 			if spell == "heal" then
 
-				players[playerNum].health = players[playerNum].health + multiCastSpells["heal"].amount
+				players[playerNum].health = players[playerNum].health + otherSpellIndex["heal"].amount
+
+			end
+
+			if spell == "blink" then
+
+				facingX,facingY = players[playerNum].facingX,players[playerNum].facingY
+				mag,dir = convertVector({x=facingX,y=facingY})
+				mag = otherSpellIndex[spell].distance
+				vector = convertDirection(dir,mag)
+				players[playerNum].x = players[playerNum].x + vector.x
+				players[playerNum].y = players[playerNum].y + vector.y
 
 			end
 
