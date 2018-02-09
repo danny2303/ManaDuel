@@ -29,6 +29,19 @@ function love.load()
 
 	cooldownTime = 5
 
+	--shaders
+
+	shader = love.graphics.newShader[[
+
+	    vec4 effect( vec4 drawColor, Image texture, vec2 texture_coords, vec2 screen_coords ){
+	      vec4 pixelColor = Texel(texture, texture_coords );//This is the current pixel color
+	      pixelColor.r = pixelColor.r + 1;
+	      return pixelColor * drawColor;
+	    }
+
+	]]
+
+
 	--pause menu (gameMenu1)
 
 	lslui.addButton({pos  = {x = love.graphics.getWidth()/2-160,y = love.graphics.getHeight()/2-230},size = {xsize = 220,ysize = 60}, textData = {text = "Resume",textx = 5,texty = 0},page = "gameMenu1",action = "run",joystickActions = {up = 2,down = 3,autoButtonSelect = 5}}) --2
@@ -93,6 +106,8 @@ end
 
 function love.draw()
 
+	love.graphics.setShader(shader)
+
 	love.graphics.push()
 	love.graphics.scale(uiscale)
 
@@ -112,7 +127,19 @@ function love.draw()
 
 		love.graphics.setColor(255,255,255)
 		for i=1,2 do
-			love.graphics.line(applyScroll(players[i].x+players[i].facingX,"x")*zoom,applyScroll(players[i].y+players[i].facingY,"y")*zoom,applyScroll(players[i].x+players[i].facingX*2,"x")*zoom,applyScroll(players[i].y+players[i].facingY*2,"y")*zoom)
+
+		invisible = false
+
+		if #players[i].effects > 0 then
+			for effectNum=1,#players[i].effects do
+				if players[i].effects[effectNum].name == "invisibility" then invisible = true end
+			end
+		end
+
+		if not(invisible) then 
+			love.graphics.line(applyScroll(players[i].x+players[i].facingX,"x")*zoom,applyScroll(players[i].y+players[i].facingY,"y")*zoom,applyScroll(players[i].x+players[i].facingX*2,"x")*zoom,applyScroll(players[i].y+players[i].facingY*2,"y")*zoom) 
+		end
+		
 		end
 
 		love.graphics.pop()
@@ -183,5 +210,4 @@ function love.draw()
 		love.graphics.setColor(255,255,255)
 		love.graphics.print(roundedTime,love.graphics.getWidth()/2-50,love.graphics.getHeight()/2-50,0,5,5)
 	end
-
 end

@@ -25,7 +25,7 @@ function spell.load()
 
 	--{indexInThisArray,arrayItIsIn,indexInThatArray}
 	allCastableSpells = {{1,"proj","fireball","Fireball","A firey inferno!"},{2,"proj","timeStop","Time Freeze","Stops time itself for a short while."},{3,"proj","wisp","Wisp","A cheap but light projectile."},{4,"proj","orbitingSheild","Sheild","A sheild to guard you in battle!"},{5,"proj","poisonOrb","Poison Orb","A pure orb of deadly poison!"},
-						{6,"proj","whirlwind","Tornado","A whirling wall of wind."},{7,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{8,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{9,"multi","blink","Blink","Teleports you a few meters in the direction you desire."},{10,"multi","heal","Heal",""},{11,"multi","heal","Heal",""},
+						{6,"proj","whirlwind","Tornado","A whirling wall of wind."},{7,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{8,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{9,"multi","blink","Blink","Teleports you a few meters in the direction you desire."},{11,"multi","invisibility","Darkest Night","Makes you no longer reflect light!"},{11,"multi","heal","Heal",""},
 						{12,"proj","whirlwind","Tornado","A whirling wall of wind."},{13,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{14,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{15,"multi","heal","Heal",""},{16,"multi","heal","Heal",""},{17,"multi","heal","Heal",""}}
 						
 
@@ -43,41 +43,7 @@ function spell.load()
 
 	toRemove = {}
 
-	otherSpellIndex = {dragonsBreath = {mana = 30}, heal = {mana = 10, amount = 10}, blink = {mana = 0, distance = 4}}--spellname = true, ...
-
-end
-
-function drawAllHitboxes()
-
-	if #objects > 0 then
-
-		for i=1, #objects do
-
-			drawObject(i)
-
-		end
-
-	end
-
-end
-
-function isnan(x) return x ~= x end
-
-function convertVector(vector)
-
-	division = vector.x/vector.y
-	mag = math.sqrt(vector.x^2 + vector.y^2)
-	if vector.y >= 0 then dir = math.atan(division) else dir = math.atan(division)+math.pi end
-	return mag,dir
-
-end
-
-function convertDirection(dir,mag)
-
-	x = (mag * math.cos(1.5708-dir))
-	y = (mag * math.sin(1.5708-dir))
-
-	return {x = x, y = y}
+	otherSpellIndex = {dragonsBreath = {mana = 30}, heal = {mana = 10, amount = 10}, blink = {mana = 20, distance = 4}, invisibility = {mana = 20}}--spellname = true, ...
 
 end
 
@@ -120,6 +86,12 @@ function cast(playerNum,spell)
 
 			end
 
+			if spell == "invisibility" then
+
+				addEffect(playerNum,"invisibility",10)
+
+			end
+
 		end
 
 	end
@@ -157,6 +129,41 @@ function launch(playerNum,projectile,x,y,isCustomCast)
 	end
 
 end
+
+function drawAllHitboxes()
+
+	if #objects > 0 then
+
+		for i=1, #objects do
+
+			drawObject(i)
+
+		end
+
+	end
+
+end
+
+function isnan(x) return x ~= x end
+
+function convertVector(vector)
+
+	division = vector.x/vector.y
+	mag = math.sqrt(vector.x^2 + vector.y^2)
+	if vector.y >= 0 then dir = math.atan(division) else dir = math.atan(division)+math.pi end
+	return mag,dir
+
+end
+
+function convertDirection(dir,mag)
+
+	x = (mag * math.cos(1.5708-dir))
+	y = (mag * math.sin(1.5708-dir))
+
+	return {x = x, y = y}
+
+end
+
 
 function stopTime(playerNum)
 
@@ -257,9 +264,23 @@ function spell.draw()
 	--drawAllHitboxes() --DEBUG TOOL
 end
 
-function addEffect(playerNum,effect)
+function addEffect(playerNum,effect,duration)
 
-	players[playerNum].effects[#players[playerNum].effects + 1] = {name = effect, count = 0}
+	alreadyActive = false
+
+	if #players[playerNum].effects > 0 then
+
+		for i =1, #players[playerNum].effects do
+
+			if players[playerNum].effects[i].name == effect then
+				alreadyActive = true
+			end
+
+		end
+
+	end
+
+	if not(alreadyActive) then players[playerNum].effects[#players[playerNum].effects + 1] = {name = effect, counter = duration} end
 
 end
 

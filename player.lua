@@ -15,7 +15,7 @@ function player.load()
 	maxHealth,maxMana = 20,100
 	timeSinceDead = 5
 
-	spellbooks = {{l1 = "dragonsBreath",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "dragonsBreath",s2 = "poisonOrb",s3 = "fireball",s4 = "orbitingSheild"},
+	spellbooks = {{l1 = "dragonsBreath",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "invisibility",s2 = "poisonOrb",s3 = "fireball",s4 = "orbitingSheild"},
 				  {l1 = "whirlwind",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "timeStop",s2 = "poisonOrb",s3 = "fireball",s4 = "orbitingSheild"}}
 
 	players = {{manaRegen = 0.1, image = playerFront,x=0,y=0,"down",health=maxHealth,mana=maxMana,facingX=0,facingY=1, effects = {}},{manaRegen = 0.1, image = playerFront,x=0,y=0, facing = "down",health=maxHealth,mana=maxMana,facingX=0,facingY=1, effects = {}}}
@@ -142,14 +142,27 @@ end
 function player.draw()
 
 	for i=1,2 do
-		if players[i].facing == "left" then
-			love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX+(playerFront:getWidth()*playerScale),applyScroll(players[i].y,"y")-playerOffsetY,0,-playerScale,playerScale)
-		else
-			if players[i].image == playerDead then
-				love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0.5,playerScale,playerScale,players[i].image:getWidth()/2-playerOffsetX,players[i].image:getHeight()/2-playerOffsetY)
-			else
-				love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0,playerScale,playerScale)
+
+		invisible = false
+
+		if #players[i].effects > 0 then
+			for effectNum=1,#players[i].effects do
+				if players[i].effects[effectNum].name == "invisibility" then invisible = true end
 			end
+		end
+
+		if not(invisible) then
+
+			if players[i].facing == "left" then
+				love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX+(playerFront:getWidth()*playerScale),applyScroll(players[i].y,"y")-playerOffsetY,0,-playerScale,playerScale)
+			else
+				if players[i].image == playerDead then
+					love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0.5,playerScale,playerScale,players[i].image:getWidth()/2-playerOffsetX,players[i].image:getHeight()/2-playerOffsetY)
+				else
+					love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0,playerScale,playerScale)
+				end
+			end
+
 		end
 	end
 
