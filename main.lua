@@ -34,7 +34,7 @@ function love.load()
 	shader = love.graphics.newShader[[
 
 	    vec4 effect( vec4 drawColor, Image texture, vec2 texture_coords, vec2 screen_coords ){
-	      vec4 pixelColor = Texel(texture, texture_coords );//This is the current pixel color
+	      vec4 pixelColor = Texel(texture, texture_coords );
 	      pixelColor.r = pixelColor.r + 1;
 	      return pixelColor * drawColor;
 	    }
@@ -106,7 +106,7 @@ end
 
 function love.draw()
 
-	love.graphics.setShader(shader)
+	--love.graphics.setShader(shader)
 
 	love.graphics.push()
 	love.graphics.scale(uiscale)

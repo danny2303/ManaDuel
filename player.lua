@@ -139,6 +139,7 @@ function moveHitboxes()
 
 end
 
+
 function player.draw()
 
 	for i=1,2 do
@@ -147,11 +148,34 @@ function player.draw()
 
 		if #players[i].effects > 0 then
 			for effectNum=1,#players[i].effects do
-				if players[i].effects[effectNum].name == "invisibility" then invisible = true end
+				if players[i].effects[effectNum].name == "invisibility" then 
+					invisible = true 
+					invisibilityTimer = players[i].effects[effectNum].counter
+				end
 			end
 		end
 
 		if not(invisible) then
+
+			love.graphics.setColor(255,255,255,255)
+
+			if players[i].facing == "left" then
+				love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX+(playerFront:getWidth()*playerScale),applyScroll(players[i].y,"y")-playerOffsetY,0,-playerScale,playerScale)
+			else
+				if players[i].image == playerDead then
+					love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0.5,playerScale,playerScale,players[i].image:getWidth()/2-playerOffsetX,players[i].image:getHeight()/2-playerOffsetY)
+				else
+					love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0,playerScale,playerScale)
+				end
+			end
+
+		else
+
+			local amplitude = 127.5
+			local frequency = 1
+			local phase = 15
+
+			love.graphics.setColor(255,255,255,amplitude*math.sin(frequency*invisibilityTimer+phase))
 
 			if players[i].facing == "left" then
 				love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX+(playerFront:getWidth()*playerScale),applyScroll(players[i].y,"y")-playerOffsetY,0,-playerScale,playerScale)

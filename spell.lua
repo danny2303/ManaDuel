@@ -43,7 +43,7 @@ function spell.load()
 
 	toRemove = {}
 
-	otherSpellIndex = {dragonsBreath = {mana = 30}, heal = {mana = 10, amount = 10}, blink = {mana = 20, distance = 4}, invisibility = {mana = 20}}--spellname = true, ...
+	otherSpellIndex = {dragonsBreath = {mana = 30}, heal = {mana = 10, amount = 10}, blink = {mana = 20, distance = 4}, invisibility = {mana = 20, duration = 50}}--spellname = true, ...
 
 end
 
@@ -88,7 +88,7 @@ function cast(playerNum,spell)
 
 			if spell == "invisibility" then
 
-				addEffect(playerNum,"invisibility",10)
+				addEffect(playerNum,"invisibility",otherSpellIndex[spell].duration)
 
 			end
 
