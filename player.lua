@@ -175,7 +175,7 @@ function player.draw()
 				love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX+(playerFront:getWidth()*playerScale),applyScroll(players[i].y,"y")-playerOffsetY,0,-playerScale,playerScale)
 			else
 				if players[i].image == playerDead then
-					love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0.5,playerScale,playerScale,players[i].image:getWidth()/2-playerOffsetX,players[i].image:getHeight()/2-playerOffsetY)
+					love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0,playerScale*1.3,playerScale*1.3)
 				else
 					love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0,playerScale,playerScale)
 				end

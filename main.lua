@@ -31,7 +31,7 @@ function love.load()
 
 	--shaders
 
-	shader = love.graphics.newShader[[
+	blurShader = love.graphics.newShader[[
 
 	// This shader is only here to help you understand how a very basic box blur works.
 	// It should not be used as it's fairly inefficient and doesn't look as good as
@@ -51,6 +51,22 @@ function love.load()
 	}
 
 	]]
+
+	deathShader = love.graphics.newShader[[
+
+	vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords ){
+	  vec4 pixel = Texel(texture, texture_coords );
+
+	  float greyAmount = 0.1;
+
+	  pixel.r = pixel.r - greyAmount;
+	  pixel.b = pixel.b - greyAmount;
+	  pixel.g = pixel.g - greyAmount;
+
+	  return pixel;
+	}
+
+	  ]]
 
 
 	--pause menu (gameMenu1)
@@ -117,9 +133,7 @@ end
 
 function love.draw()
 
-	shader:send("blurRadius", 3*math.pow(math.sin(love.timer.getTime()), 2))
-
-	--love.graphics.setShader(shader)
+	blurShader:send("blurRadius", 3*math.pow(math.sin(love.timer.getTime()), 2))
 
 	love.graphics.push()
 	love.graphics.scale(uiscale)
@@ -221,6 +235,10 @@ function love.draw()
 	if player.getPlayersState() == "dead" then
 		local roundedTime = math.floor(timeSinceDead * 10^(2 or 0) + 0.5) / 10^(2 or 0)
 		love.graphics.setColor(255,255,255)
-		love.graphics.print(roundedTime,love.graphics.getWidth()/2-50,love.graphics.getHeight()/2-50,0,5,5)
+		love.graphics.setFont(runeFont)
+		love.graphics.setShader(deathShader)
+		love.graphics.print(roundedTime,550,250,0,5,5)
+	else
+		love.graphics.setShader()
 	end
 end

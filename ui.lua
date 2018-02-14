@@ -107,7 +107,6 @@ function drawStatusEffects()
 			for effectNum =1,#players[i].effects do
 
 				love.graphics.setColor(255,255,255)
-
 				love.graphics.draw(effectImages[players[i].effects[effectNum].name],effectNum*100+(i*barDistance-(barDistance-barPadding)-50),150,0,0.2,0.2)
 				love.graphics.printf(round(players[i].effects[effectNum].counter,0),effectNum*100+(i*barDistance-(barDistance-barPadding)-68),218,100,'center')
 				love.graphics.draw(timerImage,effectNum*100+(i*barDistance-(barDistance-barPadding)-45),213,0.4,0.4)
