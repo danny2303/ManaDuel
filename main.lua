@@ -33,11 +33,22 @@ function love.load()
 
 	shader = love.graphics.newShader[[
 
-	    vec4 effect( vec4 drawColor, Image texture, vec2 texture_coords, vec2 screen_coords ){
-	      vec4 pixelColor = Texel(texture, texture_coords );
-	      pixelColor.r = pixelColor.r + 1;
-	      return pixelColor * drawColor;
+	// This shader is only here to help you understand how a very basic box blur works.
+	// It should not be used as it's fairly inefficient and doesn't look as good as
+	// a gaussian blur. Look at the "Blur (convoluted)" examples instead.
+	extern float blurRadius;
+	#define SAMPLE_RANGE 4
+	vec4 effect(vec4 color, Image currentTexture, vec2 texCoords, vec2 screenCoords){
+	  vec4 sum = vec4(0);
+	  for(int x = -SAMPLE_RANGE; x < SAMPLE_RANGE + 1; x++){
+	    for(int y = -SAMPLE_RANGE; y < SAMPLE_RANGE + 1; y++){
+	      // textureOffset
+	      sum += Texel(currentTexture, texCoords + blurRadius*vec2(x, y)/love_ScreenSize.xy);
 	    }
+	  }
+	  sum = sum/(2*SAMPLE_RANGE*2*SAMPLE_RANGE);
+	  return sum * color;
+	}
 
 	]]
 
@@ -105,6 +116,8 @@ function love.update(dt)
 end
 
 function love.draw()
+
+	shader:send("blurRadius", 3*math.pow(math.sin(love.timer.getTime()), 2))
 
 	--love.graphics.setShader(shader)
 

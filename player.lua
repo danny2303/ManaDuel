@@ -15,7 +15,7 @@ function player.load()
 	maxHealth,maxMana = 20,100
 	timeSinceDead = 5
 
-	spellbooks = {{l1 = "dragonsBreath",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "invisibility",s2 = "poisonOrb",s3 = "fireball",s4 = "orbitingSheild"},
+	spellbooks = {{l1 = "dragonsBreath",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "corrupt",s2 = "poisonOrb",s3 = "fireball",s4 = "orbitingSheild"},
 				  {l1 = "whirlwind",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "timeStop",s2 = "poisonOrb",s3 = "fireball",s4 = "orbitingSheild"}}
 
 	players = {{manaRegen = 0.1, image = playerFront,x=0,y=0,"down",health=maxHealth,mana=maxMana,facingX=0,facingY=1, effects = {}},{manaRegen = 0.1, image = playerFront,x=0,y=0, facing = "down",health=maxHealth,mana=maxMana,facingX=0,facingY=1, effects = {}}}
@@ -36,7 +36,19 @@ function player.update(dt)
 	castSpells()
 	manageStatusEffects(dt)
 	regenerateMana()
+	checkCurrentTile()
 	checkIfDead(dt)
+
+end
+
+function checkCurrentTile()
+
+	for playerNum = 1,2 do
+		playerX,playerY = math.floor(players[playerNum].x)+mapLength/2, math.floor(players[playerNum].y)+mapHeight/2
+		if map[playerX][playerY].type.name == "harmfull" and not(map[playerX][playerY].type.immunePlayer == playerNum) then
+			players[playerNum].health = players[playerNum].health - map[playerX][playerY].type.damage
+		end
+	end
 
 end
 

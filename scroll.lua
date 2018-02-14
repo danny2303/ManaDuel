@@ -62,20 +62,20 @@ function setupMap()
 		map[x] = {}
 		for y = 1,mapHeight do
 			if math.random(1,100) == 1 then
-				map[x][y] = createTiledata(3,0)
+				map[x][y] = createTiledata(3,0,"terrain")
 			else
-				map[x][y] = createTiledata(math.random(0,2),0)
+				map[x][y] = createTiledata(math.random(0,2),0,"terrain")
 			end
 		end
 	end
 
 end
 
-function createTiledata(x,y)
+function createTiledata(x,y,type)
 
 	local quad = love.graphics.newQuad(x*tileSize,y*tileSize,tileSize,tileSize,tilemap:getWidth(),tilemap:getHeight())
 
-	return {quad=quad}
+	return {quad=quad,type=type}
 
 end
 
@@ -106,6 +106,20 @@ function applyScroll(num,axis) --num is x position in tiles
 	end
 
 	return num*tileSize+camera
+
+end
+
+function undoScroll(num,axis)
+
+	if axis == "x" then 
+		camera = cameraX
+	elseif axis == "y" then 
+		camera = cameraY 
+	else 
+		print("Arguement 2 for applyScroll() must be \"x\" or \"y\"")
+	end
+
+	return (num-camera)/tileSize
 
 end
 

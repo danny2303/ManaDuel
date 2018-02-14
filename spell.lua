@@ -25,7 +25,7 @@ function spell.load()
 
 	--{indexInThisArray,arrayItIsIn,indexInThatArray}
 	allCastableSpells = {{1,"proj","fireball","Fireball","A firey inferno!"},{2,"proj","timeStop","Time Freeze","Stops time itself for a short while."},{3,"proj","wisp","Wisp","A cheap but light projectile."},{4,"proj","orbitingSheild","Sheild","A sheild to guard you in battle!"},{5,"proj","poisonOrb","Poison Orb","A pure orb of deadly poison!"},
-						{6,"proj","whirlwind","Tornado","A whirling wall of wind."},{7,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{8,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{9,"multi","blink","Blink","Teleports you a few meters in the direction you desire."},{11,"multi","invisibility","Darkest Night","Makes you no longer reflect light!"},{11,"multi","heal","Heal",""},
+						{6,"proj","whirlwind","Tornado","A whirling wall of wind."},{7,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{8,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{9,"multi","blink","Blink","Teleports you a few meters in the direction you desire."},{10,"multi","invisibility","Darkest Night","Makes you no longer reflect light!"},{11,"multi","corrupt","Corrupt","Turns the land on which you walk\ninto a dangerous wasteland."},
 						{12,"proj","whirlwind","Tornado","A whirling wall of wind."},{13,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{14,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{15,"multi","heal","Heal",""},{16,"multi","heal","Heal",""},{17,"multi","heal","Heal",""}}
 						
 
@@ -43,7 +43,7 @@ function spell.load()
 
 	toRemove = {}
 
-	otherSpellIndex = {dragonsBreath = {mana = 30}, heal = {mana = 10, amount = 10}, blink = {mana = 20, distance = 4}, invisibility = {mana = 20, duration = 50}}--spellname = true, ...
+	otherSpellIndex = {corrupt = {mana = 20, radius = 5, fossilchance  = 15, skullchance = 5, damage = 0.1}, dragonsBreath = {mana = 30}, heal = {mana = 10, amount = 10}, blink = {mana = 20, distance = 4}, invisibility = {mana = 20, duration = 50}}--spellname = true, ...
 
 end
 
@@ -92,10 +92,42 @@ function cast(playerNum,spell)
 
 			end
 
+			if spell == "corrupt" then
+				centerX,centerY = math.floor(players[playerNum].x)+mapLength/2, math.floor(players[playerNum].y)+mapHeight/2
+				radius = otherSpellIndex[spell].radius
+
+				for r = 0,radius,0.5 do
+
+					two_pi = 6.283
+					angle_inc=1.0/r
+
+					for angle=0, two_pi, angle_inc do
+					    xpos=round(centerX+r*math.cos(angle),0)
+					    ypos=round(centerY+r*math.sin(angle),0)
+					    if math.random(1,otherSpellIndex[spell].fossilchance) == 1 then
+					    	if math.random(1,otherSpellIndex[spell].skullchance) == 1 then
+					    		map[xpos][ypos] = createTiledata(6,0,{name = "harmfull", immunePlayer = playerNum, damage = otherSpellIndex[spell].damage})
+					    	else
+					  			map[xpos][ypos] = createTiledata(5,0,{name = "harmfull", immunePlayer = playerNum, damage = otherSpellIndex[spell].damage})
+					    	end
+					    else
+					 		map[xpos][ypos] = createTiledata(4,0,{name = "harmfull", immunePlayer = playerNum, damage = otherSpellIndex[spell].damage})
+					    end
+					end
+
+				end
+
+			end
+
 		end
 
 	end
 
+end
+
+function round(num, numDecimalPlaces)
+  local mult = 10^(numDecimalPlaces or 0)
+  return math.floor(num * mult + 0.5) / mult
 end
 
 function launch(playerNum,projectile,x,y,isCustomCast)
