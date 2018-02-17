@@ -15,7 +15,7 @@ function player.load()
 	maxHealth,maxMana = 20,100
 	timeSinceDead = 5
 
-	spellbooks = {{l1 = "dragonsBreath",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "corrupt",s2 = "poisonOrb",s3 = "fireball",s4 = "orbitingSheild"},
+	spellbooks = {{l1 = "dragonsBreath",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "invisibility",s2 = "mirror",s3 = "fireball",s4 = "orbitingSheild"},
 				  {l1 = "whirlwind",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "timeStop",s2 = "poisonOrb",s3 = "fireball",s4 = "orbitingSheild"}}
 
 	players = {{manaRegen = 0.1, image = playerFront,x=0,y=0,"down",health=maxHealth,mana=maxMana,facingX=0,facingY=1, effects = {}},{manaRegen = 0.1, image = playerFront,x=0,y=0, facing = "down",health=maxHealth,mana=maxMana,facingX=0,facingY=1, effects = {}}}
@@ -157,6 +157,8 @@ function player.draw()
 	for i=1,2 do
 
 		invisible = false
+		mirroredAmount = 0
+		mirroredTimer = 0
 
 		if #players[i].effects > 0 then
 			for effectNum=1,#players[i].effects do
@@ -164,39 +166,53 @@ function player.draw()
 					invisible = true 
 					invisibilityTimer = players[i].effects[effectNum].counter
 				end
+				if players[i].effects[effectNum].name == "mirrored" then 
+					mirroredAmount = 1
+					mirroredTimer = players[i].effects[effectNum].counter
+				end
 			end
 		end
 
-		if not(invisible) then
+		local amplitude = 20
+		local frequency = 2
+		local phase = 15
 
-			love.graphics.setColor(255,255,255,255)
+		mirroredSeperation = amplitude*math.sin(frequency*mirroredTimer+phase)
 
-			if players[i].facing == "left" then
-				love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX+(playerFront:getWidth()*playerScale),applyScroll(players[i].y,"y")-playerOffsetY,0,-playerScale,playerScale)
-			else
-				if players[i].image == playerDead then
-					love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0,playerScale*1.3,playerScale*1.3)
+		for j=0,mirroredAmount do
+
+			if not(invisible) then
+
+				love.graphics.setColor(255,255,255,255)
+
+				if players[i].facing == "left" then
+					love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX+(playerFront:getWidth()*playerScale-(j*mirroredSeperation)),applyScroll(players[i].y,"y")-playerOffsetY,0,-playerScale,playerScale)
 				else
-					love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0,playerScale,playerScale)
+					if players[i].image == playerDead then
+						love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0,playerScale*1.3,playerScale*1.3)
+					else
+						love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX-(j*mirroredSeperation),applyScroll(players[i].y,"y")-playerOffsetY,0,playerScale,playerScale)
+					end
 				end
-			end
 
-		else
-
-			local amplitude = 127.5
-			local frequency = 1
-			local phase = 15
-
-			love.graphics.setColor(255,255,255,amplitude*math.sin(frequency*invisibilityTimer+phase))
-
-			if players[i].facing == "left" then
-				love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX+(playerFront:getWidth()*playerScale),applyScroll(players[i].y,"y")-playerOffsetY,0,-playerScale,playerScale)
 			else
-				if players[i].image == playerDead then
-					love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0.5,playerScale,playerScale,players[i].image:getWidth()/2-playerOffsetX,players[i].image:getHeight()/2-playerOffsetY)
+
+				local amplitude = 127.5
+				local frequency = 1
+				local phase = 15
+
+				love.graphics.setColor(255,255,255,amplitude*math.sin(frequency*invisibilityTimer+phase))
+
+				if players[i].facing == "left" then
+					love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX+(playerFront:getWidth()*playerScale)-(j*mirroredSeperation),applyScroll(players[i].y,"y")-playerOffsetY,0,-playerScale,playerScale)
 				else
-					love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0,playerScale,playerScale)
+					if players[i].image == playerDead then
+						love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0.5,playerScale,playerScale,players[i].image:getWidth()/2-playerOffsetX,players[i].image:getHeight()/2-playerOffsetY)
+					else
+						love.graphics.draw(players[i].image,applyScroll(players[i].x,"x")-(j*mirroredSeperation)-playerOffsetX,applyScroll(players[i].y,"y")-playerOffsetY,0,playerScale,playerScale)
+					end
 				end
+
 			end
 
 		end

@@ -30,7 +30,10 @@ function ui.load()
 	invisibleIcon = love.graphics.newImage("images/ui/invisibleIcon.png")
 	invisibleIcon:setFilter("nearest","nearest")
 
-	effectImages = {burning = fireIcon, poisoned = poisonIcon, paralyzed = paralyzedIcon, confused = confusedIcon, healing = healingIcon, invisibility = invisibleIcon}
+	mirroredIcon = love.graphics.newImage("images/ui/mirroredIcon.png")
+	mirroredIcon:setFilter("nearest","nearest")
+
+	effectImages = {mirrored = mirroredIcon, burning = fireIcon, poisoned = poisonIcon, paralyzed = paralyzedIcon, confused = confusedIcon, healing = healingIcon, invisibility = invisibleIcon}
 
 end
 

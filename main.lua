@@ -156,14 +156,16 @@ function love.draw()
 		for i=1,2 do
 
 		invisible = false
+		mirrored = false
 
 		if #players[i].effects > 0 then
 			for effectNum=1,#players[i].effects do
 				if players[i].effects[effectNum].name == "invisibility" then invisible = true end
+				if players[i].effects[effectNum].name == "mirrored" then mirrored = true end
 			end
 		end
 
-		if not(invisible) then 
+		if not(invisible) and not(mirrored) then 
 			love.graphics.line(applyScroll(players[i].x+players[i].facingX,"x")*zoom,applyScroll(players[i].y+players[i].facingY,"y")*zoom,applyScroll(players[i].x+players[i].facingX*2,"x")*zoom,applyScroll(players[i].y+players[i].facingY*2,"y")*zoom) 
 		end
 		
