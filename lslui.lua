@@ -50,6 +50,7 @@ function lslui.load()
 
 	inactiveRunes = love.graphics.newImage("images/ui/inactiveRunes.png")
 	glowingRunes = love.graphics.newImage("images/ui/glowingRunes.png")
+	hdRunes = love.graphics.newImage("images/ui/hdGlowingRunes.png")
 	button = love.graphics.newImage("images/ui/button.png")
 	longButton = love.graphics.newImage("images/ui/longButton.png")
 	selectedLongButton = love.graphics.newImage("images/ui/selectedLongButton.png")
@@ -63,7 +64,7 @@ end
 
 function drawRune(x,y,num,state,r,b,g,size,rotation)
 
-	if state == "glowing" then 
+	if state == "glowing"then 
 		if cantClickTimer  == 0 then  love.graphics.setColor(r,b,g) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
 	else 
 		if cantClickTimer  == 0 then  love.graphics.setColor(255,255,255) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
@@ -74,7 +75,16 @@ function drawRune(x,y,num,state,r,b,g,size,rotation)
 	image = inactiveRunes
 	if state == "glowing" then image = glowingRunes end
 
+	if state == "hd" then
+		love.graphics.setColor(r,b,g)
+		image = hdRunes
+		quad = love.graphics.newQuad(0,(num-1)*300, 300, 300, 300, 2400 )
+		love.graphics.draw(image,quad,x+50,y+50,rotation,size,size,150,150)
+	else
+
 	love.graphics.draw(image,quad,x+50,y+50,rotation,size,size,50,50)
+
+	end
 
 end
 

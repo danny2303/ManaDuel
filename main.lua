@@ -57,13 +57,15 @@ function love.load()
 	vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords ){
 	  vec4 pixel = Texel(texture, texture_coords );
 
-	  float greyAmount = 0.1;
+	  vec4 combinedColor = pixel * color;
 
-	  pixel.r = pixel.r - greyAmount;
-	  pixel.b = pixel.b - greyAmount;
-	  pixel.g = pixel.g - greyAmount;
+	  float adverageShade = (combinedColor.r + combinedColor.b + combinedColor.g)/3;
 
-	  return pixel;
+	  combinedColor.r = adverageShade;
+	  combinedColor.b = adverageShade;
+	  combinedColor.g = adverageShade;
+
+	  return combinedColor;
 	}
 
 	  ]]
@@ -113,7 +115,7 @@ function love.update(dt)
 		scroll.update()
 		player.update(dt)
 		object.update(dt)
-		spell.update()
+		spell.update(dt)
 		ui.update()
 	end
 
@@ -211,6 +213,8 @@ function love.draw()
 
 		input.draw()
 		ui.draw()
+		drawEffects()
+		
 	end
 
 	lslui.draw()
