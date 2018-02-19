@@ -94,6 +94,7 @@ function love.load()
 
 	lslui.addButton({pos  = {x = 20,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Back",textx = 3,texty = -5},page = 2,action = 0,joystickActions = {up=16,right=16,down=16,autoButtonSelect = 7}}) --12
 	lslui.addButton({pos  = {x = 1600,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Next",textx = 3,texty = -5},page = 2,action = "nextcontrollingPlayer",joystickActions = {up=16,left=16,autoButtonSelect = 13}}) --13
+	lslui.addButton({pos  = {x = 1400,y = 50},size = {xsize = 240,ysize = 60}, textData = {text = "Sort",textx = 3,texty = -5},page = 2,action = "cyclesort",joystickActions = {up=16,left=16,autoButtonSelect = 14}}) --14
 
 	lslui.setMenuBackground({page = {0,1},image = "images/ui/ancientWall.png"})
 	lslui.setMenuBackground({page = {2},image = "images/ui/spellbook.png"})

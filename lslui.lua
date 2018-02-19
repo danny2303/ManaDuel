@@ -5,6 +5,9 @@ local utf8 = require("utf8")
 
 function lslui.load()
 
+	currentSort = 1
+	sorts = {"all","ultimates","utility"}
+
 	cantClickTimer = 0
 	cantClickColor = {132, 74, 77}
 
@@ -400,7 +403,7 @@ function lslui.update()
 		lslui.changeButton({pos  = {x = 50,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Back",textx = 3,texty = -5},page = 2,action = 0,joystickActions = {up=17-(round(spellbookScroll/100,0)),right=17-(round(spellbookScroll/100,0)),autoButtonSelect = 7}},12)
 		lslui.changeButton({pos  = {x = 1600,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Next",textx = 3,texty = -5},page = 2,action = "nextcontrollingPlayer",joystickActions = {up=17-(round(spellbookScroll/100,0)),left=17-(round(spellbookScroll/100,0)),autoButtonSelect = 13}},13) --13
 
-		if menuPage == 2 and not(selectedButton==12 or selectedButton==13 or selectedButton <= numMenuButtons+5 or (selectedButton > numMenuButtons+#allCastableSpells - 5) ) then selectedButton = 17-(round(spellbookScroll/100,0)) end
+		if menuPage == 2 and not(selectedButton==12 or selectedButton==13 or selectedButton==14 or selectedButton <= numMenuButtons+5 or (selectedButton > numMenuButtons+#allCastableSpells - 5) ) then selectedButton = 17-(round(spellbookScroll/100,0)) end
 	end
 
 end
@@ -436,6 +439,9 @@ function checkForJoystickMovement()
 		   buttonScrollBuffer = 2
 		   	if menuPage == 2  and not (selectedButton == numMenuButtons+1) then
 		   		selectedButton = selectedButton - 1
+		   	end
+		   	if menuPage == 2  and (selectedButton == numMenuButtons+1) then
+		   		selectedButton = 14
 		   	end
 		end
 
@@ -514,6 +520,8 @@ function manageClick(buttonID)
 			menuPage = runPage
 		end
 		controllingPlayer = 2
+	elseif buttonArray[buttonID].action == "cyclesort" then
+		if currentSort < #sorts then currentSort = currentSort + 1 else currentSort = 1 end
 	elseif buttonArray[buttonID].action ~= "typing" then
 		menuPage = buttonArray[buttonID].action
 		canClick = false
@@ -573,8 +581,10 @@ end
 
 function drawSpellbook()
 
+	love.graphics.setFont(writingFont)
+	love.graphics.print("Sorting by: "..sorts[currentSort],1000,40,0,1,1)
 
-	 if not(selectedButton == 12 or selectedButton == 13) and menuPage == 2 then 
+	 if not(selectedButton == 12 or selectedButton == 13 or selectedButton==14) and menuPage == 2 then 
 	 	love.graphics.setFont(writingFont)
 
 	 	if cantClickTimer  == 0 then  love.graphics.setColor(0,0,0) else love.graphics.setColor(cantClickColor[1], cantClickColor[2], cantClickColor[3]) end
