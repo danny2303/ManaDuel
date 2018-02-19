@@ -37,7 +37,7 @@ function spell.load()
 						{12,"multi","mirror","Mirror Soul","Summons an exact replica\nof your soul to mislead\nyour enemy."},{13,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{14,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{15,"multi","heal","Heal",""},{16,"multi","heal","Heal",""},{17,"multi","heal","Heal",""}}
 						
 
-	projectilesIndex = {fireball = {category= "large",layer = "front", lifetime = 40, rotationSpeed = 1,image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
+	projectilesIndex = {fireball = {category= "small",layer = "front", lifetime = 40, rotationSpeed = 1,image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
 						timeStop = {ecolor = {r=255,b=0,g=0},type = 4,category= "ultimate", width = 0.5, height = 0.5, projectileSpeed = 0, mana = 100, scale= 0.1, collisionMode = "barrier", loadCall = "stopTime", updateCall = "updateTimeStop"},
 						wisp = {layer = "front",lifetime  = 40, image = fireballImage, width = 0.4, height = 0.5, projectileSpeed = 1, damage = 5, mana = 5, scale= 0.1, collisionMode = "wisp",isOffence = true, effect = "paralyzed",effectDuration = 15},
 						orbitingSheild = {layer = "back",lifetime  = 40,image = orbitarsImage, isAnimation = true, numFrames = 40, playSpeed = 10, frameWidth = 35, width = 3.5, height = 3.5, projectileSpeed = 0, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
@@ -184,6 +184,26 @@ function castEffect(playerNum,category,type,color)
 
 	--4 levels of cast effect - 1) No effect 2) Small particle effect 3) Lots of particles 4) Rune flashes on screen and color shader
 
+	if category == "blood" then
+
+		variance = 1000
+		psystem = love.graphics.newParticleSystem(goldenSpark, 1000)
+		psystem:setParticleLifetime(0.1, 0.5) -- Particles live at least 2s and at most 5s.
+		psystem:setEmissionRate(500)
+		psystem:setSizes( 1, 20, 5)
+		psystem:setLinearAcceleration(players[playerNum].facingX*500-variance,players[playerNum].facingY*500-variance,players[playerNum].facingX*500+variance,players[playerNum].facingY*500+variance) -- Random movement in all directions.
+		psystem:setColors(255, 0, 0, 255, 0, 0, 0, 100) -- Fade to transparency.
+		psystem:setAreaSpread( "uniform", 10, 20 )
+		psystem:setSpin( 500, 500 )
+		psystem:setSpread(4)
+
+		effectType = psystem
+		effectCategory = "centeredparticle"
+		effectTimer = 5
+		effectplayerNum = playerNum
+
+	end
+
 	if category == "small" then
 		psystem = love.graphics.newParticleSystem(goldenSpark, 1000)
 		psystem:setParticleLifetime(0.1, 5) -- Particles live at least 2s and at most 5s.
@@ -256,12 +276,12 @@ function drawEffects()
 		effectTimer = effectTimer - 1
 
 	else
-		if effectCategory == "particle" then
+		if effectCategory == "particle" or effectCategory == "centeredparticle" then
 			effectType:stop( )
 		end
 	end
 
-	if effectCategory == "particle" then
+	if effectCategory == "particle" or effectCategory == "centeredparticle" then
 		love.graphics.setColor(255,255,255)
 		love.graphics.draw(effectType, love.graphics.getWidth() * 0.5, love.graphics.getHeight() * 0.5)
 	end
@@ -394,6 +414,11 @@ function spell.update(dt)
 	manageStack()
 	if effectCategory == "particle" then
 		x,y = applyScroll(players[effectplayerNum].x+players[effectplayerNum].facingX*2,"x")*zoom,applyScroll(players[effectplayerNum].y+players[effectplayerNum].facingY*2,"y")*zoom
+		psystem:setPosition(x,y)
+		psystem:update(dt)
+	end
+	if effectCategory == "centeredparticle" then
+		x,y = applyScroll(players[effectplayerNum].x,"x")*zoom,applyScroll(players[effectplayerNum].y,"y")*zoom
 		psystem:setPosition(x,y)
 		psystem:update(dt)
 	end
@@ -546,11 +571,13 @@ function manageCollision(subjectData,objectsList) --subjectData = the subject's 
 						if objectsList[i] == "player1Hitbox" and objects[subjectData.objectIndex].owner == 2 then 
 							players[1].health = players[1].health - projectilesIndex[subjectData.projectileIndex].damage
 							removeProjectile(findStackIndex(subjectData.objectIndex))
+							castEffect(1,"blood",1,1)
 						end
 
 						if objectsList[i] == "player2Hitbox" and objects[subjectData.objectIndex].owner == 1 then 
 							players[2].health = players[2].health - projectilesIndex[subjectData.projectileIndex].damage 
 							removeProjectile(findStackIndex(subjectData.objectIndex))
+							castEffect(2,"blood",1,1)
 						end
 
 
