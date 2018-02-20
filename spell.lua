@@ -3,10 +3,8 @@ local spell = {}
 function spell.load()
 
 	--effect stuff
-	effectTimer = 0
-	effectType = 1
-	effectCategory = nil
-	effectColor = {r=0,b=0,g=0}
+	activeEffects = {}
+
 	goldenSpark = love.graphics.newImage("images/ui/goldenSpark.png")
 
 
@@ -37,12 +35,14 @@ function spell.load()
 						{12,"multi","mirror","Mirror Soul","Summons an exact replica\nof your soul to mislead\nyour enemy."},{13,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{14,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{15,"multi","heal","Heal",""},{16,"multi","heal","Heal",""},{17,"multi","heal","Heal",""}}
 						
 
-	projectilesIndex = {fireball = {category= "small",layer = "front", lifetime = 40, rotationSpeed = 1,image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
+	projectilesIndex = {fireball = {category= "large",layer = "front", lifetime = 40, rotationSpeed = 1,image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
 						timeStop = {ecolor = {r=255,b=0,g=0},type = 4,category= "ultimate", width = 0.5, height = 0.5, projectileSpeed = 0, mana = 100, scale= 0.1, collisionMode = "barrier", loadCall = "stopTime", updateCall = "updateTimeStop"},
 						wisp = {layer = "front",lifetime  = 40, image = fireballImage, width = 0.4, height = 0.5, projectileSpeed = 1, damage = 5, mana = 5, scale= 0.1, collisionMode = "wisp",isOffence = true, effect = "paralyzed",effectDuration = 15},
 						orbitingSheild = {layer = "back",lifetime  = 40,image = orbitarsImage, isAnimation = true, numFrames = 40, playSpeed = 10, frameWidth = 35, width = 3.5, height = 3.5, projectileSpeed = 0, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
-						poisonOrb = {layer = "front",lifetime  = 40,image = poisonOrbImage, width = 0.5, height = 0.5, projectileSpeed = 3, damage = 0, mana = 10, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "poisoned",effectDuration = 5, rotationSpeed = 0.5},
-						whirlwind = {layer = "back",lifetime  = 40,scale = 0.05,image = whirlwindImage, isAnimation = true, numFrames = 6, playSpeed = 5, frameWidth = 27, width = 2.9, height = 2.9, projectileSpeed = 2, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false}
+						poisonOrb = {category = "small", layer = "front",lifetime  = 40,image = poisonOrbImage, width = 0.5, height = 0.5, projectileSpeed = 3, damage = 0, mana = 10, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "poisoned",effectDuration = 5, rotationSpeed = 0.5},
+						whirlwind = {layer = "back",lifetime  = 40,scale = 0.05,image = whirlwindImage, isAnimation = true, numFrames = 6, playSpeed = 5, frameWidth = 27, width = 2.9, height = 2.9, projectileSpeed = 2, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
+						lightOrb = {category = "small", layer = "front",lifetime  = 40,image = poisonOrbImage, width = 0.5, height = 0.5, projectileSpeed = 100, damage = 10, mana = 10, scale= 0.1, collisionMode = "wisp",isOffence = true, rotationSpeed = 0},
+
 }
 
 	uniqueProjectileCode = 1
@@ -51,7 +51,7 @@ function spell.load()
 
 	toRemove = {}
 
-	otherSpellIndex = {mirror = {mana = 10, duration = 60}, corrupt = {mana = 20, radius = 5, fossilchance  = 15, skullchance = 5, damage = 0.1}, dragonsBreath = {mana = 30}, heal = {mana = 10, amount = 10}, blink = {mana = 20, distance = 4}, invisibility = {mana = 20, duration = 50}}--spellname = true, ...
+	otherSpellIndex = {mirror = {mana = 10, duration = 60}, corrupt = {mana = 20, radius = 5, fossilchance  = 15, skullchance = 5, damage = 0.1}, dragonsBreath = {ecolor = {r=255,b=0,g=0},type = 4,category= "ultimate",mana = 30}, heal = {mana = 10, amount = 10}, blink = {mana = 20, distance = 4}, invisibility = {mana = 20, duration = 50}}--spellname = true, ...
 
 end
 
@@ -154,9 +154,11 @@ function launch(playerNum,projectile,x,y,isCustomCast)
 	rotation = 0
 	if projectilesIndex[projectile].rotationSpeed then rotation = projectilesIndex[projectile].rotationSpeed end
 
-	if players[playerNum].mana >= manacost or isCustomCast then
-
+	if players[playerNum].mana >= manacost and not( isCustomCast ) then
 		castEffect(playerNum, projectilesIndex[projectile].category,  projectilesIndex[projectile].type, projectilesIndex[projectile].ecolor)
+	end
+
+	if players[playerNum].mana >= manacost or isCustomCast then
 
 		addObject(uniqueProjectileCode,players[playerNum].x+players[playerNum].facingX,players[playerNum].y+players[playerNum].facingY, projectilesIndex[projectile].width,projectilesIndex[projectile].height,{removed = false,projectileStackIndex = #projectileStack+1,projectileIndex = projectile,owner = playerNum}) --todo projectile size - Adds a projectile object - todo multi-shot
 		
@@ -186,6 +188,8 @@ function castEffect(playerNum,category,type,color)
 
 	if category == "blood" then
 
+		newEffect  = {}
+
 		variance = 1000
 		psystem = love.graphics.newParticleSystem(goldenSpark, 1000)
 		psystem:setParticleLifetime(0.1, 0.5) -- Particles live at least 2s and at most 5s.
@@ -197,14 +201,20 @@ function castEffect(playerNum,category,type,color)
 		psystem:setSpin( 500, 500 )
 		psystem:setSpread(4)
 
-		effectType = psystem
-		effectCategory = "centeredparticle"
-		effectTimer = 5
-		effectplayerNum = playerNum
+		newEffect.effectType = psystem
+		newEffect.effectCategory = "centeredparticle"
+		newEffect.effectTimer = 5
+		newEffect.effectplayerNum = playerNum
+
+		activeEffects[#activeEffects+1] = newEffect	
+
 
 	end
 
 	if category == "small" then
+
+		newEffect = {}
+
 		psystem = love.graphics.newParticleSystem(goldenSpark, 1000)
 		psystem:setParticleLifetime(0.1, 5) -- Particles live at least 2s and at most 5s.
 		psystem:setEmissionRate(500)
@@ -215,13 +225,18 @@ function castEffect(playerNum,category,type,color)
 		psystem:setSpin( 500, 500 )
 		psystem:setSpread(4)
 
-		effectType = psystem
-		effectCategory = "particle"
-		effectTimer = 5
-		effectplayerNum = playerNum
+		newEffect.effectType = psystem
+		newEffect.effectCategory = "particle"
+		newEffect.effectTimer = 5
+		newEffect.effectplayerNum = playerNum
+
+		activeEffects[#activeEffects+1] = newEffect	
 	end
 
 	if category == "explosion" then 
+
+		newEffect = {}
+
 		psystem = love.graphics.newParticleSystem(goldenSpark, 1000)
 		psystem:setParticleLifetime(2, 5) -- Particles live at least 2s and at most 5s.
 		psystem:setEmissionRate(1000)
@@ -232,13 +247,19 @@ function castEffect(playerNum,category,type,color)
 		psystem:setSpin( 500, 500 )
 		psystem:setSpread(5)
 
-		effectType = psystem
-		effectCategory = "particle"
-		effectTimer = 100
-		effectplayerNum = playerNum
+		newEffect.effectType = psystem
+		newEffect.effectCategory = "particle"
+		newEffect.effectTimer = 100
+		newEffect.effectplayerNum = playerNum
+
+		activeEffects[#activeEffects+1] = newEffect	
+
 	end
 
 	if category == "large" then 
+
+		newEffect = {}
+
 		psystem = love.graphics.newParticleSystem(goldenSpark, 1000)
 		psystem:setParticleLifetime(2, 1) -- Particles live at least 2s and at most 5s.
 		psystem:setEmissionRate(10000)
@@ -249,41 +270,60 @@ function castEffect(playerNum,category,type,color)
 		psystem:setSpin( 500, 500 )
 		psystem:setSpread(5)
 
-		effectType = psystem
-		effectCategory = "particle"
-		effectTimer = 5
-		effectplayerNum = playerNum
+		newEffect.effectType = psystem
+		newEffect.effectCategory = "particle"
+		newEffect.effectTimer = 5
+		newEffect.effectplayerNum = playerNum
+
+		activeEffects[#activeEffects+1] = newEffect	
+
 	end
 
 	if category == "ultimate" then
-		effectTimer = 100
-		effectType = type
-		effectColor = color
-		effectCategory = "rune"
+
+		newEffect = {}
+
+		newEffect.effectTimer = 100
+		newEffect.effectType = type
+		newEffect.effectColor = color
+		newEffect.effectCategory = "rune"
+
+		activeEffects[#activeEffects+1] = newEffect	
+
 	end
 
 end
 
 function drawEffects()
 
-	if effectTimer > 0 then
+	if #activeEffects > 0 then
 
-		if effectCategory == "rune" then
-			drawRune(850,400,effectType,"hd",effectColor.r,effectColor.b,effectColor.g,50/effectTimer,effectTimer/20)
-			effectTimer = effectTimer - 2
+		for i=1, #activeEffects	do
+
+			effect = activeEffects[i]
+
+			if effect.effectTimer > 0 then
+
+				if effect.effectCategory == "rune" then
+					drawRune(850,400,effect.effectType,"hd",effect.effectColor.r,effect.effectColor.b,effect.effectColor.g,50/effect.effectTimer,effect.effectTimer/20)
+					effect.effectTimer = effect.effectTimer - 2
+				end
+
+				effect.effectTimer = effect.effectTimer - 1
+
+			else
+				if effect.effectCategory == "particle" or effect.effectCategory == "centeredparticle" then
+					effect.effectType:stop( )
+				end
+			end
+
+			if effect.effectCategory == "particle" or effect.effectCategory == "centeredparticle" then
+				love.graphics.setColor(255,255,255)
+				love.graphics.draw(effect.effectType, love.graphics.getWidth() * 0.5, love.graphics.getHeight() * 0.5)
+			end
+
 		end
 
-		effectTimer = effectTimer - 1
-
-	else
-		if effectCategory == "particle" or effectCategory == "centeredparticle" then
-			effectType:stop( )
-		end
-	end
-
-	if effectCategory == "particle" or effectCategory == "centeredparticle" then
-		love.graphics.setColor(255,255,255)
-		love.graphics.draw(effectType, love.graphics.getWidth() * 0.5, love.graphics.getHeight() * 0.5)
 	end
 
 end
@@ -412,15 +452,26 @@ end
 function spell.update(dt)
 
 	manageStack()
-	if effectCategory == "particle" then
-		x,y = applyScroll(players[effectplayerNum].x+players[effectplayerNum].facingX*2,"x")*zoom,applyScroll(players[effectplayerNum].y+players[effectplayerNum].facingY*2,"y")*zoom
-		psystem:setPosition(x,y)
-		psystem:update(dt)
-	end
-	if effectCategory == "centeredparticle" then
-		x,y = applyScroll(players[effectplayerNum].x,"x")*zoom,applyScroll(players[effectplayerNum].y,"y")*zoom
-		psystem:setPosition(x,y)
-		psystem:update(dt)
+
+	if #activeEffects > 0 then
+
+		for i=1, #activeEffects	do
+
+			effect = activeEffects[i]
+
+			if effect.effectCategory == "particle" then
+				x,y = applyScroll(players[effect.effectplayerNum].x+players[effect.effectplayerNum].facingX*2,"x")*zoom,applyScroll(players[effect.effectplayerNum].y+players[effect.effectplayerNum].facingY*2,"y")*zoom
+				effect.effectType:setPosition(x,y)
+				effect.effectType:update(dt)
+			end
+			if effect.effectCategory == "centeredparticle" then
+				x,y = applyScroll(players[effect.effectplayerNum].x,"x")*zoom,applyScroll(players[effect.effectplayerNum].y,"y")*zoom
+				effect.effectType:setPosition(x,y)
+				effect.effectType:update(dt)
+			end
+
+		end
+
 	end
 
 end
