@@ -5,8 +5,10 @@ local utf8 = require("utf8")
 
 function lslui.load()
 
+	spellbookLength = 0
+
 	currentSort = 1
-	sorts = {"all","ultimates","utility"}
+	sorts = {"all","ultimate","epic","greater","lesser","multi-shot"}
 
 	cantClickTimer = 0
 	cantClickColor = {132, 74, 77}
@@ -397,13 +399,13 @@ function lslui.update()
 
 	if generatedSpellbookButtons then
 			scrollLocked = false
-		for i=numMenuButtons+1,numMenuButtons+#allCastableSpells do
+		for i=numMenuButtons+1,numMenuButtons+spellbookLength do
 			lslui.moveButton(1140,(i-numMenuButtons)*100+50+(spellbookScroll),i)
 		end
 		lslui.changeButton({pos  = {x = 50,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Back",textx = 3,texty = -5},page = 2,action = 0,joystickActions = {up=17-(round(spellbookScroll/100,0)),right=17-(round(spellbookScroll/100,0)),autoButtonSelect = 7}},12)
 		lslui.changeButton({pos  = {x = 1600,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Next",textx = 3,texty = -5},page = 2,action = "nextcontrollingPlayer",joystickActions = {up=17-(round(spellbookScroll/100,0)),left=17-(round(spellbookScroll/100,0)),autoButtonSelect = 13}},13) --13
 
-		if menuPage == 2 and not(selectedButton==12 or selectedButton==13 or selectedButton==14 or selectedButton <= numMenuButtons+5 or (selectedButton > numMenuButtons+#allCastableSpells - 5) ) then selectedButton = 17-(round(spellbookScroll/100,0)) end
+		if menuPage == 2 and not(selectedButton==12 or selectedButton==13 or selectedButton==14 or selectedButton <= numMenuButtons+5 or (selectedButton > numMenuButtons+spellbookLength - 5) ) then selectedButton = 17-(round(spellbookScroll/100,0)) end
 	end
 
 end
@@ -430,7 +432,7 @@ function checkForJoystickMovement()
 	if cantClickTimer < 0 then cantClickTimer = 0 end
 
 	if inputs[controllingPlayer].ballyl < 0 and menuPage == 2 and not(selectedButton==12) and spellbookScroll < 0 then spellbookScroll = spellbookScroll + 7 end
-	if inputs[controllingPlayer].ballyl > 0 and menuPage == 2 and not(selectedButton==12) and spellbookScroll > -(#allCastableSpells-8)*100 then spellbookScroll = spellbookScroll - 7 end
+	if inputs[controllingPlayer].ballyl > 0 and menuPage == 2 and not(selectedButton==12) and spellbookScroll > -(spellbookLength-8)*100 then spellbookScroll = spellbookScroll - 7 end
 
 	if buttonScrollBuffer <= 0 then
 
@@ -448,7 +450,7 @@ function checkForJoystickMovement()
 		if inputs[controllingPlayer].ballyl > 0  and inputs[controllingPlayer].ballxl > -joystickPrecision and inputs[controllingPlayer].ballxl < joystickPrecision then
 			selectedButton = buttonArray[selectedButton].joystickActions.down
 			buttonScrollBuffer = 2
-		   	if menuPage == 2  and not (selectedButton == numMenuButtons+#allCastableSpells) then
+		   	if menuPage == 2  and not (selectedButton == numMenuButtons+spellbookLength) then
 		   		selectedButton = selectedButton + 1
 		   	end
 		end
@@ -522,6 +524,10 @@ function manageClick(buttonID)
 		controllingPlayer = 2
 	elseif buttonArray[buttonID].action == "cyclesort" then
 		if currentSort < #sorts then currentSort = currentSort + 1 else currentSort = 1 end
+		for i=numMenuButtons + spellbookLength,numMenuButtons + 1,-1 do
+			table.remove(buttonArray,i)
+		end
+		lslui.loadSpellbookButtons(sorts[currentSort])
 	elseif buttonArray[buttonID].action ~= "typing" then
 		menuPage = buttonArray[buttonID].action
 		canClick = false
@@ -561,13 +567,40 @@ function drawScrollingSpellbook()
 	end
 
 end
+
+function filterSpell(spell,filter)
+
+	if filter == "multi-shot" then
+		if spell[2] == "multi" then return true end
+	elseif filter == "ultimate" then
+		if spell[2] == "proj" and projectilesIndex[spell[3]].category == "ultimate" then return true end
+		if spell[2] == "multi" and otherSpellIndex[spell[3]].category == "ultimate" then return true end
+	elseif filter == "epic" then
+		if spell[2] == "proj" and projectilesIndex[spell[3]].category == "large" then return true end
+		if spell[2] == "multi" and otherSpellIndex[spell[3]].category == "large" then return true end
+	elseif filter == "greater" then
+		if spell[2] == "proj" and projectilesIndex[spell[3]].category == "small" then return true end
+		if spell[2] == "multi" and otherSpellIndex[spell[3]].category == "small" then return true end
+	elseif filter == "lesser" then
+		if spell[2] == "proj" and projectilesIndex[spell[3]].category == nil then return true end
+		if spell[2] == "multi" and otherSpellIndex[spell[3]].category == nil then return true end
+	else
+		return true
+	end
+
+end
 --
-function lslui.loadSpellbookButtons()
+function lslui.loadSpellbookButtons(filter)
+
+	spellbookLength = 0
 
 	numMenuButtons = #buttonArray
 
 	for i=1,#allCastableSpells do
-		lslui.addButton({pos  = {x = 1,y = 1},size = {xsize = 360,ysize = 100}, textData = {text = allCastableSpells[i][4],textx = 0,texty = 0},page = 2,action = "equipSpell",joystickActions = {left = 12,right=13,autoButtonSelect = #buttonArray+1},buttonType={name="spell",spellID = allCastableSpells[i]}})
+		if filterSpell(allCastableSpells[i],filter) == true then
+			lslui.addButton({pos  = {x = 1,y = 1},size = {xsize = 360,ysize = 100}, textData = {text = allCastableSpells[i][4],textx = 0,texty = 0},page = 2,action = "equipSpell",joystickActions = {left = 12,right=13,autoButtonSelect = #buttonArray+1},buttonType={name="spell",spellID = allCastableSpells[i]}})
+			spellbookLength = spellbookLength + 1
+		end
 	end
 
 	generatedSpellbookButtons = true

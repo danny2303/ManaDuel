@@ -99,7 +99,7 @@ function love.load()
 	lslui.setMenuBackground({page = {0,1},image = "images/ui/ancientWall.png"})
 	lslui.setMenuBackground({page = {2},image = "images/ui/spellbook.png"})
 
-	lslui.loadSpellbookButtons()
+	lslui.loadSpellbookButtons("all")
 
 end
 
