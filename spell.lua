@@ -17,12 +17,14 @@ function spell.load()
 	poisonOrbImage = love.graphics.newImage("images/projectiles/poison.png")
 	orbitarsImage = love.graphics.newImage("images/projectiles/orbitarsAnimation.png")
 	whirlwindImage = love.graphics.newImage("images/projectiles/whirlwindAnimation.png")
+	photonImage = love.graphics.newImage("images/projectiles/photon.png")
 
 	orbitarsImage:setFilter("nearest","nearest")
 	poisonOrbImage:setFilter("nearest","nearest")
 	fireballImage:setFilter("nearest","nearest")
 	orbitarsImage:setFilter("nearest","nearest")
 	whirlwindImage:setFilter("nearest","nearest")
+	photonImage:setFilter("nearest","nearest")
 
 
 	--speed = pixels/second
@@ -32,7 +34,7 @@ function spell.load()
 	--{indexInThisArray,arrayItIsIn,indexInThatArray}
 	allCastableSpells = {{1,"proj","fireball","Fireball","A firey inferno!"},{2,"proj","timeStop","Time Freeze","Stops time itself for a short while."},{3,"proj","wisp","Wisp","A cheap but light projectile."},{4,"proj","orbitingSheild","Sheild","A sheild to guard you in battle!"},{5,"proj","poisonOrb","Poison Orb","A pure orb of deadly poison!"},
 						{6,"proj","whirlwind","Tornado","A whirling wall of wind."},{7,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{8,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{9,"multi","blink","Blink","Teleports you a few meters in the direction you desire."},{10,"multi","invisibility","Darkest Night","Makes you no longer reflect light!"},{11,"multi","corrupt","Corrupt","Turns the land on which you walk\ninto a dangerous wasteland."},
-						{12,"multi","mirror","Mirror Soul","Summons an exact replica\nof your soul to mislead\nyour enemy."},{13,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{14,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{15,"multi","heal","Heal",""},{16,"multi","heal","Heal",""},{17,"multi","heal","Heal",""}}
+						{12,"multi","mirror","Mirror Soul","Summons an exact replica\nof your soul to mislead\nyour enemy."},{13,"proj","lightOrb","Fire Photon","A light-ning fast beam of pure light!"},{14,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{15,"multi","heal","Heal",""},{16,"multi","heal","Heal",""},{17,"multi","heal","Heal",""}}
 						
 
 	projectilesIndex = {fireball = {category= "large",layer = "front", lifetime = 40, rotationSpeed = 1,image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
@@ -41,7 +43,7 @@ function spell.load()
 						orbitingSheild = {layer = "back",lifetime  = 40,image = orbitarsImage, isAnimation = true, numFrames = 40, playSpeed = 10, frameWidth = 35, width = 3.5, height = 3.5, projectileSpeed = 0, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
 						poisonOrb = {category = "small", layer = "front",lifetime  = 40,image = poisonOrbImage, width = 0.5, height = 0.5, projectileSpeed = 3, damage = 0, mana = 10, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "poisoned",effectDuration = 5, rotationSpeed = 0.5},
 						whirlwind = {layer = "back",lifetime  = 40,scale = 0.05,image = whirlwindImage, isAnimation = true, numFrames = 6, playSpeed = 5, frameWidth = 27, width = 2.9, height = 2.9, projectileSpeed = 2, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
-						lightOrb = {category = "small", layer = "front",lifetime  = 40,image = poisonOrbImage, width = 0.5, height = 0.5, projectileSpeed = 100, damage = 10, mana = 10, scale= 0.1, collisionMode = "wisp",isOffence = true, rotationSpeed = 0},
+						lightOrb = {category = "small", layer = "front",lifetime  = 40,image = photonImage, width = 0.25, height = 0.25, projectileSpeed = 50, damage = 10, mana = 10, scale= 0.1, collisionMode = "wisp",isOffence = true, rotationSpeed = 0},
 
 }
 
