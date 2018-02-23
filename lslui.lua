@@ -402,7 +402,7 @@ function lslui.update()
 		for i=numMenuButtons+1,numMenuButtons+spellbookLength do
 			lslui.moveButton(1140,(i-numMenuButtons)*100+50+(spellbookScroll),i)
 		end
-		lslui.changeButton({pos  = {x = 50,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Back",textx = 3,texty = -5},page = 2,action = 0,joystickActions = {up=17-(round(spellbookScroll/100,0)),right=17-(round(spellbookScroll/100,0)),autoButtonSelect = 7}},12)
+		lslui.changeButton({pos  = {x = 50,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Back",textx = 3,texty = -5},page = 2,action = 0,joystickActions = {up=17-(round(spellbookScroll/100,0)),right=17-(round(spellbookScroll/100,0)),autoButtonSelect = 5}},12)
 		lslui.changeButton({pos  = {x = 1600,y = 1000},size = {xsize = 240,ysize = 60}, textData = {text = "Next",textx = 3,texty = -5},page = 2,action = "nextcontrollingPlayer",joystickActions = {up=17-(round(spellbookScroll/100,0)),left=17-(round(spellbookScroll/100,0)),autoButtonSelect = 13}},13) --13
 
 		if menuPage == 2 and not(selectedButton==12 or selectedButton==13 or selectedButton==14 or selectedButton <= numMenuButtons+5 or (selectedButton > numMenuButtons+spellbookLength - 5) ) then selectedButton = 17-(round(spellbookScroll/100,0)) end

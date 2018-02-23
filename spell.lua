@@ -30,7 +30,6 @@ function spell.load()
 	--speed = pixels/second
 	--rotationSpeed = radians/tick/10
 
-
 	--{indexInThisArray,arrayItIsIn,indexInThatArray}
 	allCastableSpells = {{1,"proj","fireball","Fireball","A firey inferno!"},{2,"proj","timeStop","Time Freeze","Stops time itself for a short while."},{3,"proj","wisp","Wisp","A cheap but light projectile."},{4,"proj","orbitingSheild","Sheild","A sheild to guard you in battle!"},{5,"proj","poisonOrb","Poison Orb","A pure orb of deadly poison!"},
 						{6,"proj","whirlwind","Tornado","A whirling wall of wind."},{7,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{8,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{9,"multi","blink","Blink","Teleports you a few meters in the direction you desire."},{10,"multi","invisibility","Darkest Night","Makes you no longer reflect light!"},{11,"multi","corrupt","Corrupt","Turns the land on which you walk\ninto a dangerous wasteland."},
