@@ -33,7 +33,7 @@ function spell.load()
 	--{indexInThisArray,arrayItIsIn,indexInThatArray}
 	allCastableSpells = {{1,"proj","fireball","Fireball","A firey inferno!"},{2,"proj","timeStop","Time Freeze","Stops time itself for a short while."},{3,"proj","wisp","Wisp","A cheap but light projectile."},{4,"proj","orbitingSheild","Sheild","A sheild to guard you in battle!"},{5,"proj","poisonOrb","Poison Orb","A pure orb of deadly poison!"},
 						{6,"proj","whirlwind","Tornado","A whirling wall of wind."},{7,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{8,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{9,"multi","blink","Blink","Teleports you a few meters in the direction you desire."},{10,"multi","invisibility","Darkest Night","Makes you no longer reflect light!"},{11,"multi","corrupt","Corrupt","Turns the land on which you walk\ninto a dangerous wasteland."},
-						{12,"multi","mirror","Mirror Soul","Summons an exact replica\nof your soul to mislead\nyour enemy."},{13,"proj","lightOrb","Fire Photon","A light-ning fast beam of pure light!"},{14,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{15,"multi","heal","Heal",""},{16,"multi","heal","Heal",""},{17,"multi","heal","Heal",""}}
+						{12,"multi","mirror","Mirror Soul","Summons an exact replica\nof your soul to mislead\nyour enemy."},{13,"proj","lightOrb","Fire Photon","A light-ning fast beam of pure light!"},{14,"multi","hail","Hail storm","A circle of icy hailstones charge into battle!"},{15,"multi","heal","Heal",""},{16,"multi","heal","Heal",""},{17,"multi","heal","Heal",""}}
 						
 
 	projectilesIndex = {fireball = {category= "large",layer = "front", lifetime = 40, rotationSpeed = 1,image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
@@ -43,7 +43,7 @@ function spell.load()
 						poisonOrb = {category = "small", layer = "front",lifetime  = 40,image = poisonOrbImage, width = 0.5, height = 0.5, projectileSpeed = 3, damage = 0, mana = 10, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "poisoned",effectDuration = 5, rotationSpeed = 0.5},
 						whirlwind = {layer = "back",lifetime  = 40,scale = 0.05,image = whirlwindImage, isAnimation = true, numFrames = 6, playSpeed = 5, frameWidth = 27, width = 2.9, height = 2.9, projectileSpeed = 2, damage = 0, mana = 20, scale= 1, collisionMode = "barrier",isOffence = false},
 						lightOrb = {category = "small", layer = "front",lifetime  = 40,image = photonImage, width = 0.25, height = 0.25, projectileSpeed = 50, damage = 10, mana = 10, scale= 0.1, collisionMode = "wisp",isOffence = true, rotationSpeed = 0},
-
+						hailstone = {category = "small", layer = "front",lifetime  = 40,image = photonImage, width = 0.125, height = 0.125, projectileSpeed = 3, damage = 1, mana = 10, scale= 0.05, collisionMode = "projectile",isOffence = true, rotationSpeed = 0.5},
 }
 
 	uniqueProjectileCode = 1
@@ -52,7 +52,7 @@ function spell.load()
 
 	toRemove = {}
 
-	otherSpellIndex = {mirror = {mana = 10, duration = 60}, corrupt = {mana = 20, radius = 5, fossilchance  = 15, skullchance = 5, damage = 0.1}, dragonsBreath = {ecolor = {r=255,b=0,g=0},type = 4,category= "ultimate",mana = 30}, heal = {mana = 10, amount = 10}, blink = {mana = 20, distance = 4}, invisibility = {mana = 20, duration = 50}}--spellname = true, ...
+	otherSpellIndex = {hail = {mana = 0}, mirror = {mana = 10, duration = 60}, corrupt = {mana = 20, radius = 5, fossilchance  = 15, skullchance = 5, damage = 0.1}, dragonsBreath = {ecolor = {r=255,b=0,g=0},type = 4,category= "ultimate",mana = 30}, heal = {mana = 10, amount = 10}, blink = {mana = 20, distance = 4}, invisibility = {mana = 20, duration = 50}}--spellname = true, ...
 
 end
 
@@ -94,6 +94,17 @@ function cast(playerNum,spell)
 				vector = convertDirection(dir,mag)
 				players[playerNum].x = players[playerNum].x + vector.x
 				players[playerNum].y = players[playerNum].y + vector.y
+
+			end
+
+			if spell == "hail" then
+
+				facingX,facingY = players[playerNum].facingX,players[playerNum].facingY
+				for i=0,6.2,0.2 do
+					mag,dir = convertVector({x=facingX,y=facingY})
+					vector = convertDirection(dir + i, mag)
+					launch(playerNum,"hailstone",vector.x,vector.y,true,players[playerNum].x,players[playerNum].y)
+				end
 
 			end
 
@@ -147,7 +158,7 @@ function round(num, numDecimalPlaces)
   return math.floor(num * mult + 0.5) / mult
 end
 
-function launch(playerNum,projectile,x,y,isCustomCast)
+function launch(playerNum,projectile,x,y,isCustomCast,startx,starty)
 
 	pspeed = projectilesIndex[projectile].projectileSpeed
 	manacost = projectilesIndex[projectile].mana
@@ -161,8 +172,9 @@ function launch(playerNum,projectile,x,y,isCustomCast)
 
 	if players[playerNum].mana >= manacost or isCustomCast then
 
-		addObject(uniqueProjectileCode,players[playerNum].x+players[playerNum].facingX,players[playerNum].y+players[playerNum].facingY, projectilesIndex[projectile].width,projectilesIndex[projectile].height,{removed = false,projectileStackIndex = #projectileStack+1,projectileIndex = projectile,owner = playerNum}) --todo projectile size - Adds a projectile object - todo multi-shot
-		
+		if not (startx) then addObject(uniqueProjectileCode,players[playerNum].x+players[playerNum].facingX,players[playerNum].y+players[playerNum].facingY, projectilesIndex[projectile].width,projectilesIndex[projectile].height,{removed = false,projectileStackIndex = #projectileStack+1,projectileIndex = projectile,owner = playerNum}) end --todo projectile size - Adds a projectile object 
+		if startx then addObject(uniqueProjectileCode,startx,starty, projectilesIndex[projectile].width,projectilesIndex[projectile].height,{removed = false,projectileStackIndex = #projectileStack+1,projectileIndex = projectile,owner = playerNum}) end --todo projectile size - Adds a projectile object 
+
 		--remove variable magnitude of launch vectors
 
 		mag,dir = convertVector({x=x,y=y})

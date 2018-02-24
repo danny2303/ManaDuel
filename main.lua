@@ -14,8 +14,8 @@ function love.load()
 
 	print(bitser.loads(love.filesystem.read("testSave.txt"))["hellotoyouall"])
 
-	table = {hellotoyouall = 1,2,4,5,6,7,{1,2,3}}
-	love.filesystem.write("testSave.txt", bitser.dumps(table))
+	testTable = {hellotoyouall = 1,2,4,5,6,7,{1,2,3}}
+	love.filesystem.write("testSave.txt", bitser.dumps(testTable))
 
 
 	-----
