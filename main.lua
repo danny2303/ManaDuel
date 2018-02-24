@@ -9,6 +9,9 @@ bitser = require 'bitser'
 
 function love.load()
 
+	spellbooks = {{l1 = "dragonsBreath",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "warp",s2 = "mirror",s3 = "fireball",s4 = "orbitingSheild"},
+				  {l1 = "whirlwind",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "timeStop",s2 = "poisonOrb",s3 = "fireball",s4 = "orbitingSheild"}}
+
 
 	--saving and loading demo 
 
