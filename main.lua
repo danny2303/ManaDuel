@@ -6,19 +6,35 @@ ui = require "ui"
 spell = require "spell"
 lslui = require "lslui"
 bitser = require 'bitser'
+local utf8 = require("utf8")
+
+function love.textinput(t)
+    inputText = inputText .. t
+end
+ 
+function love.keypressed(key)
+    if key == "backspace" then
+        local byteoffset = utf8.offset(inputText, -1)
+        if byteoffset then
+            inputText = string.sub(inputText, 1, byteoffset - 1)
+        end
+    end
+end
 
 function love.load()
 
-	spellbooks = {{l1 = "dragonsBreath",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "warp",s2 = "mirror",s3 = "fireball",s4 = "orbitingSheild"},
+	inputText  = ""
+
+	spellbooks = {{l1 = "dragonsBreath",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "smokebomb",s2 = "mirror",s3 = "fireball",s4 = "orbitingSheild"},
 				  {l1 = "whirlwind",l2 = "wisp",r1 = "fireball",r2 = "heal",s1 = "timeStop",s2 = "poisonOrb",s3 = "fireball",s4 = "orbitingSheild"}}
 
 
 	--saving and loading demo 
 
-	print(bitser.loads(love.filesystem.read("testSave.txt"))["hellotoyouall"])
+	print(bitser.loads(love.filesystem.read("testSave.txt"))[1].s1)
 
 	testTable = {hellotoyouall = 1,2,4,5,6,7,{1,2,3}}
-	love.filesystem.write("testSave.txt", bitser.dumps(testTable))
+	love.filesystem.write("testSave.txt", bitser.dumps(spellbooks))
 
 
 	-----
@@ -95,7 +111,7 @@ function love.load()
 	--main menu (0)
 	lslui.addButton({pos  = {x = 170,y = 100},size = {xsize = 240,ysize = 60}, textData = {text = "Fight"},page = 0,action = "enterSpellbook",joystickActions = {up = 8,down = 6,autoButtonSelect = 12},buttonType = {name = "rune", r= 255, b=0, g=0, runeNum = 1,size = 2}}) --5
 	lslui.addButton({pos  = {x = 170,y = 270},size = {xsize = 240,ysize = 60}, textData = {text = "Options"},page = 0,action = 1,joystickActions = {up = 5,down = 7,autoButtonSelect = 11},buttonType = {name = "rune", r= 0, b=255, g=0, runeNum = 2,size = 2}}) --6
-	lslui.addButton({pos  = {x = 170,y = 440},size = {xsize = 240,ysize = 60}, textData = {text = "Characters"},page = 0,action = "run",joystickActions = {up = 6,down = 8,autoButtonSelect = 2},buttonType = {name = "rune", r= 0, b=0, g=255, runeNum = 3,size = 2}}) --7
+	lslui.addButton({pos  = {x = 170,y = 440},size = {xsize = 240,ysize = 60}, textData = {text = "Characters"},page = 0,action = 3,joystickActions = {up = 6,down = 8,autoButtonSelect = 7},buttonType = {name = "rune", r= 0, b=0, g=255, runeNum = 3,size = 2}}) --7
 	lslui.addButton({pos  = {x = 170,y = 610},size = {xsize = 240,ysize = 60}, textData = {text = "Exit"},page = 0,action = "exit",joystickActions = {up = 7,down =5 ,autoButtonSelect = 5},buttonType = {name = "rune", r= 30, b=30, g=30, runeNum = 4,size = 2}}) --8
 
 	--options menu (1)
@@ -115,6 +131,8 @@ function love.load()
 
 	lslui.loadSpellbookButtons("all")
 
+
+
 end
 
 function love.update(dt)
@@ -131,10 +149,10 @@ function love.update(dt)
 		player.update(dt)
 		object.update(dt)
 		spell.update(dt)
-		ui.update()
 	end
 
 	lslui.update()
+	ui.update()
 
 	lslui.inGameMenu("start","gameMenu1")
 
@@ -227,12 +245,12 @@ function love.draw()
 		love.graphics.pop()
 
 		input.draw()
-		ui.draw()
 		drawEffects()
 		
 	end
 
 	lslui.draw()
+	ui.draw()
 	for i = 1,10 do
 	--	drawRune(math.random(0,1800),math.random(0,1000),math.random(1,8),"glowing",math.random(0,255),math.random(0,255),math.random(0,255))
 	end

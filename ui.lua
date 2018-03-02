@@ -2,6 +2,13 @@ local ui = {}
 
 function ui.load()
 
+	clickBuffer = 0
+	newplayername = ""
+
+	characterButtonNames = {"New","Load","Import","Export"}
+
+	love.keyboard.setTextInput(true)
+
 	barPadding = 100
 	barDistance = 1200
 	healthLength = 15
@@ -39,22 +46,138 @@ end
 
 function ui.update()
 
+	clickBuffer = clickBuffer - 1
+	if clickBuffer < 0 then clickBuffer = 0 end
+
 	upholdBarLimits()
+	if inGame and menuPage == 3 then
+		characterMenu()
+	end
 
 end
 
 function ui.draw()
+
+	if inGame then
 
 	love.graphics.setFont(effectFont)
 
 	drawUI()
 	drawStatusEffects()
 
-	if players[1].effects[1] then
-		if players[1].effects[1].name == "test" then
-			--love.graphics.circle("fill",500,500,500,500,500)
+	elseif menuPage == 3 then
+		drawCharacterMenu()
+	end
+
+end
+
+function love.mousepressed( x, y, button)
+
+	if clickBuffer == 0 then
+
+		clickBuffer = 10
+
+		if button == 1 then
+
+			if not(isDrawingPopupWindow) then
+				for i=1,4 do
+					if x > 700 and x < 1000 and y > i*200 and y < i*200+100 then
+						if i == 1 then
+							isDrawingPopupWindow = true
+							popupArgs = {message = "Type the name of your new character:", selected = false, isTextInput = true, phase = "newCharacter"}
+							inputText = ""
+						end
+						if i == 2 then
+							isDrawingPopupWindow = true
+							popupArgs = {message = "Type the name of the character you wish to load:", selected = false, isTextInput = true, phase = "loadCharacter1"}
+							inputText = ""
+						end
+					end
+				end
+			end
+
+			if x > 850 and x < 950 and y > 765 and y < 865 and isDrawingPopupWindow then
+				isDrawingPopupWindow = false
+				if popupArgs.phase == "newCharacter" then
+					--make a new character
+				end
+				if popupArgs.phase == "loadCharacter1" then
+					newplayername = inputText
+					isDrawingPopupWindow = true
+					popupArgs = {message = "Type either '1' or '2' - this is the player number you wish " .. newplayername .. " to play as:", selected = false, isTextInput = true, phase = "loadCharacter2"}
+					inputText = ""
+				elseif popupArgs.phase == "loadCharacter2" and not(inputText == "1" or inputText == "2") then
+					isDrawingPopupWindow = true
+					popupArgs = {message = "Type either '1' or '2' - this is the player number you wish " .. newplayername .. " to play as:", selected = false, isTextInput = true, phase = "loadCharacter2"}
+					inputText = ""
+				elseif popupArgs.phase == "loadCharacter2" and (inputText == "1" or inputText == "2") then
+					--set this character to that player num
+				end
+			end
+
+		end
+
+	end
+
+end
+
+function characterMenu()
+
+
+
+end
+
+function drawCharacterMenu()
+
+	love.graphics.setFont(digitalFont)
+	love.graphics.setColor(255,255,255)
+	love.graphics.print("You must use the computer to change characters:",450,0,0,0.5,0.5)
+	--new change import export
+	--drawPopupWindow("Important messsage ", false, true)
+
+	if not(isDrawingPopupWindow) then
+		for i=1,4 do
+			mx,my = love.mouse.getX(),love.mouse.getY()
+			love.graphics.setColor(255,255,255)
+			if mx > 700 and mx < 1000 and my > i*200 and my < i*200+100 then
+				love.graphics.setColor(50,50,50)
+			end
+			love.graphics.rectangle("fill",700,i*200,300,100)
+
+			love.graphics.setColor(0,0,0)
+			love.graphics.printf(characterButtonNames[i],700,i*200 + 10,300,"center")
 		end
 	end
+
+	if isDrawingPopupWindow then drawPopupWindow(popupArgs) end
+
+end
+
+function drawPopupWindow(args)
+
+	message = args.message
+	selected = args.selected
+	isTextInput = args.isTextInput
+
+	love.graphics.setColor(255,255,255)
+	love.graphics.rectangle("fill",400,300,25,500)
+	love.graphics.rectangle("fill",1400,300,25,525)
+	love.graphics.rectangle("fill",400,800,1000,25)
+	love.graphics.rectangle("fill",400,300,1000,25)
+
+	love.graphics.setColor(1, 51, 2)
+	love.graphics.rectangle("fill",425,325,975,475)
+
+	if selected then love.graphics.setColor(100,100,100) else love.graphics.setColor(255,255,255) end
+	love.graphics.rectangle("fill",850,765,100,100)
+
+	love.graphics.setFont(digitalFont)
+	love.graphics.setColor(0,0,0)
+	love.graphics.printf(message,425,350,1400,"center",0,0.7,0.7)
+	love.graphics.print("OK",865,775,0,0.9,0.9)
+
+	love.graphics.setColor(255,255,255)
+	if isTextInput then love.graphics.print(inputText, 500, 600) end
 
 end
 

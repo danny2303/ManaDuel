@@ -6,6 +6,7 @@ function spell.load()
 	activeEffects = {}
 
 	goldenSpark = love.graphics.newImage("images/ui/goldenSpark.png")
+	blankParticle = love.graphics.newImage("images/ui/blankParticle.png")
 
 
 	timeStopped = false
@@ -33,7 +34,7 @@ function spell.load()
 	--{indexInThisArray,arrayItIsIn,indexInThatArray}
 	allCastableSpells = {{1,"proj","fireball","Fireball","A firey inferno!"},{2,"proj","timeStop","Time Freeze","Stops time itself for a short while."},{3,"proj","wisp","Wisp","A cheap but light projectile."},{4,"proj","orbitingSheild","Sheild","A sheild to guard you in battle!"},{5,"proj","poisonOrb","Poison Orb","A pure orb of deadly poison!"},
 						{6,"proj","whirlwind","Tornado","A whirling wall of wind."},{7,"multi","dragonsBreath","Dragon's Breath","Summons the allmighty fury the dragon!"},{8,"multi","heal","Heal","Heals you temporarily\n-only for use in life-or-death situations"},{9,"multi","blink","Blink","Teleports you a few meters in the direction you desire."},{10,"multi","invisibility","Darkest Night","Makes you no longer reflect light!"},{11,"multi","corrupt","Corrupt","Turns the land on which you walk\ninto a dangerous wasteland."},
-						{12,"multi","mirror","Mirror Soul","Summons an exact replica\nof your soul to mislead\nyour enemy."},{13,"proj","lightOrb","Fire Photon","A light-ning fast beam of pure light!"},{14,"multi","hail","Hail storm","A circle of icy hailstones charge into battle!"},{15,"multi","warp","Warp","Teleports you to a random location on the map!\nGood for quick escapes!"},{16,"multi","heal","Heal",""},{17,"multi","heal","Heal",""}}
+						{12,"multi","mirror","Mirror Soul","Summons an exact replica\nof your soul to mislead\nyour enemy."},{13,"proj","lightOrb","Fire Photon","A light-ning fast beam of pure light!"},{14,"multi","hail","Hail storm","A circle of icy hailstones charge into battle!"},{15,"multi","warp","Warp","Teleports you to a random location on the map!\nGood for quick escapes!"},{16,"multi","smokebomb","Fog cover","Covers the screen in a thick black fog"},{17,"multi","heal","Heal",""}}
 						
 
 	projectilesIndex = {fireball = {category= "large",layer = "front", lifetime = 40, rotationSpeed = 1,image = fireballImage, width = 0.5, height = 0.5, projectileSpeed = 2, damage = 5, mana = 20, scale= 0.1, collisionMode = "projectile",isOffence = true, effect = "confused",effectDuration = 10,updateCall = "home", updateArgs = {accuracy = 100}},
@@ -52,7 +53,7 @@ function spell.load()
 
 	toRemove = {}
 
-	otherSpellIndex = {warp = {mana = 70}, hail = {mana = 50}, mirror = {mana = 10, duration = 60}, corrupt = {mana = 20, radius = 5, fossilchance  = 15, skullchance = 5, damage = 0.1}, dragonsBreath = {ecolor = {r=255,b=0,g=0},type = 4,category= "ultimate",mana = 30}, heal = {mana = 10, amount = 10}, blink = {mana = 20, distance = 4}, invisibility = {mana = 20, duration = 50}}--spellname = true, ...
+	otherSpellIndex = {smokebomb = {mana = 40}, warp = {mana = 70}, hail = {mana = 50}, mirror = {mana = 10, duration = 60}, corrupt = {mana = 20, radius = 5, fossilchance  = 15, skullchance = 5, damage = 0.1}, dragonsBreath = {ecolor = {r=255,b=0,g=0},type = 4,category= "ultimate",mana = 30}, heal = {mana = 10, amount = 10}, blink = {mana = 20, distance = 4}, invisibility = {mana = 20, duration = 50}}--spellname = true, ...
 
 end
 
@@ -78,6 +79,12 @@ function cast(playerNum,spell)
 					vector = convertDirection(dir + i, mag)
 					launch(playerNum,"poisonOrb",vector.x,vector.y,true)
 				end
+			end
+
+			if spell == "smokebomb" then
+
+				castEffect(playerNum, "smokebomb")
+
 			end
 
 			if spell == "warp" then
@@ -276,6 +283,29 @@ function castEffect(playerNum,category,type,color)
 
 	end
 
+	if category == "smokebomb" then 
+
+		newEffect = {}
+
+		psystem = love.graphics.newParticleSystem(blankParticle, 1000)
+		psystem:setParticleLifetime(2, 5) -- Particles live at least 2s and at most 5s.
+		psystem:setEmissionRate(5000000)
+		psystem:setSizes( 20, 500)
+		psystem:setLinearAcceleration(-100, -100, 100, 100) -- Random movement in all directions.
+		psystem:setColors(0,0,0,255,50,50,50,0) -- Fade to transparency.
+		psystem:setAreaSpread( "normal", 400, 400)
+		psystem:setSpin( 500, 500 )
+		psystem:setSpread(10)
+
+		newEffect.effectType = psystem
+		newEffect.effectCategory = "screenParticle"
+		newEffect.effectTimer = 100
+		newEffect.effectplayerNum = playerNum
+
+		activeEffects[#activeEffects+1] = newEffect	
+
+	end
+
 	if category == "large" then 
 
 		newEffect = {}
@@ -332,12 +362,12 @@ function drawEffects()
 				effect.effectTimer = effect.effectTimer - 1
 
 			else
-				if effect.effectCategory == "particle" or effect.effectCategory == "centeredparticle" then
+				if effect.effectCategory == "particle" or effect.effectCategory == "centeredparticle" or effect.effectCategory == "screenParticle" then
 					effect.effectType:stop( )
 				end
 			end
 
-			if effect.effectCategory == "particle" or effect.effectCategory == "centeredparticle" then
+			if effect.effectCategory == "particle" or effect.effectCategory == "centeredparticle" or effect.effectCategory == "screenParticle" then
 				love.graphics.setColor(255,255,255)
 				love.graphics.draw(effect.effectType, love.graphics.getWidth() * 0.5, love.graphics.getHeight() * 0.5)
 			end
@@ -486,6 +516,11 @@ function spell.update(dt)
 			end
 			if effect.effectCategory == "centeredparticle" then
 				x,y = applyScroll(players[effect.effectplayerNum].x,"x")*zoom,applyScroll(players[effect.effectplayerNum].y,"y")*zoom
+				effect.effectType:setPosition(x,y)
+				effect.effectType:update(dt)
+			end
+			if effect.effectCategory == "screenParticle" then
+				x,y = applyScroll(0,"x")*zoom,applyScroll(0,"y")*zoom
 				effect.effectType:setPosition(x,y)
 				effect.effectType:update(dt)
 			end
